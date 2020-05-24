@@ -1,0 +1,53 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	match /users/{email}/leads_buyer/{document=**} {
+    	function emailEqualsAndVerified() {
+        return request.auth.uid != null && 
+        request.auth.token.email == email &&
+        request.auth.token.email_verified
+      }
+      
+      allow read, write: if emailEqualsAndVerified()
+    }
+    
+    match /users/{email}/leads_seller/{document=**} {
+    	function emailEqualsAndVerified() {
+        return request.auth.uid != null && 
+        request.auth.token.email == email &&
+        request.auth.token.email_verified
+      }
+      
+      allow read, write: if emailEqualsAndVerified()
+    }
+    
+    match /users/{email}/leads_tenant/{document=**} {
+    	function emailEqualsAndVerified() {
+        return request.auth.uid != null && 
+        request.auth.token.email == email &&
+        request.auth.token.email_verified
+      }
+      
+      allow read, write: if emailEqualsAndVerified()
+    }
+    
+    match /users/{email}/leads_landlord/{document=**} {
+    	function emailEqualsAndVerified() {
+        return request.auth.uid != null && 
+        request.auth.token.email == email &&
+        request.auth.token.email_verified
+      }
+      
+      allow read, write: if emailEqualsAndVerified()
+    }
+    
+      match /users/{email}/areas/{document=**} {
+    	function emailEqualsAndVerified() {
+        return request.auth.uid != null && 
+        request.auth.token.email == email &&
+        request.auth.token.email_verified
+      }
+      
+      allow read, write: if emailEqualsAndVerified()
+    }
+  }
+}
