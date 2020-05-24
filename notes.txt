@@ -1,3 +1,9 @@
+BASICS
+
+ionic serve
+ionic build
+
+
 CAPACITOR
 
 Add platforms using "npx cap add":
@@ -6,11 +12,50 @@ Add platforms using "npx cap add":
   npx cap add ios
   npx cap add electron
 
+Copy changes into native projects:
+    ionic build
+    ionic cap copy
+
+After making updates to the native code (such as adding a new plugin) use sync command:
+    ionic cap sync
+
+ANDROID
+Open in Android studio:
+    ionic cap open android
+Live reload:
+    ionic cap run android -l --external
+Permissions for android:
+android/app/src/main/AndroidManifest.xml
+
+
+iOS
+To add the ios project any time, there should be just several simple commands involved
+    ionic cap add ios           \\should be enough? if not, move on to the next lines
+    ionic build
+    ionic cap copy
+
+To open the ios project in the studio:
+    ionic cap open ios
+
   https://capacitor.ionicframework.com/docs/basics/workflow
 
 
 ANGULAR
-Install latest:         npm install @ionic/angular@latest --save
+Install latest:         
+    npm install @ionic/angular@latest --save
+
+
+FIREBASE
+Init a project with 
+    firebase init       //this might be good to change the app? currently its real.estate.
+keepi\.firebaserc       //this is where the project is defined
+
+Future modifications to database.rules.json will update Database Rules when you run
+    firebase deploy
+
+
+
+
 
 Your Ionic app is ready! Follow these next steps:
 
