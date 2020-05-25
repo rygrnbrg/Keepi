@@ -3,15 +3,13 @@ import { NavController, ToastController, AlertController, LoadingController } fr
 import { User } from '../../providers';
 import { AuthProvider } from '../../providers/auth/auth';
 import { TranslateService } from '@ngx-translate/core';
-import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  private loading: Promise<HTMLIonLoadingElement>;
-  
   account: { email: string, password: string } = {
     email: '',
     password: ''
@@ -26,32 +24,30 @@ export class LoginPage {
     private alertCtrl: AlertController,
     private translateService: TranslateService,
     private loadingCtrl: LoadingController,
-    private localStorage: Storage) {
-
-  }
-
-  ionViewWillEnter() {
+    private storage: NativeStorage) {
     this.translateService.get([
       'GENERAL_EMAIL_EXAMPLE', 'GENERAL_EMAIL', 'PASSWORD_RECOVERY_TITLE', 'PASSWORD_RECOVERY_MESSAGE',
       'PASSWORD_RECOVERY_SUCCESS', 'GENERAL_APPROVE', 'GENERAL_CANCEL']).subscribe(values => {
         this.translations = values;
       });
+  }
 
-    this.localStorage.get(AuthProvider.emailStorageKey).then(
+  ionViewWillEnter() {
+    this.storage.getItem(AuthProvider.emailStorageKey).then(
       (email) => this.account.email = email
     );
   }
 
   // Attempt to login in through our User service
-  doLogin(): void {
-    this.loading = this.loadingCtrl.create();
-    this.loading.present()
+  async doLogin() {
+    let loading = await this.loadingCtrl.create();
+    loading.present();
     this.user.login(this.account).then((resp) => {
-      this.loading.dismiss();
+      loading.dismiss();
     }, (err: Error) => {
-      this.loading.dismiss();
+      loading.dismiss();
       if (err.name === AuthProvider.emailNotVerifiedErrorCode) {
-        this.navCtrl.setRoot("SendVerificationPage");
+        this.navCtrl.navigateRoot("sendverification");
       }
       else {
         this.showToast(err.message);
@@ -60,11 +56,11 @@ export class LoginPage {
   }
 
   signUp(): void {
-    this.navCtrl.setRoot("SignupPage");
+    this.navCtrl.navigateRoot("signup");
   }
 
-  showToast(message: string) {
-    let toast = this.toastCtrl.create({
+  async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
       message: message,
       duration: 3000,
       position: 'top'
@@ -72,9 +68,9 @@ export class LoginPage {
     toast.present();
   }
 
-  forgotPassword() {
-    const prompt = this.alertCtrl.create({
-      title: this.translations.PASSWORD_RECOVERY_TITLE,
+  async forgotPassword() {
+    const prompt = await this.alertCtrl.create({
+      header: this.translations.PASSWORD_RECOVERY_TITLE,
       message: this.translations.PASSWORD_RECOVERY_MESSAGE,
       inputs: [
         {

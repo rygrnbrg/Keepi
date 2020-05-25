@@ -4,15 +4,12 @@ import { LeadFilter } from "./../../models/lead-filter";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Lead } from "../../models/lead";
-import {
-  AngularFirestore,
-  AngularFirestoreCollection,
-  Query
-} from "angularfire2/firestore";
 import { User } from "..";
 import { firestore } from "firebase";
 import { LeadPropertyType, DealType } from "../../models/lead-property-metadata";
 import { Comment } from '../../models/comment';
+import * as firebase from 'firebase/app';
+
 /*
   Generated class for the LeadsProvider provider.
 
@@ -21,7 +18,7 @@ import { Comment } from '../../models/comment';
 */
 @Injectable()
 export class LeadsProvider {
-  private leadsDictionary: { [id: string]: AngularFirestoreCollection<firestore.DocumentData> } = {};
+  private leadsDictionary: any;
   private static standardLeadKeys = [
     "name",
     "phone",
@@ -36,7 +33,6 @@ export class LeadsProvider {
 
   constructor(
     public http: HttpClient,
-    private afStore: AngularFirestore,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private user: User
   ) {
@@ -46,24 +42,23 @@ export class LeadsProvider {
   private initLeadCollections() {
     let userData = this.user.getUserData();
     LeadType.getAllLeadTypes().forEach(leadType => {
-      let leadsCollectionRef = this.afStore
-        .collection("users")
-        .doc(userData.email)
-        .collection("leads_" + leadType.id.toString().toLowerCase(), ref => ref.orderBy("created", "desc"));
+      let leadsCollectionRef = 
+      firebase.firestore().collection("users").doc(userData.email)
+      .collection("leads_" + leadType.id.toString().toLowerCase()).orderBy("created", "desc");    
       this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
     });
   }
 
-  public get(leadTypeId: LeadTypeID): Query {
-    return this.leadsDictionary[leadTypeId.toString()].ref.limit(300);
+  public get(leadTypeId: LeadTypeID): firebase.firestore.Query {
+    return this.leadsDictionary[leadTypeId.toString()].limit(300);
   }
 
   /**
   * Filter function does not support range values. Range values in consumer code.
   * Multivalue will support only list with 1 item.
   */
-  public filter(filters: LeadFilter[], leadTypeId: LeadTypeID): Query {
-    let query: Query = this.leadsDictionary[leadTypeId.toString()].ref;
+  public filter(filters: LeadFilter[], leadTypeId: LeadTypeID): firebase.firestore.Query {
+    let query: firebase.firestore.Query = this.leadsDictionary[leadTypeId.toString()];
 
     // query = this.addBudgetFilter(filters, query);
     query = this.addRelevanceFilter(filters, query);
@@ -126,7 +121,7 @@ export class LeadsProvider {
     return promise;
   }
 
-  private addBudgetFilter(filters: LeadFilter[], query: Query): Query {
+  private addBudgetFilter(filters: LeadFilter[], query: firebase.firestore.Query): firebase.firestore.Query {
     let dealType = this.leadPropertyMetadataProvider.getDealType(filters.map(filter => filter.metadata));
     let range = dealType === DealType.Sell ? 200000 : 1500;
     filters
@@ -142,7 +137,7 @@ export class LeadsProvider {
     return query;
   }
 
-  private addRelevanceFilter(filters: LeadFilter[], query: Query): Query {
+  private addRelevanceFilter(filters: LeadFilter[], query: firebase.firestore.Query): firebase.firestore.Query {
     let relevanceFilter = filters.find(x => x.id === LeadPropertyMetadataProvider.relevanceKey)
     if (relevanceFilter) {
       query = query.where(LeadPropertyMetadataProvider.relevanceKey, "==", relevanceFilter.value);
@@ -150,7 +145,7 @@ export class LeadsProvider {
     return query;
   }
 
-  private addStringFilters(filters: LeadFilter[], query: Query): Query {
+  private addStringFilters(filters: LeadFilter[], query: firebase.firestore.Query): firebase.firestore.Query {
     filters
       .filter(
         filter => filter.metadata && filter.metadata.type === LeadPropertyType.StringSingleValue
@@ -164,7 +159,7 @@ export class LeadsProvider {
     return query;
   }
 
-  private addMultivalueFilters(filters: LeadFilter[], query: Query): Query {
+  private addMultivalueFilters(filters: LeadFilter[], query: firebase.firestore.Query): firebase.firestore.Query {
     filters
       .filter(
         filter => filter.metadata && filter.metadata.type === LeadPropertyType.StringMultivalue

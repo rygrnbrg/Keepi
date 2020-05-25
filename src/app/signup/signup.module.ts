@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonicPageModule } from 'ionic-angular';
+import { NgModule } from '@angular/core';;
+import { SignupPageRoutingModule } from './signup-routing.module';
+import { FormsModule } from '@angular/forms';
 import { SignupPage } from './signup';
 
 @NgModule({
-  declarations: [
-    SignupPage,
-  ],
   imports: [
-    IonicPageModule.forChild(SignupPage),
-    TranslateModule.forChild()
+    IonicModule,
+    CommonModule,
+    TranslateModule,
+    SignupPageRoutingModule,
+    FormsModule
   ],
-  exports: [
-    SignupPage
-  ],
-  providers: []
+  declarations: [SignupPage]
 })
 export class SignupPageModule { }

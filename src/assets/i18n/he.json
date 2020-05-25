@@ -57,7 +57,7 @@
   "LOGIN_TITLE": "התחברות",
   "LOGIN_ERROR": "לא ניתן להתחבר. אנא בדוק את פרטי ההתחברות ונסה שנית.",
   "LOGIN_WRONG_CREDENTIALS":  "שם המשתמש או הסיסמה אינם נכונים. אנא נסה שנית.",
-  "LOGIN_EMAIL_NOT_VERIFIED": "כתובת הדואר האלקטרוני שלך לא אומתה. שלחנו לך הודעה לכתובת זו ובה קישור לאימות, אנא לחץ עליו.",
+  "LOGIN_EMAIL_NOT_VERIFIED": "כתובת הדואר האלקטרוני שלך טרם אומתה. שלחנו לך הודעה לכתובת זו ובה קישור לאימות.",
 
   "LOGIN_FORGOT_PASSWORD": "שכחת סיסמה?",
   "LOGIN_FORGOT_PASSWORD_CARE": "אין בעיה, נדאג לך",
@@ -65,7 +65,8 @@
  
   "GOTO_SIGNUP_MESSAGE": "פעם ראשונה אצלנו?", 
   "GOTO_SIGNUP": "צור חשבון",
-  "GOTO_LOGIN": "כבר רשום אצלנו?",
+  "GOTO_LOGIN_MESSAGE": "כבר רשום אצלנו?",
+  "GOTO_LOGIN": "התחבר",
 
   "SIGNUP_TITLE": "הרשמה",
   "SIGNUP_ERROR": "לא ניתן ליצור חשבון. אנא בדוק את פרטי ההתחברות ונסה שנית.",
@@ -74,10 +75,13 @@
   "SIGNUP_BUTTON": "הירשם",
   
   "SEND_VERIFICATION_SENT_SUCCESS_TITLE": "בדוק את תיבת הדואר שלך",
-  "SEND_VERIFICATION_SENT_SUCCESS_MESSAGE": "לחץ על הקישור בהודעת הדואר האלקטרוני ששלחנו לך להשלמת תהליך האימות",
+  "SEND_VERIFICATION_SENT_SUCCESS_MESSAGE": "על מנת להפעיל את חשבונך, שלחנו לך קישור באימייל להשלמת תהליך האימות",
   "SEND_VERIFICATION_TITLE": "אימות כתובת דואר אלקטרוני",
-  "SEND_VERIFICATION_MESSAGE": "על מנת לסיים את תהליך ההרשמה יש לאמת את כתובת הדואר האלקטרוני איתה נרשמת.",
+  "SEND_VERIFICATION_MESSAGE_1": "על מנת לסיים את תהליך ההרשמה יש לאמת את כתובת הדואר האלקטרוני איתה נרשמת.",
+  "SEND_VERIFICATION_MESSAGE_2": "שלחנו לך קישור לאימות הכתובת והפעלת החשבון",
   "SEND_VERIFICATION_BUTTON": "שלחו לי קישור לאימות",
+  "SEND_VERIFICATION_SEND_AGAIN_PRE": "לא הגיע?",
+  "SEND_VERIFICATION_SEND_AGAIN": "שלח שוב",
   "AUTH_PASSWORD_VERIFICATION_ERROR": "שליחת דואר אלקטרוני לאיפוס סיסמה נכשלה. אנא נסה שנית",
 
   "LEADS_PAGE_TITLE": "הלידים שלי",
@@ -104,7 +108,7 @@
 
   "VERIFY_TITLE": "ההרשמה בוצעה בהצלחה!",
   "VERIFY_MESSAGE": "על מנת לסיים את תהליך ההרשמה יש לאמת את כתובת הדואר האלקטרוני איתה נרשמת. שלחנו לך הודעה לכתובת זו ובה קישור לאימות, אנא לחץ עליו.",
-  "VERIFY_BUTTON": "לחצתי, בואו נמשיך!",
+  "VERIFY_BUTTON": "לחצתי על הקישור במייל, בואו נמשיך!",
 
   "PASSWORD_RECOVERY_TITLE": "שחזור סיסמה",
   "PASSWORD_RECOVERY_MESSAGE": "יש להזין את כתובת הדואר האלקטרוני איתה נרשמת",

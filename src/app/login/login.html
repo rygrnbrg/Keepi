@@ -1,5 +1,5 @@
-<div class="logo-block-round">
-  <div class="logo-block-round-inner"></div>
+<div class="logo-block">
+  <div class="logo-block-inner"></div>
 </div>
 <ion-header class="logo-header">
   <ion-navbar>
@@ -8,9 +8,8 @@
 </ion-header>
 
 <ion-content class="cover-page">
-  <form (submit)="doLogin()">
+  <form (submit)="doLogin()"  class="login-box" #form="ngForm">
     <ion-list>
-      <div class="login-box">
         <ion-item>
           <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
           <ion-input type="email" [(ngModel)]="account.email" name="email"></ion-input>
@@ -19,16 +18,19 @@
           <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
           <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
         </ion-item>
-        <div padding>
-          <button ion-button color="secondary" block>{{ 'LOGIN_BUTTON' | translate }}</button>
-        </div>
-        <div class="danger-note" (click)="forgotPassword()">
-            {{ 'LOGIN_FORGOT_PASSWORD' | translate }}
-        </div>
+     </ion-list>  
+     <ion-list>
+      <ion-button type="submit" expand="block" color="secondary" block>{{ 'LOGIN_BUTTON' | translate }}</ion-button>
+
+      <div class="comment-button" (click)="forgotPassword()">
+          {{ 'LOGIN_FORGOT_PASSWORD' | translate }}
       </div>
-      <ion-item class="login-box-buttons" (click)="signUp()">
-        <b>{{ 'GOTO_SIGNUP_MESSAGE' | translate }}</b> {{ 'GOTO_SIGNUP' | translate }}
-      </ion-item>
-    </ion-list>
+
+      <div class="login-box-buttons" (click)="signUp()">
+        {{ 'GOTO_SIGNUP_MESSAGE' | translate }}
+        <span class="highlight">{{ 'GOTO_SIGNUP' | translate }}</span>
+      </div>
+
+     </ion-list>     
   </form>
 </ion-content>

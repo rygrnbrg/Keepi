@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
+import { NavController, ToastController, AlertController } from '@ionic/angular';
 import { User } from '../../providers';
 import { TranslateService } from '@ngx-translate/core';
 
-@IonicPage()
 @Component({
   selector: 'page-send-verification',
   templateUrl: 'send-verification.html',
@@ -13,7 +12,6 @@ export class SendVerificationPage {
 
   constructor(
     public navCtrl: NavController,
-    public navParams: NavParams,
     public user: User,
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
@@ -21,6 +19,7 @@ export class SendVerificationPage {
     translateService.get(['SEND_VERIFICATION_SENT_SUCCESS_TITLE', 'SEND_VERIFICATION_SENT_SUCCESS_MESSAGE', 'VERIFY_BUTTON']).subscribe(values => {
       this.translations = values;
     });
+    this.user.sendVerificationEmail();
   }
 
   sendVerification() {
@@ -30,9 +29,9 @@ export class SendVerificationPage {
     )
   }
 
-  showPrompt() {
-    const prompt = this.alertCtrl.create({
-      title: this.translations.SEND_VERIFICATION_SENT_SUCCESS_TITLE,
+  async showPrompt() {
+    const prompt = await this.alertCtrl.create({
+      header: this.translations.SEND_VERIFICATION_SENT_SUCCESS_TITLE,
       message: this.translations.SEND_VERIFICATION_SENT_SUCCESS_MESSAGE,
       buttons: [{
           text: this.translations.VERIFY_BUTTON,
@@ -48,8 +47,8 @@ export class SendVerificationPage {
     this.user.logout();
   }
 
-  showToast(message: string) {
-    let toast = this.toastCtrl.create({
+  async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
       message: message,
       duration: 3000,
       position: 'top'

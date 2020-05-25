@@ -1,15 +1,17 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
+import { SendVerificationPageRoutingModule } from './send-verification-routing.module';
 import { SendVerificationPage } from './send-verification';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 
 @NgModule({
-  declarations: [
-    SendVerificationPage,
-  ],
   imports: [
-    IonicPageModule.forChild(SendVerificationPage),
-    TranslateModule.forChild()
+    IonicModule,
+    CommonModule,
+    TranslateModule,
+    SendVerificationPageRoutingModule
   ],
+  declarations: [SendVerificationPage]
 })
 export class SendVerificationPageModule {}

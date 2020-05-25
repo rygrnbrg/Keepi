@@ -24,3 +24,153 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+  
+  
+$content-padding:       16px ;
+$content-margin:        16px ;
+$logo-md-height:        100px;
+
+  .margin-top {
+    margin-top: $content-margin;
+  }
+    
+  ion-chip {
+    &.chip {
+      margin-left: $content-margin/2;
+    }
+  }
+  
+  ion-radio {
+    margin-left: $content-margin !important;
+  }
+  
+  ion-list-header.list-header {
+    text-align: right;
+    border-top: none;
+  }
+  
+  .pad-left-right {
+    padding-left: $content-padding * 2;
+    padding-right: $content-padding * 2;
+  }
+    
+  .box-shadow-effect {
+    box-shadow: 0px 2px 1px rgb(247, 247, 247), 0 2px 4px #ccc;
+  }
+  
+  .logo-block {
+    margin: $content-margin;
+    margin-top: $content-margin *3;
+  }
+  
+  
+  .logo-block-inner {
+    background-image: url("assets/img/keepi_logo.png");
+    background-position: center;
+    background-size: contain;
+    height:  $logo-md-height;
+    width: 100%;
+    background-repeat: no-repeat;
+  }
+  
+  
+  .header-icon{
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0; 
+    height: 50px;
+    width:60px;
+    position: absolute;
+    top:0;
+    padding-top: $content-margin/2;
+    left:$content-margin;
+    background-color: white;
+    border-radius: 0 0 $content-margin*2 $content-margin*2;
+    box-shadow: 0 6px 6px -5px;
+  }
+  
+  .header-icon-inner{
+    background-image: url("assets/img/keepi-face-sm.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin: 0; 
+    height: 35px;
+    width:100%;
+  }
+    
+  .login-box {
+    padding: $content-margin * 1;
+   
+    .item {
+      background-color: transparent !important;
+    }
+     
+    .comment-button {
+        text-align: center;
+        width: 100%;
+        margin: $content-margin;
+        color: var(--ion-color-primar);
+      }
+  }
+  
+  .login-box-buttons {
+    margin-top: $content-margin * 2;
+    text-align: center;
+    background-color: transparent;
+    .highlight{
+        color: var(--ion-color-primary);
+    }
+  }
+  
+  .transparent {
+    background-color: transparent;
+  }
+    
+  .fab-pad {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 80px !important;
+  }
+  
+  .items-list {
+    margin-bottom: 0;
+    ion-icon.icon {
+      min-width: 24px;
+      text-align: center;
+    }
+  }
+
+  .inline-badge {
+    margin: $content-margin/4;
+    padding: $content-padding/2;
+    white-space: normal;
+    text-align: right;
+  
+    ion-icon {
+      margin-right: $content-margin/2;
+    }
+  }
+  
+  html[dir="rtl"]{
+    .item-md ion-avatar[item-start]{
+        margin-right: $content-margin;
+    }
+    .item-md ion-icon[item-start] + .item-inner{
+        margin-left: 0;
+    }
+
+    .item-md [item-end]{
+        margin-left: $content-margin;
+    }
+    .note-md{
+        font-size: 1.4rem;
+    }
+    .rtl-modal input{
+        direction: rtl;
+    }
+    input[type=email], input[type=password]{
+        direction: ltr;
+    }
+}

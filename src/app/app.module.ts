@@ -1,3 +1,4 @@
+import { ComponentFixture } from '@angular/core/testing';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -12,6 +13,10 @@ import { AppComponent } from './app.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { User, AuthProvider } from "../providers";
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { environment } from '../environments/environment';
+import * as firebase from 'firebase';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,16 +32,23 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
         useFactory: (createTranslateLoader),  
         deps: [HttpClient] 
       } 
-    })  
+    }),
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    User,
+    AuthProvider,
+    NativeStorage
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(){
+    firebase.initializeApp(environment.firebase);
+  }
+}
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');

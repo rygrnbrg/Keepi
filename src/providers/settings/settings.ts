@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 /**
  * A simple settings/config class for storing key/value pairs with persistence.
@@ -13,13 +13,13 @@ export class Settings {
   _defaults: any;
   _readyPromise: Promise<any>;
 
-  constructor(public storage: Storage, defaults: any) {
+  constructor(public storage: NativeStorage, defaults: any) {
     this._defaults = defaults;
     this.load();
   }
 
   load() {
-    return this.storage.get(this.SETTINGS_KEY).then((value) => {
+    return this.storage.getItem(this.SETTINGS_KEY).then((value) => {
       if (value) {
         this.settings = value;
         return this._mergeDefaults(this._defaults);
@@ -49,15 +49,15 @@ export class Settings {
 
   setValue(key: string, value: any) {
     this.settings[key] = value;
-    return this.storage.set(this.SETTINGS_KEY, this.settings);
+    return this.storage.setItem(this.SETTINGS_KEY, this.settings);
   }
 
   setAll(value: any) {
-    return this.storage.set(this.SETTINGS_KEY, value);
+    return this.storage.setItem(this.SETTINGS_KEY, value);
   }
 
   getValue(key: string) {
-    return this.storage.get(this.SETTINGS_KEY)
+    return this.storage.getItem(this.SETTINGS_KEY)
       .then(settings => {
         return settings[key];
       });

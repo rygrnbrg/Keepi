@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ToastController, AlertController } from 'ionic-angular';
+import { NavController, ToastController, AlertController } from '@ionic/angular';
 import { User } from '../../providers';
-import { LoginPage, SendVerificationPage } from '../';
 import { TranslateService } from '@ngx-translate/core';
 
-@IonicPage()
 @Component({
   selector: 'page-signup',
   templateUrl: 'signup.html'
@@ -34,7 +32,7 @@ export class SignupPage {
         () => {
           this.showPrompt();
         },
-        err => this.navCtrl.setRoot(SendVerificationPage)
+        err => this.navCtrl.navigateRoot("sendverification")
       )
     }, (err: Error) => {
       this.showToast(err.message);
@@ -42,12 +40,12 @@ export class SignupPage {
   }
 
   gotoLogin() {
-    this.navCtrl.setRoot(LoginPage);
+    this.navCtrl.navigateRoot("login");
   }
 
-  showPrompt() {
-    const prompt = this.alertCtrl.create({
-      title: this.translations.VERIFY_TITLE,
+  async showPrompt() {
+    const prompt = await this.alertCtrl.create({
+      header: this.translations.VERIFY_TITLE,
       message: this.translations.VERIFY_MESSAGE,
       buttons: [
          {
@@ -60,12 +58,8 @@ export class SignupPage {
     prompt.present();
   }
 
-  login() {
-    this.navCtrl.setRoot('LoginPage');
-  }
-
-  showToast(message: string) {
-    let toast = this.toastCtrl.create({
+  async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
       message: message,
       duration: 3000,
       position: 'top'

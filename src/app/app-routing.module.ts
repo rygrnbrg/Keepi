@@ -3,8 +3,24 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'tabs',
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+  {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  },  
+  {
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule)
+  },  
+  {
+    path: 'signup',
+    loadChildren: () => import('./signup/signup.module').then(m => m.SignupPageModule)
+  },
+  {
+    path: 'sendverification',
+    loadChildren: () => import('./send-verification/send-verification.module').then(m => m.SendVerificationPageModule)
   }
 ];
 @NgModule({

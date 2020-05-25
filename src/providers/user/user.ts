@@ -1,15 +1,7 @@
-import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { AuthProvider } from '../auth/auth';
 import { AuthenticationData } from '../../models/authentication';
-import { Observable } from 'rxjs';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection,
-  Query
-
-} from "angularfire2/firestore";
-import { firestore } from "firebase";
+import * as firebase from 'firebase/app';
 
 export interface UserData {
   id: string;
@@ -24,16 +16,13 @@ export interface Area {
 @Injectable()
 export class User {
   private _user: firebase.User;
-  private _areasRef : AngularFirestoreCollection<firestore.DocumentData>;
+  private _areasRef : any;
   private _areas : Area[];
   private defaultAreasInitiated = false;
   
   constructor(
-    private authProvider: AuthProvider,     
-    private afStore: AngularFirestore) {
-    authProvider.afAuth.authState.subscribe((res) => {
-      this.initUser(res);
-    });
+    private authProvider: AuthProvider) {
+      firebase.auth().onAuthStateChanged(user => this.initUser(user));
   }
 
   public login(data: AuthenticationData): Promise<any> {
@@ -79,10 +68,6 @@ export class User {
     };
   }
 
-  public authenticationState(): Observable<firebase.User | null> {
-    return this.authProvider.afAuth.authState
-  }
-
   public logout() {
     this.authProvider.doLogout().then(this._user = null);
   }
@@ -98,12 +83,12 @@ export class User {
     }
 
     this._areas = [];
-    let areasCollectionRef = this.afStore
+    let areasCollectionRef = firebase.firestore()
         .collection("users")
         .doc(this._user.email)
-        .collection("areas", ref => ref.orderBy("name", "asc"));
+        .collection("areas").orderBy("name", "asc");
       this._areasRef = areasCollectionRef;
-      return this._areasRef.ref.get().then(areas => {
+      return this._areasRef.get().then(areas => {
         areas.docs.forEach(area => {
           this._areas.push({ name: area.data().name});
         });
@@ -113,7 +98,7 @@ export class User {
 
   public addArea(name: string): Promise<void> {
     let area = { name: name };
-    return this._areasRef.ref.where("name", "==", name).get().then((querySnapshot) => {
+    return this._areasRef.where("name", "==", name).get().then((querySnapshot) => {
       if (querySnapshot.size == 0){
         return this._areasRef.add(area);
       }
@@ -121,15 +106,15 @@ export class User {
   }
 
   public removeArea(area: Area): Promise<void>{
-    return this._areasRef.ref.where("name", "==", area.name).get().then((querySnapshot) => {
+    return this._areasRef.where("name", "==", area.name).get().then((querySnapshot) => {
       return querySnapshot.forEach(x=> {
-        return x.ref.delete();
+        return x.delete();
       });
     }).then(()=> this.initAreas());
   }
 
   // private initRoysAreas() {
-  //   this._areasRef.ref.get().then((querySnapshot) => {       
+  //   this._areasRef.get().then((querySnapshot) => {       
   //       if (querySnapshot.size){
   //         return;
   //       }

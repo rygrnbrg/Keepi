@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase/app';
 import { AuthenticationData } from '../../models/authentication';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { TranslateService } from '@ngx-translate/core';
-import { Storage } from '@ionic/storage';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Injectable()
 export class AuthProvider {
@@ -11,7 +10,9 @@ export class AuthProvider {
   public static emailNotVerifiedErrorCode = 'auth/email-not-verified';
   public static emailStorageKey = "email";
 
-  constructor(public afAuth: AngularFireAuth, public translateService: TranslateService, public localStorage: Storage) {
+  constructor( 
+    public translateService: TranslateService, 
+    public storage: NativeStorage) {
     this.translateService.use('he');
     this.translateService.get([
       'SIGNUP_ERROR', 'SIGNUP_ERROR_WEAK', 'SIGNUP_ERROR_EMAIL_USED', 'LOGIN_WRONG_CREDENTIALS',
@@ -21,10 +22,10 @@ export class AuthProvider {
   }
 
   doRegister(data: AuthenticationData): Promise<firebase.User> {
-    return this.afAuth.auth.createUserWithEmailAndPassword(data.email, data.password)
+    return firebase.auth().createUserWithEmailAndPassword(data.email, data.password)
       .then(
         res => {
-          this.localStorage.set(AuthProvider.emailStorageKey, data.email);
+          this.storage.setItem(AuthProvider.emailStorageKey, data.email);
           return Promise.resolve(res.user);
         },
         err => {
@@ -35,10 +36,10 @@ export class AuthProvider {
   }
 
   doLogin(data: AuthenticationData): Promise<firebase.User> {
-    return this.afAuth.auth.signInWithEmailAndPassword(data.email, data.password)
+    return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
       .then(
         res => {
-          this.localStorage.set(AuthProvider.emailStorageKey, data.email);
+          this.storage.setItem(AuthProvider.emailStorageKey, data.email);
           if (!res.user.emailVerified) {
             let code = AuthProvider.emailNotVerifiedErrorCode;
             console.log("User login failed due to email not being verified.", res.user)
@@ -54,17 +55,17 @@ export class AuthProvider {
   }
 
   doLogout(): Promise<void> {
-    if (!this.afAuth.auth.currentUser) {
+    if (!firebase.auth().currentUser) {
       return Promise.resolve();
     }
     return firebase.auth().signOut();
   }
 
   doSendVerificationEmail(): Promise<void> {
-    if (!this.afAuth.auth.currentUser) {
+    if (!firebase.auth().currentUser) {
       return Promise.reject("Send verification failed. User not logged in.");
     }
-    return this.afAuth.auth.currentUser.sendEmailVerification().then(
+    return firebase.auth().currentUser.sendEmailVerification().then(
       () => Promise.resolve(),
       (err) => {
         console.log('Send verification failed.', err.code);
@@ -74,7 +75,7 @@ export class AuthProvider {
   }
 
   doSendPasswordResetEmail(email: string): Promise<void> {
-    return this.afAuth.auth.sendPasswordResetEmail(email).then(
+    return firebase.auth().sendPasswordResetEmail(email).then(
       () => Promise.resolve(),
       (err) => {
         console.log('Send verification failed.', err.code);

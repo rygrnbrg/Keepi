@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { IonicPageModule } from 'ionic-angular';
-
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { LoginPage } from './login';
+import { LoginPageRoutingModule } from './login-routing.module';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    LoginPage,
-  ],
   imports: [
-    IonicPageModule.forChild(LoginPage),
-    TranslateModule.forChild()
+    IonicModule,
+    CommonModule,
+    TranslateModule,
+    LoginPageRoutingModule,
+    FormsModule
   ],
-  exports: [
-    LoginPage
-  ]
+  declarations: [LoginPage]
 })
 export class LoginPageModule { }
