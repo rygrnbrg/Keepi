@@ -1,8 +1,11 @@
-BASICS
+IONIC
 
 ionic serve
 ionic build
 
+discover and fix vulnerbilities:
+    npm audit fix   - fix
+    npm audit       - details
 
 CAPACITOR
 
@@ -53,6 +56,10 @@ keepi\.firebaserc       //this is where the project is defined
 Future modifications to database.rules.json will update Database Rules when you run
     firebase deploy
 
+
+GIT
+Push:
+git push -u origin master
 
 
 

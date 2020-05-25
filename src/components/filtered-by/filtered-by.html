@@ -1,0 +1,5 @@
+<!-- <div>{{"LEADS_FILTER_BY" | translate}}</div> -->
+<ion-chip *ngFor="let filter of filters" color="primary">
+  <ion-icon *ngIf="filter.metadata" [name]="filter.metadata.icon"></ion-icon>
+  <ion-label>{{getFilterValueString(filter)}}</ion-label>
+</ion-chip>

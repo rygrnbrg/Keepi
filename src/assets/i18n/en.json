@@ -1,0 +1,90 @@
+{
+  "BACK_BUTTON_TEXT": "Back",
+
+  "NAME": "Name",
+  "EMAIL": "Email",
+  "USERNAME": "Username",
+  "PASSWORD": "Password",
+  "LOGIN": "Sign in",
+  "SIGNUP": "Sign up",
+
+  "TAB1_TITLE": "Items",
+  "TAB2_TITLE": "Search",
+  "TAB3_TITLE": "Settings",
+
+  "MAP_TITLE": "Map",
+
+  "TUTORIAL_SKIP_BUTTON": "Skip",
+  "TUTORIAL_CONTINUE_BUTTON": "Continue",
+
+  "TUTORIAL_SLIDE1_TITLE": "Lead Type",
+  "TUTORIAL_SLIDE1_DESCRIPTION": "This person is interested in",
+  "TUTORIAL_SLIDE1_BUTTON1": "Rent His Property",
+  "TUTORIAL_SLIDE1_BUTTON2": "Buy",
+  "TUTORIAL_SLIDE1_BUTTON3": "Live In Rent",
+  "TUTORIAL_SLIDE1_BUTTON4": "Sell",
+
+  "TUTORIAL_SLIDE2_TITLE": "Property",
+  "TUTORIAL_SLIDE2_DESCRIPTION": "The property type is",
+  "TUTORIAL_SLIDE2_BUTTON1": "Apartment",
+  "TUTORIAL_SLIDE2_BUTTON2": "Penthouse",
+  "TUTORIAL_SLIDE2_BUTTON3": "Cottage",
+  "TUTORIAL_SLIDE2_BUTTON4": "Other",
+
+  "TUTORIAL_SLIDE3_TITLE": "Rooms",
+  "TUTORIAL_SLIDE3_DESCRIPTION": "Number of rooms",
+  "TUTORIAL_SLIDE3_BUTTON1": "Less than 3",
+  "TUTORIAL_SLIDE3_BUTTON2": "3",
+  "TUTORIAL_SLIDE3_BUTTON3": "4",
+  "TUTORIAL_SLIDE3_BUTTON4": "5",
+  "TUTORIAL_SLIDE3_BUTTON5": "More then 5",
+
+  "TUTORIAL_SLIDE4_TITLE": "Budget",
+  "TUTORIAL_SLIDE4_DESCRIPTION": "Budget is <b>up to</b>",
+
+  "TUTORIAL_SLIDE5_TITLE": "Area",
+  "TUTORIAL_SLIDE5_DESCRIPTION": "Requested area is",
+
+  "TUTORIAL_SLIDE6_TITLE": "Source",
+  "TUTORIAL_SLIDE6_DESCRIPTION": "How did the lead get to us?",
+
+
+
+  "WELCOME_INTRO": "The starting point for your next great Ionic app",
+
+  "SETTINGS_TITLE": "Settings",
+  "SETTINGS_OPTION1": "Option 1",
+  "SETTINGS_OPTION2": "Option 2",
+  "SETTINGS_OPTION3": "Option 3",
+  "SETTINGS_OPTION4": "Option 4",
+
+  "SETTINGS_PROFILE_BUTTON": "Edit Profile",
+
+  "SETTINGS_PAGE_PROFILE": "Edit Profile",
+
+  "WELCOME_TITLE": "Welcome",
+
+  "LOGIN_TITLE": "Sign in",
+  "LOGIN_ERROR": "Unable to sign in. Please check your account information and try again.",
+  "LOGIN_BUTTON": "Sign in",
+  "SIGNUP_TITLE": "Sign up",
+  "SIGNUP_ERROR": "Unable to create account. Please check your account information and try again.",
+  "SIGNUP_BUTTON": "Sign up",
+
+  "LIST_MASTER_TITLE": "Items",
+
+  "ITEM_CREATE_TITLE": "New Item",
+  "ITEM_CREATE_CHOOSE_IMAGE": "Add Image",
+
+  "ITEM_NAME_PLACEHOLDER": "Name",
+  "ITEM_ABOUT_PLACEHOLDER": "About",
+
+  "DONE_BUTTON": "Done",
+  "CANCEL_BUTTON": "Cancel",
+  "DELETE_BUTTON": "Delete",
+
+  "CARDS_TITLE": "Social",
+
+  "SEARCH_TITLE": "Search",
+  "SEARCH_PLACEHOLDER": "Search the items list, e.g. \"Donald Duck\""
+}

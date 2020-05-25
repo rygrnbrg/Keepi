@@ -1,0 +1,10 @@
+budget-slider {
+    ion-range .range-slider{
+        margin: 0 $content-margin;
+    }
+
+    .budget-value-label{
+        text-align: center;
+        width: 100%;
+    }
+}

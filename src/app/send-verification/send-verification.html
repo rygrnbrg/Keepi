@@ -1,0 +1,24 @@
+<div class="logo-block-round">
+  <div class="logo-block-round-inner"></div>
+</div>
+<ion-header>
+  <ion-navbar>
+    <ion-title></ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="cover-page">
+  <ion-list>
+    <div class="login-box">
+      <div class="light">
+        {{'SEND_VERIFICATION_MESSAGE' | translate}}
+      </div>
+      <div padding>
+        <button ion-button block color="light" (click)="sendVerification()">{{'SEND_VERIFICATION_BUTTON' | translate}}</button>
+      </div>
+    </div>
+    <ion-item class="login-box-buttons" (click)="gotoLogin()">
+      {{'VERIFY_BUTTON' | translate}}
+    </ion-item>
+  </ion-list>
+</ion-content>

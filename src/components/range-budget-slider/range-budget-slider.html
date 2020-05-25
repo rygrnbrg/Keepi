@@ -1,0 +1,13 @@
+<ion-label class="budget-value-label"> {{ value.lower | numberFormat }} - {{ value.upper | numberFormat }} </ion-label>
+<ion-range
+  dualKnobs="true"
+  [(ngModel)]="sliderValue"
+  [min]="sliderMinMaxValue.lower"
+  [max]="sliderMinMaxValue.upper"
+  step="1"
+  color="secondary"
+  (ionChange)="onSliderChange($event)"
+>
+  <!-- <ion-label range-left>{{ minMaxValue.upper | numberFormat }}</ion-label>
+  <ion-label range-right>{{ minMaxValue.lower | numberFormat }}</ion-label> -->
+</ion-range>

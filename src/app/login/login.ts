@@ -1,22 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ToastController, AlertController, Loading, LoadingController } from 'ionic-angular';
+import { NavController, ToastController, AlertController, LoadingController } from '@ionic/angular';
 import { User } from '../../providers';
-import { SignupPage } from '../';
 import { AuthProvider } from '../../providers/auth/auth';
-import { SendVerificationPage } from '..';
 import { TranslateService } from '@ngx-translate/core';
-import { Storage } from '@ionic/storage';
+import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage/ngx';
 
-@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
 })
 export class LoginPage {
-  // The account fields for the login form.
-  // If you're using the username field with or without email, make
-  // sure to add it to the type
-  private loading: Loading;
+  private loading: Promise<HTMLIonLoadingElement>;
   
   account: { email: string, password: string } = {
     email: '',
@@ -57,7 +51,7 @@ export class LoginPage {
     }, (err: Error) => {
       this.loading.dismiss();
       if (err.name === AuthProvider.emailNotVerifiedErrorCode) {
-        this.navCtrl.setRoot(SendVerificationPage);
+        this.navCtrl.setRoot("SendVerificationPage");
       }
       else {
         this.showToast(err.message);
@@ -66,7 +60,7 @@ export class LoginPage {
   }
 
   signUp(): void {
-    this.navCtrl.setRoot(SignupPage);
+    this.navCtrl.setRoot("SignupPage");
   }
 
   showToast(message: string) {
