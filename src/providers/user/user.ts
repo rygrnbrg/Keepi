@@ -9,8 +9,12 @@ export interface UserData {
   areas: Area[];
 }
 
-export interface Area {
-  name: string
+export interface UserSetting {
+  name: string;
+}
+
+export interface Area extends UserSetting {
+ 
 }
 
 @Injectable()
@@ -82,18 +86,20 @@ export class User {
       return Promise.resolve();
     }
 
+
     this._areas = [];
     let areasCollectionRef = firebase.firestore()
         .collection("users")
         .doc(this._user.email)
-        .collection("areas").orderBy("name", "asc");
+        .collection("areas");//.orderBy("name", "asc");
       this._areasRef = areasCollectionRef;
+      //this.initRoysAreas(); 
       return this._areasRef.get().then(areas => {
         areas.docs.forEach(area => {
           this._areas.push({ name: area.data().name});
         });
         this._areas = this._areas.sort((a,b)=> a.name >= b.name? 1:-1);
-      });      
+      });
   }
 
   public addArea(name: string): Promise<void> {
@@ -113,34 +119,34 @@ export class User {
     }).then(()=> this.initAreas());
   }
 
-  // private initRoysAreas() {
-  //   this._areasRef.get().then((querySnapshot) => {       
-  //       if (querySnapshot.size){
-  //         return;
-  //       }
+  private initRoysAreas() {
+    this._areasRef.get().then((querySnapshot) => {       
+        if (querySnapshot.size){
+          return;
+        }
 
-  //       this.addArea('מרכז העיר');
-  //         this.addArea('צפון העיר');
-  //         this.addArea('דרום העיר');
-  //         this.addArea('שכונות הרצף');
-  //         this.addArea('הגוש הדתי');
-  //         this.addArea('רמת אפריים');
-  //         this.addArea('רמת חן');
-  //         this.addArea('נת 600 / נת 542');
-  //         this.addArea('קו החוף');
-  //         this.addArea('נוף גלים');
-  //         this.addArea('עיר ימים');
-  //         this.addArea('פולג');
-  //         this.addArea('אגמים');
-  //         this.addArea('האירוסים');
-  //         this.addArea('נורדאו');
-  //         this.addArea('דורה');
-  //         this.addArea('אזורים');
-  //         this.addArea('קרית השרון');
-  //         this.addArea('ותיקים / עמליה');
-  //         this.addArea('מושבים');
-  //         this.addArea('א.ת החדש');
-  //         this.addArea('א.ת אחר');      
-  //     });
-  // }
+        this.addArea('מרכז העיר');
+          this.addArea('צפון העיר');
+          this.addArea('דרום העיר');
+          this.addArea('שכונות הרצף');
+          this.addArea('הגוש הדתי');
+          this.addArea('רמת אפריים');
+          this.addArea('רמת חן');
+          this.addArea('נת 600 / נת 542');
+          this.addArea('קו החוף');
+          this.addArea('נוף גלים');
+          this.addArea('עיר ימים');
+          this.addArea('פולג');
+          this.addArea('אגמים');
+          this.addArea('האירוסים');
+          this.addArea('נורדאו');
+          this.addArea('דורה');
+          this.addArea('אזורים');
+          this.addArea('קרית השרון');
+          this.addArea('ותיקים / עמליה');
+          this.addArea('מושבים');
+          this.addArea('א.ת החדש');
+          this.addArea('א.ת אחר');      
+      });
+  }
 }

@@ -21,6 +21,10 @@ const routes: Routes = [
   {
     path: 'sendverification',
     loadChildren: () => import('./send-verification/send-verification.module').then(m => m.SendVerificationPageModule)
+  },
+  {
+    path: 'settings',
+    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
   }
 ];
 @NgModule({

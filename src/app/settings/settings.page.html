@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-title>{{ pageTitle }}</ion-title>
+      <ion-buttons slot="start">
+          <ion-back-button></ion-back-button>
+        </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list *ngIf="page == 'main'" class="items-list">
+      <ion-list-header>
+          {{ 'SETTINGS_ACCOUNT' | translate }}
+      </ion-list-header>
+      <ion-item (click)="logout()" *ngIf="userData">
+        <ion-avatar slot="start">
+            <img [src]=" '' | avatar" />
+        </ion-avatar>
+        <ion-label>
+          <h3 color="primary">{{userData.email}}</h3>
+          <p color="danger">{{'GENERAL_LOGOUT' | translate}}</p>         
+        </ion-label>
+      </ion-item>
+      <ion-list-header>
+          {{ 'SETTINGS_PREFERENCES' | translate }}
+      </ion-list-header>
+
+      <ion-item *ngFor="let setting of multivalueMetadataEditableSettings" (click)="gotoSettingsPage(setting)">
+         <ion-label color="primary">{{ 'SETTINGS_'+ setting.key | translate }}</ion-label> 
+      </ion-item>
+    </ion-list>
+    <div *ngFor="let setting of multivalueMetadataEditableSettings">
+        <ion-list  *ngIf="page == setting.name" class="items-list">
+            <ion-item *ngFor="let item of items"  class="items-list">
+              <ion-icon name="trash-bin-outline" slot="end" color="danger" size="small" (click)="confirmItemRemove(setting, item)"></ion-icon>
+              <p>{{item.name}}</p>
+            </ion-item> 
+            <ion-item class="fab-pad"></ion-item>  
+            <ion-fab bottom left *ngIf="page == setting.name">
+            <button ion-fab (click)="addItemModal(setting)" color="secondary">
+              <ion-icon name="md-add"></ion-icon>
+            </button>
+          </ion-fab>      
+        </ion-list>
+    </div>
+</ion-content>

@@ -45,14 +45,19 @@
   "SETTINGS_ACCOUNT": "חשבון",
   "SETTINGS_PROFILE_BUTTON": "Edit Profile",
 
-  "SETTINGS_PAGE_AREAS": "אזורי נכסים",
-  "SETTINGS_AREAS_BUTTON": "אזורי נכסים",
-  "SETTINGS_AREAS_DELETE_CONFIRM": "האם למחוק את האזור {area}?",
-  "SETTINGS_AREAS_ADD_TITLE": "הוספת אזור",
-  "SETTINGS_AREAS_ADD_PLACEHOLDER": "שם האזור",
-  "SETTINGS_AREAS_ADD_SUCCESS": "האזור נוסף בהצלחה",
+  "SETTINGS_AREAS": "אזורי נכסים",
+  "AREAS_SINGLE": "אזור",
+  "SETTINGS_PROPERTY_TYPES": "סוגי נכסים",
+  "PROPERTY_TYPES_SINGLE": "אזורי פעילות",
+  "SETTINGS_SOURCES": "מקורות הלידים",
+  "SOURCES_SINGLE": "מקור הליד",
+  "SETTINGS_ITEM_DELETE_CONFIRM": "האם למחוק את ה",
+  "SETTINGS_ITEM_ADD_TITLE": "הוספת",
+  "SETTINGS_ITEM_ADD_PLACEHOLDER": "שם ה",
+  "SETTINGS_ITEM_ADD_SUCCESS": "נוסף בהצלחה",
 
   "WELCOME_TITLE": "ברוכים הבאים",
+
 
   "LOGIN_TITLE": "התחברות",
   "LOGIN_ERROR": "לא ניתן להתחבר. אנא בדוק את פרטי ההתחברות ונסה שנית.",
