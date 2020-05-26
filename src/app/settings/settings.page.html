@@ -34,13 +34,21 @@
             <ion-item *ngFor="let item of items"  class="items-list">
               <ion-icon name="trash-bin-outline" slot="end" color="danger" size="small" (click)="confirmItemRemove(setting, item)"></ion-icon>
               <p>{{item.name}}</p>
-            </ion-item> 
-            <ion-item class="fab-pad"></ion-item>  
-            <ion-fab bottom left *ngIf="page == setting.name">
-            <button ion-fab (click)="addItemModal(setting)" color="secondary">
-              <ion-icon name="md-add"></ion-icon>
-            </button>
-          </ion-fab>      
-        </ion-list>
+            </ion-item>  
+            <ion-item class="fab-pad" lines="none">
+
+            </ion-item>  
+        </ion-list>  
     </div>
+
+
 </ion-content>
+<ion-footer class="ion-no-border" >
+    <div *ngFor="let setting of multivalueMetadataEditableSettings">
+     <ion-fab *ngIf="page == setting.name" horizontal="end" vertical="bottom">
+      <ion-fab-button (click)="addItemModal(setting)" color="secondary">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+     </ion-fab>         
+    </div>
+  </ion-footer>

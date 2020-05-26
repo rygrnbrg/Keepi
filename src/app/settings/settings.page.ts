@@ -35,19 +35,23 @@ export class SettingsPage{
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
     private router: Router) {
-      
-      this.translate.get([
-        'SETTINGS_ITEMS_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
-        'SETTINGS_ITEMS_ADD_TITLE', 'SETTINGS_ITEMS_ADD_PLACEHOLDER','GENERAL_ACTION_ERROR',
-        'SETTINGS_ITEMS_ADD_SUCCESS']).subscribe(values => {
+      this.multivalueMetadataEditableSettings = [
+        {name: "areas", key: "AREAS"} ,
+        {name: "propertyTypes", key: "PROPERTY_TYPES"} ,
+        {name: "sources", key: "SOURCES"} 
+      ];
+
+      let translations = [
+        'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
+        'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER','GENERAL_ACTION_ERROR',
+        'SETTINGS_ITEM_ADD_SUCCESS'];
+
+      this.multivalueMetadataEditableSettings.forEach(x=> translations.push(x.key + "_SINGLE"));
+
+      this.translate.get(translations).subscribe(values => {
           this.translations = values;
         });
 
-        this.multivalueMetadataEditableSettings = [
-          {name: "areas", key: "AREAS"} ,
-          {name: "propertyTypes", key: "PROPERTY_TYPES"} ,
-          {name: "sources", key: "SOURCES"} 
-        ];
 
         this.route.queryParams.subscribe(params => {  
           this.page = params.page || this.page;
@@ -104,8 +108,9 @@ export class SettingsPage{
   }
 
   public async confirmItemRemove(setting: EditableSetting, item: UserSetting) {
-    let message = this.translations['SETTINGS_ITEM_DELETE_CONFIRM'] + this.translations[`${setting.key}_SINGLE`];
-    message += `"${item}"`;
+    let singleKey = `${setting.key}_SINGLE`;
+    let message =   `${this.translations['SETTINGS_ITEM_DELETE_CONFIRM']}${this.translations[singleKey]}`;
+    message += ` "${item.name}"?`;
     const prompt = await this.alertCtrl.create({
       message: message,
       buttons: [
@@ -145,19 +150,33 @@ export class SettingsPage{
     });
   }
 
+  private async addArea(area: string){
+    let loading = await this.loadingCtrl.create();
+    loading.present();
+    this.user.addArea(area).then(()=>{
+      this.items = this.user.getUserData().areas;
+      loading.dismiss();
+      this.showToast(`"${area}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
+    }, ()=>{            
+      this.showToast(this.translations.GENERAL_ACTION_ERROR);
+    });//todo:handle error
+  }
+
   private removeFromView(item: UserSetting){
     this.items.splice(this.items.indexOf(item), 1);   
   }
 
-  public async addItemModal(itemType: string) {
+  public async addItemModal(setting: EditableSetting) {
+    let singleKey = `${setting.key}_SINGLE`;
     this.newItemName = "";
+   
     const prompt = await this.alertCtrl.create({
-      header: this.translations.SETTINGS_AREAS_ADD_TITLE,
+      header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations[singleKey]}`,
       cssClass: "rtl-modal",
       inputs: [
         {
           name: 'item',
-          placeholder: this.translations.SETTINGS_AREAS_ADD_PLACEHOLDER,
+          placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]}${this.translations[singleKey]}`,
           value: this.newItemName,
 
         },
@@ -171,20 +190,18 @@ export class SettingsPage{
         },
         {
           text: this.translations.GENERAL_APPROVE,
-          handler: async data => {
-            if (!data.area){
+          handler: async data => {            
+            if (!data.item){
               return;
             }
-            
-            let loading = await this.loadingCtrl.create();
-            loading.present();
-            this.user.addArea(data.area).then(()=>{
-              this.items = this.user.getUserData()[itemType];
-              loading.dismiss();
-              this.showToast(this.translations.SETTINGS_ITEM_ADD_SUCCESS);
-            }, ()=>{            
-              this.showToast(this.translations.GENERAL_ACTION_ERROR);
-            });//todo:handle error
+
+            switch (setting.name) {
+              case "areas":
+                   this.addArea(data.item);
+                break;         
+              default:
+                break;
+            }
           }
         }
       ]

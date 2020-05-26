@@ -113,9 +113,9 @@ export class User {
 
   public removeArea(area: Area): Promise<void>{
     return this._areasRef.where("name", "==", area.name).get().then((querySnapshot) => {
-      return querySnapshot.forEach(x=> {
-        return x.delete();
-      });
+      if (querySnapshot.size > 0){
+        return querySnapshot.docs[0].ref.delete();
+      }
     }).then(()=> this.initAreas());
   }
 
