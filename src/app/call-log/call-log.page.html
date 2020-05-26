@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+     {{'CALL_LOG_TITLE' | translate}}
+    </ion-title>
+    <div class="header-icon">
+      <div class="header-icon-inner"></div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="cover-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="updateLog($event)">
+    <ion-refresher-content  refreshingSpinner="circular"></ion-refresher-content>
+  </ion-refresher>
+  <div class="bg-color">
+  <ion-list class="items-list">
+    <ion-list-header (click)="updateLog()">
+      <ion-label>{{ 'MAIN_LATEST_CALLS' | translate }}</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let item of log" (click)="openItem(item)">
+      <ion-avatar slot="start">
+        <img [src]="item.avatar | avatar" />
+      </ion-avatar>
+      <ion-label>
+         <h3>{{item.name}}</h3>
+        <p>{{item.phone}}</p>           
+      </ion-label>
+      <ion-icon name="person-add-outline"></ion-icon>
+      <!-- <ion-note item-end *ngIf="item.created">{{item.created | date : 'dd/MM/yy'}}</ion-note> -->
+    </ion-item>
+    <ion-item class="fab-pad" lines="none"></ion-item>
+  </ion-list>
+  </div>
+</ion-content>
+<ion-footer class="ion-no-border">
+  <ion-fab horizontal="end" vertical="bottom">
+    <ion-fab-button (click)="openItem()" color="secondary">
+      <ion-icon name="person-add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

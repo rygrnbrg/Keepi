@@ -25,6 +25,10 @@ const routes: Routes = [
   {
     path: 'settings',
     loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
+  },
+  {
+    path: 'call-log',
+    loadChildren: () => import('./call-log/call-log.module').then( m => m.CallLogPageModule)
   }
 ];
 @NgModule({

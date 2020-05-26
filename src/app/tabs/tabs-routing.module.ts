@@ -10,7 +10,7 @@ const routes: Routes = [
     children: [
       {
         path: 'tab1',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+        loadChildren: () => import('../call-log/call-log.module').then(m => m.CallLogPageModule)
       },
       {
         path: 'tab2',

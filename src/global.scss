@@ -152,25 +152,3 @@ $logo-md-height:        100px;
       margin-right: $content-margin/2;
     }
   }
-  
-  html[dir="rtl"]{
-    .item-md ion-avatar[item-start]{
-        margin-right: $content-margin;
-    }
-    .item-md ion-icon[item-start] + .item-inner{
-        margin-left: 0;
-    }
-
-    .item-md [item-end]{
-        margin-left: $content-margin;
-    }
-    .note-md{
-        font-size: 1.4rem;
-    }
-    .rtl-modal input{
-        direction: rtl;
-    }
-    input[type=email], input[type=password]{
-        direction: ltr;
-    }
-}
