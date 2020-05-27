@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> {{ item.name ? item.name : item.phone }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="scrollbar-container"></div>
+  <ion-slides scrollbar="true" [options]="slideOpts" (ionSlideDidChange)="setActiveSlide($event)">
+    <ion-slide *ngFor="let slide of leadPropertiesMetadata; let i = index">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12">
+            <ion-icon [name]="slide.icon" class="slide-icon"></ion-icon>
+            <h3 class="slide-title">{{ slide.title | translate }}</h3>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="slide.options?.length">
+          <ion-col size="6" *ngFor="let button of slide.options">
+            <ion-button dir="ltr" expand="block" (click)="answerButtonClick(slide, button, i)" [color]="button.selected ? 'secondary' : 'primary'">
+              {{ button.title }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row [hidden]="slide.type !== leadPropertyType.StringMultivalue">
+          <ion-item class="fab-pad"></ion-item>
+        </ion-row>
+        <ion-row *ngIf="slide.id === 'rooms'" class="margin-top">
+          <ion-col col-12>
+            <ion-button color="secondary" expand="block" (click)="addMetersSlide(i);">
+              {{ 'METER_DATA_INPUT' | translate }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <div *ngIf="slide.type === leadPropertyType.Budget && isSlideActive(slide)">
+              <budget-slider [dealType]="dealType" [value]="this.resultLead.budget" 
+              (valueChanged)="setBudget(slide, $event)" (customValueSelected)="goToSlide(i +1);"></budget-slider>
+           </div>
+      <ion-fab vertical="top" horizontal="end" *ngIf="slide.id == 'area'">
+        <ion-fab-button mini (click)="addAreaModal()" color="secondary">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-slide>
+    <ion-slide>
+      <ion-list>
+        <ion-list-header>
+          {{ "DETAILS" | translate }}
+        </ion-list-header>
+        <ion-item>
+          <ion-icon name="person-add" slot="start" color="primary"></ion-icon>
+          <!-- <p>{{ item.name }}, {{ "INTERESTED_IN" | translate }} {{ item.type | leadType | translate }}</p> -->
+        </ion-item>
+        <ion-item>
+          <ion-icon name="phone-portrait" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <p>{{ item.phone }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-list-header>
+          {{ "PROPERTIES" | translate }}
+        </ion-list-header>
+        <ion-item *ngFor="let slide of leadPropertiesMetadata; let i = index" (click)="goToSlide(i)">
+          <ion-icon [name]="slide.icon" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ slide.title }}</h2>
+            <p><span dir="ltr">{{getSlideValueString(slide)}}</span></p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-slide>
+  </ion-slides>
+</ion-content>
+
+
+<ion-footer class="ion-no-border">
+  <ion-fab vertical="bottom" horizontal="center">
+    <ion-fab-button color="secondary" (click)="goToSlide(activeSlide + 1)">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="bottom" horizontal="center" [hidden]="!isSummarySlide">
+    <button ion-fab (click)="submitSummary()" color="secondary">
+      {{ "GENERAL_APPROVE" | translate }}
+    </button>
+  </ion-fab>
+</ion-footer>
+
+
+
+<!-- [hidden]="!(
+              leadPropertiesMetadata[activeSlide].type === leadPropertyType.StringMultivalue || 
+              leadPropertiesMetadata[activeSlide].type === leadPropertyType.Budget
+          )" -->

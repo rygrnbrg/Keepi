@@ -29,6 +29,10 @@ const routes: Routes = [
   {
     path: 'call-log',
     loadChildren: () => import('./call-log/call-log.module').then( m => m.CallLogPageModule)
+  },
+  {
+    path: 'lead-create',
+    loadChildren: () => import('./lead-create/lead-create.module').then( m => m.LeadCreatePageModule)
   }
 ];
 @NgModule({

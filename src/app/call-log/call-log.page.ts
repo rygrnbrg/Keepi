@@ -3,6 +3,7 @@ import { NavController, Platform, ModalController, LoadingController } from '@io
 import { CallLog, CallLogObject } from '@ionic-native/call-log/ngx';
 import { Caller } from '../../models/caller';
 import { Lead } from '../../models/lead';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-call-log',
@@ -26,7 +27,8 @@ export class CallLogPage implements OnInit {
         private callLog: CallLog,
         private platform: Platform,
         private loadingCtrl: LoadingController,
-        private modalCtrl: ModalController) {
+        private modalCtrl: ModalController,
+        private router: Router) {
         this.updateLog();
     }
 
@@ -101,14 +103,17 @@ export class CallLogPage implements OnInit {
 
     }
 
-    public async openItem(item?: Lead) {
+    public openItem(item?: Lead) {
         if (!item) {
             item = new Lead("", "");
         }
 
-        let addModal = await this.modalCtrl.create({ component: "" });
-        // 'ItemCreatePage', { item: item });
-        addModal.present();
+        this.router.navigate(["lead-create"], 
+        { 
+          queryParams: {
+            item: item
+          }
+        });
     }
 
     private getLogFilter(numberOfDays: number) {

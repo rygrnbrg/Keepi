@@ -1,0 +1,24 @@
+@import "../../theme/variables.scss";
+
+.slide-icon {
+  font-size: 50px;
+  padding: 20px 0 0 0;
+}
+
+.slide-zoom {
+  height: 100%;
+}
+
+.slide-title {
+  margin-top: $content-margin;
+}
+
+.slide-image {
+  max-height: 20%;
+  max-width: 60%;
+  margin: 36px 0;
+}
+
+ion-list{
+  width:100%;
+}

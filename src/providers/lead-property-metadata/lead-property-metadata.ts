@@ -31,7 +31,7 @@ export class LeadPropertyMetadataProvider {
       // },
       {
         id: 'property',
-        title: 'נכס',
+        title: 'סוג הנכס',
         description: 'סוג הנכס',
         image: 'assets/img/ica-slidebox-img-2.png',
         options: [
@@ -99,7 +99,7 @@ export class LeadPropertyMetadataProvider {
         title: 'אזור',
         description: 'האזור המבוקש',
         options: this.getAreasOptions(),
-        icon: 'md-map',
+        icon: 'map',
         type: LeadPropertyType.StringMultivalue,
         filterable: true
       },

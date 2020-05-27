@@ -18,7 +18,8 @@ import * as firebase from 'firebase/app';
 */
 @Injectable()
 export class LeadsProvider {
-  private leadsDictionary: any;
+  private leadsDictionary: any = {};
+
   private static standardLeadKeys = [
     "name",
     "phone",
