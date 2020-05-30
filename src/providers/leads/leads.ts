@@ -42,6 +42,10 @@ export class LeadsProvider {
 
   private initLeadCollections() {
     let userData = this.user.getUserData();
+    if (!userData){
+      return;
+    }
+    
     LeadType.getAllLeadTypes().forEach(leadType => {
       let leadsCollectionRef = 
       firebase.firestore().collection("users").doc(userData.email)

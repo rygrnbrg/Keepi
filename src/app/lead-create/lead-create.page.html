@@ -26,17 +26,20 @@
           <ion-item class="fab-pad"></ion-item>
         </ion-row>
         <ion-row *ngIf="slide.id === 'rooms'" class="margin-top">
-          <ion-col col-12>
+          <ion-col size="12">
             <ion-button color="secondary" expand="block" (click)="addMetersSlide(i);">
               {{ 'METER_DATA_INPUT' | translate }}
             </ion-button>
           </ion-col>
         </ion-row>
+        <ion-row [hidden]="activeSlide !== i">
+          <ion-col size="12" dir="ltr">
+              <budget-slider *ngIf="slide.type === leadPropertyType.Budget"  [dealType]="dealType" [value]="this.resultLead.budget" 
+              (valueChanged)="setBudget(slide, $event)" (customValueSelected)="goToSlide(i +1);"></budget-slider>            
+          </ion-col>
+        </ion-row>
       </ion-grid>
-      <div *ngIf="slide.type === leadPropertyType.Budget && isSlideActive(slide)">
-              <budget-slider [dealType]="dealType" [value]="this.resultLead.budget" 
-              (valueChanged)="setBudget(slide, $event)" (customValueSelected)="goToSlide(i +1);"></budget-slider>
-           </div>
+
       <ion-fab vertical="top" horizontal="end" *ngIf="slide.id == 'area'">
         <ion-fab-button mini (click)="addAreaModal()" color="secondary">
           <ion-icon name="add"></ion-icon>
@@ -50,7 +53,7 @@
         </ion-list-header>
         <ion-item>
           <ion-icon name="person-add" slot="start" color="primary"></ion-icon>
-          <!-- <p>{{ item.name }}, {{ "INTERESTED_IN" | translate }} {{ item.type | leadType | translate }}</p> -->
+          <p>{{ item.name }}, {{ "INTERESTED_IN" | translate }} {{ item.type | leadType | translate }}</p>
         </ion-item>
         <ion-item>
           <ion-icon name="phone-portrait" slot="start" color="primary"></ion-icon>
@@ -77,7 +80,7 @@
 <ion-footer class="ion-no-border">
   <ion-fab vertical="bottom" horizontal="center">
     <ion-fab-button color="secondary" (click)="goToSlide(activeSlide + 1)">
-      <ion-icon name="arrow-forward"></ion-icon>
+      <ion-icon name="arrow-back"></ion-icon>
     </ion-fab-button>
   </ion-fab>
   <ion-fab vertical="bottom" horizontal="center" [hidden]="!isSummarySlide">

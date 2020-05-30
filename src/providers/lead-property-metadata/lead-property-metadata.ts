@@ -151,7 +151,8 @@ export class LeadPropertyMetadataProvider {
   }
 
   getAreasOptions(): PropertyOption[]{
-    return this.user.getUserData().areas.map(x=> new PropertyOption(x.name))
+    let userData = this.user.getUserData();
+    return userData? userData.areas.map(x=> new PropertyOption(x.name)): [];
   }
 }
 

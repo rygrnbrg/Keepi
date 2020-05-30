@@ -1,7 +1,7 @@
 import { Router, ActivatedRoute } from '@angular/router';
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { Lead } from 'src/models/lead';
-import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadType } from 'src/models/lead-property-metadata';
+import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadType, LeadTypeID } from 'src/models/lead-property-metadata';
 import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 import { LeadsProvider } from 'src/providers/leads/leads';
@@ -16,7 +16,7 @@ import { User } from 'src/providers';
     providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadsProvider]
 })
 
-export class LeadCreatePage {
+export class LeadCreatePage implements OnInit {
     public item: Lead;
     public resultLead: Lead;
     public leadPropertyType = LeadPropertyType;
@@ -50,7 +50,7 @@ export class LeadCreatePage {
             });
         this.route.queryParams.subscribe(params => {
             //this.item = params.item;
-            this.item = <Lead>{ name: "ישראל ישראלי", phone: "0528626684" };
+            this.item = <Lead>{ name: "ישראל ישראלי", phone: "0528626684", type: LeadTypeID.Buyer };
         });
 
         this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
@@ -83,7 +83,7 @@ export class LeadCreatePage {
             true: false;
     }
 
-    ionViewDidLoad() {
+    ngOnInit() {
         this.updateAreas();
         this.leadPropertiesMetadata.forEach(slide =>
             LeadPropertyMetadata.reset(slide)

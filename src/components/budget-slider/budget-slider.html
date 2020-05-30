@@ -1,21 +1,27 @@
-<ion-label class="budget-value-label"> {{ value | numberFormat }} </ion-label>
-<ion-range
-  dualKnobs="false"
-  [(ngModel)]="sliderValue"
-  [max]="sliderMaxValue"
-  [min]="sliderMinValue"
-  step="1"
-  color="secondary"
-  (ionChange)="onSliderChange($event)"
->
   <!-- <ion-label range-left>{{ maxValue | numberFormat }}</ion-label> -->
-</ion-range>
 <ion-grid padding>
   <ion-row>
-    <ion-col col-4 *ngFor="let item of presetBudgets">
-      <button ion-button block text-center small (click)="setValue(item)" [color]="item===value ? 'secondary' : 'primary'">
+    <ion-col size="12">
+        <ion-label class="budget-value-label"> {{ value | numberFormat }} </ion-label>
+        <ion-range dir="ltr"
+          dualKnobs="false"
+          [value]="sliderValue"
+          [max]="sliderMaxValue"
+          [min]="sliderMinValue"
+          step="1"
+          color="secondary"
+          (ionChange)="onSliderChange($event)"
+        >
+        <ion-label slot="start"> 1 </ion-label>
+        <ion-label slot="end"> 100 </ion-label>   
+      </ion-range>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="6" *ngFor="let item of presetBudgets">
+      <ion-button dir="ltr" expand="block" (click)="setValue(item)" [color]="item===value ? 'secondary' : 'primary'">
         {{ item | numberFormat }}
-      </button>
+      </ion-button>
     </ion-col>
   </ion-row>
 </ion-grid>

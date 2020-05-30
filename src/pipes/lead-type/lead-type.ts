@@ -6,6 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class LeadTypePipe implements PipeTransform {
   transform(value: LeadTypeID) {
+    if (value === undefined){
+      return "";
+    }
+
     return value.toString().toUpperCase() + "_ACTION";
   }
 }

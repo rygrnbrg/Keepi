@@ -1,13 +1,12 @@
 import { DealType } from './../../models/lead-property-metadata';
-import { Input, Output, EventEmitter } from "@angular/core";
+import { Input, Output, EventEmitter, OnInit } from "@angular/core";
 import { Component } from "@angular/core";
-import { Settings } from "../../providers";
 
 @Component({
   selector: "budget-slider",
-  templateUrl: "budget-slider.html"
+  templateUrl: "budget-slider.html",
 })
-export class BudgetSliderComponent {
+export class BudgetSliderComponent implements OnInit {
   @Input() public value: number;
   @Input() public dealType: number;
 
@@ -22,12 +21,18 @@ export class BudgetSliderComponent {
 
   @Output() valueChanged = new EventEmitter<number>();
   @Output() customValueSelected = new EventEmitter<number>();
-  constructor(private settings: Settings) {
+  constructor() {
+    var settings =  {
+      defaultBudget: 1500000,
+      minBudget: 500000,
+      maxBudget: 5000000,
+      presetBudgets: [500000, 1000000, 1500000, 2000000, 2500000, 3000000],
+      defaultRentBudget: 4000,
+      minRentBudget: 2000,
+      maxRentBudget: 10000,
+      presetRentBudgets:[3500,4000,4500,5000,5500,6000,6500,7000,8000]
+    };
 
-  }
-
-  ngOnInit() {
-    this.settings.allSettings.then((settings) => {
       if (this.dealType === DealType.Sell) {
         this.scaleFactor = 100000;
         this.maxValue = settings.maxBudget;
@@ -44,7 +49,10 @@ export class BudgetSliderComponent {
       }
       this.sliderMaxValue = this.actualToRangeValue(this.maxValue);
       this.sliderMinValue = this.actualToRangeValue(this.minValue);
-    });
+  }
+
+  ngOnInit() {
+
   }
   private initValue(defaultValue: number) {
     if (!this.value) {
@@ -55,9 +63,11 @@ export class BudgetSliderComponent {
   }
 
   public onSliderChange(ionRange: any) {
-    this.sliderValue = ionRange.value;
+    this.sliderValue = ionRange.detail.value;
     this.value = this.rangeValueToActual(this.sliderValue);
     this.onValueChange();
+    ionRange.preventDefault();
+    ionRange.stopPropagation();
   }
 
   public setValue(value: number) {

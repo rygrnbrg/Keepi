@@ -7,6 +7,7 @@ import { BudgetSliderComponent } from './budget-slider/budget-slider';
 import { FilteredByComponent } from './filtered-by/filtered-by';
 import { LeadTypeSelectComponent } from './lead-type-select/lead-type-select';
 import { RangeBudgetSliderComponent } from './range-budget-slider/range-budget-slider';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
 	declarations: [LeadsListComponent,
@@ -17,7 +18,8 @@ import { RangeBudgetSliderComponent } from './range-budget-slider/range-budget-s
 	imports: [
 		TranslateModule.forChild(),
 		PipesModule,
-		IonicModule
+        IonicModule,
+        CommonModule
 	],
 	exports: [LeadsListComponent,
     BudgetSliderComponent,
