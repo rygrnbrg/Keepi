@@ -17,7 +17,7 @@ Add platforms using "npx cap add":
 
 Copy changes into native projects:
     ionic build
-    ionic cap copy
+    ionic cap copy          (includes build!)
 
 After making updates to the native code (such as adding a new plugin) use sync command:
     ionic cap sync

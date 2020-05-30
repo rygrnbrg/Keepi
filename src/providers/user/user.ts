@@ -95,6 +95,7 @@ export class User {
       this._areasRef = areasCollectionRef;
       //this.initRoysAreas(); 
       return this._areasRef.get().then(areas => {
+        this._areas = [];
         areas.docs.forEach(area => {
           this._areas.push({ name: area.data().name});
         });

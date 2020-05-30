@@ -1,7 +1,7 @@
   <!-- <ion-label range-left>{{ maxValue | numberFormat }}</ion-label> -->
 <ion-grid padding>
   <ion-row>
-    <ion-col size="12">
+    <ion-col size="12" class="swiper-no-swiping">
         <ion-label class="budget-value-label"> {{ value | numberFormat }} </ion-label>
         <ion-range dir="ltr"
           dualKnobs="false"
@@ -19,7 +19,7 @@
   </ion-row>
   <ion-row>
     <ion-col size="6" *ngFor="let item of presetBudgets">
-      <ion-button dir="ltr" expand="block" (click)="setValue(item)" [color]="item===value ? 'secondary' : 'primary'">
+      <ion-button (click)="setValue(item)" dir="ltr" expand="block" [fill]="item===value ? 'solid': 'outline'" expand="block" [color]="item===value ? 'secondary' : 'dark'">
         {{ item | numberFormat }}
       </ion-button>
     </ion-col>

@@ -14,26 +14,25 @@ export class LeadPropertyMetadataProvider {
   constructor(    
     private user: User) {
     this.properties = [
-      // {
-      //   id: 'type',
-      //   title: 'סוג הליד',
-      //   description: 'מעוניין ב',
-      //   image: 'assets/img/ica-slidebox-img-1.png',
-      //   options: [
-      //     new PropertyOption("להשכיר", false, LeadTypeID.Landlord),
-      //     new PropertyOption("לקנות", false, LeadTypeID.Buyer),
-      //     new PropertyOption("לשכור", false, LeadTypeID.Tenant),
-      //     new PropertyOption("למכור", false, LeadTypeID.Seller)
-      //   ],
-      //   icon: 'clipboard',
-      //   type: LeadPropertyType.StringSingleValue,
-      //   filterable: false
-      // },
+      {
+        id: 'type',
+        title: 'סוג עסקה',
+        description: 'מעוניין ב',
+        options: [
+          new PropertyOption("להשכיר", false, LeadTypeID.Landlord),
+          new PropertyOption("לקנות", false, LeadTypeID.Buyer),
+          new PropertyOption("לשכור", false, LeadTypeID.Tenant),
+          new PropertyOption("למכור", false, LeadTypeID.Seller)
+        ],
+        icon: 'key',
+        type: LeadPropertyType.StringSingleValue,
+        filterable: false,
+        mandatory: true
+      },
       {
         id: 'property',
         title: 'סוג הנכס',
         description: 'סוג הנכס',
-        image: 'assets/img/ica-slidebox-img-2.png',
         options: [
           new PropertyOption("דירה"),
           new PropertyOption("קוטג' / בית פרטי"),

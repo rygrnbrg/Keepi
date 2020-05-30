@@ -27,6 +27,7 @@ export class LeadCreatePage implements OnInit {
     public isSummarySlide = false;
     private newAreaName: string;
     private translations: any;
+    private activeSlideValid: boolean;
 
     @ViewChild(IonSlides) slides: IonSlides;
 
@@ -43,14 +44,12 @@ export class LeadCreatePage implements OnInit {
         private navCtrl: NavController
     ) {
         this.translate.get([
-            'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_AREAS_ADD_TITLE',
-            'SETTINGS_AREAS_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR',
-            'SETTINGS_AREAS_ADD_SUCCESS']).subscribe(values => {
+            'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
+            'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR']).subscribe(values => {
                 this.translations = values;
             });
         this.route.queryParams.subscribe(params => {
-            //this.item = params.item;
-            this.item = <Lead>{ name: "ישראל ישראלי", phone: "0528626684", type: LeadTypeID.Buyer };
+            this.item = <Lead>{ name: "ישראל ישראלי", phone: "0528626684" };
         });
 
         this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
@@ -71,16 +70,42 @@ export class LeadCreatePage implements OnInit {
     }
 
     public async setActiveSlide(event) {
-        if (!this.slides){
+        if (!this.slides) {
             this.activeSlide = 0;
+        }
+        else {
+            let activeIndex = await this.slides.getActiveIndex();
+            this.activeSlide = activeIndex;
+            this.isSummarySlide =
+                this.activeSlide == this.leadPropertiesMetadata.length ?
+                    true : false;
+        }
+        this.setValidity();
+    }
+
+    public setValidity(): void {
+        if (!this.leadPropertiesMetadata[this.activeSlide]){
             return;
         }
 
-        let activeIndex = await this.slides.getActiveIndex();
-        this.activeSlide = activeIndex;
-        this.isSummarySlide = 
-            this.activeSlide == this.leadPropertiesMetadata.length?
-            true: false;
+        if (this.leadPropertiesMetadata[this.activeSlide].mandatory &&
+            this.leadPropertiesMetadata[this.activeSlide].options.find(x => x.selected) === undefined) {
+            this.activeSlideValid = false;
+        }
+        else {
+            this.activeSlideValid = true;
+        }
+    }
+
+    public handleContinueClick(): void{
+        if (this.isSummarySlide){
+            this.submitSummary();
+            return;
+        }
+
+        if (this.activeSlideValid){
+            this.goToSlide(this.activeSlide + 1);
+        }
     }
 
     ngOnInit() {
@@ -88,8 +113,7 @@ export class LeadCreatePage implements OnInit {
         this.leadPropertiesMetadata.forEach(slide =>
             LeadPropertyMetadata.reset(slide)
         );
-        this.resultLead = new Lead(this.item.phone, this.item.name, this.item.type);
-        this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.item.type);
+        this.resultLead = new Lead(this.item.phone, this.item.name);
     }
 
     private updateAreas() {
@@ -109,7 +133,17 @@ export class LeadCreatePage implements OnInit {
     }
 
     answerButtonClick(slide: LeadPropertyMetadata, button: PropertyOption, index: number): void {
-        button.selected = !button.selected;
+        if (slide.type === LeadPropertyType.StringMultivalue) {
+            button.selected = !button.selected;
+        }
+        else {
+            button.selected = true;
+        }
+
+        if (slide.id === 'type'){
+            this.item.type = button.id;
+            this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.item.type);
+        }
 
         if (slide.type === LeadPropertyType.StringSingleValue) {
             this.handleSingleValueButtonClick(slide, button);
@@ -126,21 +160,26 @@ export class LeadCreatePage implements OnInit {
         return value;
     }
 
-    setBudget(slide: LeadPropertyMetadata, value: number, index?: number) {
+    setBudget(slide: LeadPropertyMetadata, value: number) {
         let transform = this.numberFormatPipe.transform;
         this.resultLead.budget = value;
         slide.value = transform(value);
     }
 
+    setBudgetButton(slide: LeadPropertyMetadata, value: number) {
+        this.setBudget(slide, value);
+        this.goToSlide(this.activeSlide + 1);
+    }
+
     public async addAreaModal() {
         this.newAreaName = "";
         const prompt = await this.alertCtrl.create({
-            header: this.translations.SETTINGS_AREAS_ADD_TITLE,
+            header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations["AREAS_SINGLE"]}`,
             cssClass: "rtl-modal",
             inputs: [
                 {
                     name: 'area',
-                    placeholder: this.translations.SETTINGS_AREAS_ADD_PLACEHOLDER,
+                    placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]}${this.translations["AREAS_SINGLE"]}`,
                     value: this.newAreaName
                 },
             ],
@@ -203,10 +242,10 @@ export class LeadCreatePage implements OnInit {
     }
 
     public async isSlideActive(slide: LeadPropertyMetadata): Promise<boolean> {
-        if (!this.slides){
+        if (!this.slides) {
             return false;
         }
-        
+
         let slideIndex = this.leadPropertiesMetadata.indexOf(slide);
         let activeIndex = await this.slides.getActiveIndex()
         return activeIndex === slideIndex;

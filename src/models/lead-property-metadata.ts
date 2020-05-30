@@ -10,13 +10,13 @@ export class LeadPropertyMetadata {
   public id: string;
   public title: string;
   public description: string;
-  public image?: string;
   public options?: PropertyOption[];
   public value?: any[] | any;
   public icon?: string;
   public type: LeadPropertyType;
   public filterable: boolean;
   public hidden?: boolean;
+  public mandatory?: boolean;
 
   static getValueString(
     leadPropertyMetadata: LeadPropertyMetadata,

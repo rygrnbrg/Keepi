@@ -1,5 +1,5 @@
 import { DealType } from './../../models/lead-property-metadata';
-import { Input, Output, EventEmitter, OnInit } from "@angular/core";
+import { Input, Output, EventEmitter, OnInit, SimpleChanges } from "@angular/core";
 import { Component } from "@angular/core";
 
 @Component({
@@ -22,6 +22,10 @@ export class BudgetSliderComponent implements OnInit {
   @Output() valueChanged = new EventEmitter<number>();
   @Output() customValueSelected = new EventEmitter<number>();
   constructor() {
+
+  }
+
+  ngOnInit() {
     var settings =  {
       defaultBudget: 1500000,
       minBudget: 500000,
@@ -51,9 +55,13 @@ export class BudgetSliderComponent implements OnInit {
       this.sliderMinValue = this.actualToRangeValue(this.minValue);
   }
 
-  ngOnInit() {
-
+  ngOnChanges(changes: SimpleChanges) {
+    let dealTypeChange = changes["dealType"];
+    if ( dealTypeChange && dealTypeChange.currentValue !=dealTypeChange.previousValue){
+      this.ngOnInit();
+    }
   }
+
   private initValue(defaultValue: number) {
     if (!this.value) {
       this.value = defaultValue;
