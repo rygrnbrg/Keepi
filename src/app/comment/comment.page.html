@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'COMMENT_PAGE_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-textarea class="sms-box" rows="5" placeholder="{{'ADD_COMMENT_PLACEHOLDER' | translate}}" [(ngModel)]="text"></ion-textarea>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-button slot="end" (click)="submit()" [color]="text.length? 'secondary': 'medium'">
+        <ion-label>{{'GENERAL_SAVE' | translate}}</ion-label>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

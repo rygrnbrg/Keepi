@@ -10,10 +10,11 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from '../../providers';
 import { rangeValue } from '../../components/range-budget-slider/range-budget-slider';
-import { smsResult } from '../../models/smsResult';
+import { SmsResult } from '../../models/smsResult';
 import { Comment } from '../../models/comment';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { MessagePage } from '../message/message.page';
+import { LeadDetailsPage } from '../lead-details/lead-details.page';
 
 
 @Component({
@@ -201,7 +202,8 @@ export class LeadsPage implements OnInit {
         let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
         this.showToast(message);
         this.addMessageSentComments(result.text, leads);
-      }});
+      }
+    });
   }
 
   public budgetChanged(range: rangeValue) {
@@ -282,22 +284,25 @@ export class LeadsPage implements OnInit {
     return (!this.filterSearchRunning) && this.leadsSearchResults && this.leadsSearchResults.length === 0 && this.activeFilters;
   }
 
-  deleteItem(item: Lead) {
+  public deleteItem(item: Lead) {
     this.leadsProvider.delete(item);
   }
 
-  // itemClicked(item: Lead) {
-  //   let modal = this.modalCtrl.create('ItemDetailPage', { item: item });
+  public async openLeadDetails(item: Lead) {
+    let modal = await this.modalCtrl.create({
+      component: LeadDetailsPage,
+      componentProps: { item: item }
+    });
 
-  //   modal.onDidDismiss((editedItem: Lead) => {
-  //     if (editedItem) {
-  //       this.updateItem(item, editedItem, this.leads);
-  //       this.updateItem(item, editedItem, this.leadsSearchResults);
-  //     }
-  //   })
-
-  //   modal.present();
-  // }
+    modal.present();
+    modal.onDidDismiss().then(value => {
+      if (value.data && value.data.editedItem) {
+        let editedItem = value.data.editedItem;
+        this.updateItem(item, editedItem, this.leads);
+        this.updateItem(item, editedItem, this.leadsSearchResults);
+      }
+    });
+  }
 
   private updateItem(item: Lead, editedItem: Lead, leads: any[]) {
     if (leads) {

@@ -4,7 +4,7 @@ import { NavController, NavParams, AlertController, Platform, ModalController } 
 import { SMS } from '@ionic-native/sms/ngx';
 import { TranslateService } from '@ngx-translate/core';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
-import { smsResult } from '../../models/smsResult';
+import { SmsResult } from '../../models/smsResult';
 import { AvatarPipe } from "../../pipes/avatar/avatar";
 
 @Component({
@@ -134,7 +134,7 @@ export class MessagePage {
       this.sms.send(phones[0], this.messageText).then(
         (value) => {
           console.log(value + " " + phones[0]);
-          let result: smsResult = { success: true, sentCount: phones.length, text: this.messageText };
+          let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
           if (phones.length > 1){
             for (let index = 1; index < phones.length; index++) {
               let phone = phones[index];
@@ -154,7 +154,7 @@ export class MessagePage {
       );
     }
     else {
-      let result: smsResult = { success: true, sentCount: phones.length, text: this.messageText };
+      let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
       this.modalCtrl.dismiss(result);
     }
 

@@ -20,7 +20,7 @@ export class LeadPropertyMetadataProvider {
         description: 'מעוניין ב',
         options: [
           new PropertyOption("להשכיר", false, LeadTypeID.Landlord),
-          new PropertyOption("לקנות", false, LeadTypeID.Buyer),
+          new PropertyOption("לרכוש", false, LeadTypeID.Buyer),
           new PropertyOption("לשכור", false, LeadTypeID.Tenant),
           new PropertyOption("למכור", false, LeadTypeID.Seller)
         ],

@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{item.name}}
+    </ion-title>
+    <ion-note slot="end" *ngIf="item.created">{{item.created.toDate() | date: 'dd/MM/yy'}}</ion-note>
+    <ion-buttons slot="end">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="items-list">
+    <ion-item>
+      <ion-icon [hidden]="!relevant" name="checkmark" icon slot="start" color="success"></ion-icon>
+      <ion-label [hidden]="!relevant">{{'LEAD_RELEVANCE_STATUS_YES' | translate }}</ion-label>
+      <ion-icon [hidden]="relevant" name="close" icon slot="start" color="danger"></ion-icon>
+      <ion-label [hidden]="relevant">{{'LEAD_RELEVANCE_STATUS_NO' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="relevant" (ionChange)="relevantChanged($event)"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="phone-portrait" icon slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{'ITEM_PHONE_PLACEHOLDER' | translate}}</h2>
+        <p>{{item.phone}}</p>
+      </ion-label>
+      <ion-icon name="call" slot="end" color="primary" (click)="call()"></ion-icon>
+    </ion-item>
+    <ion-list-header>
+      {{ 'DETAILS' | translate}}
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="bulb-outline" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{'ITEM_CREATE_TYPE_SELECT_TITLE' | translate}}</h2>
+        <p>{{getLeadTypeActionLabel() | translate}}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngFor="let prop of properties" [hidden]="!prop.value">
+      <ion-icon [name]="prop.icon + '-outline'" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{prop.title}}</h2>
+        <p>{{prop.value}}</p>
+      </ion-label>
+
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header>
+    {{ 'COMMENTS' | translate}}
+  </ion-list-header>
+
+  <ion-item *ngFor="let comment of getComments(item.comments)" (click)="openComment(comment)">
+    <ion-icon name="create-outline" slot="start" color="medium"></ion-icon>
+    <ion-label>
+      <p>{{comment.text}}</p>
+    </ion-label>
+    <ion-note slot="end">{{comment.date.toDate() | date: 'dd/MM/yy'}}</ion-note>
+  </ion-item>
+  <ion-item (click)="addNote()">
+    <ion-icon name="add-circle" slot="start" color="secondary"></ion-icon>
+    <ion-label>
+      <h2 class="action">{{'ADD_COMMENT_ACTION' | translate}}</h2>
+    </ion-label>
+
+  </ion-item>
+
+  <ion-list-header>
+    {{ 'MESSAGES' | translate}}
+  </ion-list-header>
+
+  <ion-item *ngFor="let comment of getMessages(item.comments)" (click)="openComment(comment)">
+    <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
+    <ion-label>
+      <p>{{comment.text}}</p>
+    </ion-label>
+    <ion-note slot="end">{{comment.date.toDate() | date: 'dd/MM/yy'}}</ion-note>
+  </ion-item>
+  <ion-item (click)="sendMessage()">
+    <ion-icon name="add-circle" slot="start" color="secondary"></ion-icon>
+    <ion-label>
+      <h2 class="action">{{'SEND_MESSAGE_ACTION' | translate}}</h2>
+    </ion-label>
+  </ion-item>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button color="secondary" (click)="sendMessage()">
+      <ion-icon name="chatbox"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

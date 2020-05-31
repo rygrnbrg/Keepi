@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title> {{ item.name ? item.name : item.phone }} </ion-title>
-    <ion-buttons slot="end" dir="rtl">
+    <ion-buttons slot="end">
       <ion-button (click)="closePage()">
         <ion-icon name="close"></ion-icon>
       </ion-button>
@@ -83,23 +83,10 @@
   </ion-slides>
 </ion-content>
 
-
 <ion-footer class="ion-no-border">
   <ion-fab vertical="bottom" horizontal="center">
     <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'medium'" (click)="handleContinueClick()">
       <ion-icon name="arrow-back"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <!-- <ion-fab vertical="bottom" horizontal="center" [hidden]="!isSummarySlide">
-    <button ion-fab (click)="submitSummary()" color="secondary">
-      {{ "GENERAL_APPROVE" | translate }}
-    </button>
-  </ion-fab> -->
 </ion-footer>
-
-
-
-<!-- [hidden]="!(
-              leadPropertiesMetadata[activeSlide].type === leadPropertyType.StringMultivalue || 
-              leadPropertiesMetadata[activeSlide].type === leadPropertyType.Budget
-          )" -->

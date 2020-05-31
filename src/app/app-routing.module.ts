@@ -41,6 +41,18 @@ const routes: Routes = [
   {
     path: 'message',
     loadChildren: () => import('./message/message.module').then( m => m.MessagePageModule)
+  },
+  {
+    path: 'lead-details',
+    loadChildren: () => import('./lead-details/lead-details.module').then( m => m.LeadDetailsPageModule)
+  },
+  {
+    path: 'comment',
+    loadChildren: () => import('./comment/comment.module').then( m => m.CommentPageModule)
+  },
+  {
+    path: 'leads-filter',
+    loadChildren: () => import('./leads-filter/leads-filter.module').then( m => m.LeadsFilterPageModule)
   }
 ];
 @NgModule({
