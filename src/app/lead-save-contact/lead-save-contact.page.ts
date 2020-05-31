@@ -3,6 +3,7 @@ import { NavParams, ModalController, Platform } from '@ionic/angular';
 import { Lead } from 'src/models/lead';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Contact, Contacts, ContactName, ContactField } from '@ionic-native/contacts/ngx';
+import { LeadCreatePage } from '../lead-create/lead-create.page';
 
 @Component({
   selector: 'app-lead-save-contact',
@@ -51,8 +52,20 @@ export class LeadSaveContactPage implements OnInit {
 
     this.item.name = this.leadName;
     this.item.phone = this.leadPhone;
-    this.modalCtrl.dismiss({ lead: this.item });
+    this.gotoLeadCreatePage(this.item)
+    //this.modalCtrl.dismiss({ lead: this.item });
   }
+
+  private async gotoLeadCreatePage(lead: Lead) {
+    let modal = await this.modalCtrl.create({
+        component: LeadCreatePage,
+        componentProps: { lead: lead }
+    });
+    modal.present();
+    modal.onDidDismiss().then(value => {
+
+    });
+}
 
   private getPremissionAndSaveContact() {
     if (this.platform.is("cordova")) {

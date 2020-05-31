@@ -119,11 +119,11 @@ export class CallLogPage {
         });
         modal.present();
         modal.onDidDismiss().then(value => {
-            if (value && value.data && value.data.lead){
-                lead.name = value.data.lead.name;
-                lead.phone = value.data.lead.phone;
-                this.gotoLeadCreatePage(lead);
-            }
+            // if (value && value.data && value.data.lead){
+            //     lead.name = value.data.lead.name;
+            //     lead.phone = value.data.lead.phone;
+            //     this.gotoLeadCreatePage(lead);
+            // }
         });
     }
 
