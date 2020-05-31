@@ -33,6 +33,14 @@ const routes: Routes = [
   {
     path: 'lead-create',
     loadChildren: () => import('./lead-create/lead-create.module').then( m => m.LeadCreatePageModule)
+  },
+  {
+    path: 'leads',
+    loadChildren: () => import('./leads/leads.module').then( m => m.LeadsPageModule)
+  },
+  {
+    path: 'message',
+    loadChildren: () => import('./message/message.module').then( m => m.MessagePageModule)
   }
 ];
 @NgModule({

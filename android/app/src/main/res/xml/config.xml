@@ -2,12 +2,20 @@
 <widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <access origin="*" />
   
+  <feature name="Permissions">
+    <param name="android-package" value="com.android.plugins.Permissions"/>
+  </feature>
+
   <feature name="CallLog">
     <param name="android-package" value="be.creacore.calllog.CallLog"/>
   </feature>
 
   <feature name="NativeStorage">
     <param name="android-package" value="NativeStorage"/>
+  </feature>
+
+  <feature name="Sms">
+    <param name="android-package" value="com.cordova.plugins.sms.Sms"/>
   </feature>
 
   

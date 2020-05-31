@@ -6,7 +6,6 @@ import { IonicModule, NavParams } from '@ionic/angular';
 import { SettingsPageRoutingModule } from './settings-routing.module';
 import { SettingsPage } from './settings.page';
 import { TranslateModule } from '@ngx-translate/core';
-import { AvatarPipe } from 'src/pipes/avatar/avatar';
 import { PipesModule } from 'src/pipes/pipes.module';
 
 @NgModule({

@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'LEADS_PAGE_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cleanFilters()" [hidden]="!activeFilters">
+        {{"LEADS_CLEAR_FILTERS" | translate}}
+        <ion-icon name="funnel"></ion-icon>
+      </ion-button>
+      <ion-button (click)="filterLeadsClick()" [hidden]="activeFilters">
+        {{ "GENERAL_FILTER" | translate }}
+        <ion-icon name="funnel"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [hidden]="filterSearchRunning">
+    <lead-type-select *ngIf="selectedLeadType" 
+    [value]="selectedLeadType" 
+    [dropdownSelect]="true" 
+    [iconsView]="false"  
+    label="LEAD_TYPE_SELECTION"
+    (valueChanged)="leadTypeChanged($event)"></lead-type-select>
+    <div class="filtered-list-header" [hidden]="!activeFilters">
+      <filtered-by [filters]="activeFilters"></filtered-by>
+    </div>
+
+    <ion-item [hidden]="activeFilters">
+      <ion-label>{{'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="relevantOnly"></ion-toggle>
+    </ion-item>
+
+    <range-budget-slider *ngIf="showBudgetSlider" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues"
+      [dealType]="selectedDealType" (valueChanged)="budgetChanged($event)">
+    </range-budget-slider>
+  </ion-list>
+  <ion-list>
+    <leads-list [hidden]="activeFilters || !leads" [leads]="leads" [showOnlyRelevant]="relevantOnly" [showClientSearch]="false" [showLeadCount]="true"
+      (itemClicked)="itemClicked($event)"></leads-list>
+    <leads-list [hidden]="!activeFilters" [leads]="leadsSearchResults" (itemClicked)="itemClicked($event)" [showLeadCount]="true"></leads-list>
+  </ion-list>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-fab horizontal="end" vertical="bottom">
+      <ion-fab-button (click)="sendMessage()" color="secondary">
+        <ion-icon name="chatbox"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ion-footer>

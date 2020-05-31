@@ -1,5 +1,5 @@
-import { Router, ActivatedRoute } from '@angular/router';
-import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadType, LeadTypeID } from 'src/models/lead-property-metadata';
 import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
@@ -8,6 +8,7 @@ import { LeadsProvider } from 'src/providers/leads/leads';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController, IonSlides, NavController } from '@ionic/angular';
 import { User } from 'src/providers';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-lead-create',
@@ -41,7 +42,8 @@ export class LeadCreatePage implements OnInit {
         private user: User,
         private toastCtrl: ToastController,
         private route: ActivatedRoute,
-        private navCtrl: NavController
+        private navCtrl: NavController,
+        private location: Location
     ) {
         this.translate.get([
             'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
@@ -54,6 +56,10 @@ export class LeadCreatePage implements OnInit {
 
         this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
         this.initSlideOptions();
+    }
+
+    public closePage(){
+        this.location.back();
     }
 
     private initSlideOptions() {
@@ -141,7 +147,7 @@ export class LeadCreatePage implements OnInit {
         }
 
         if (slide.id === 'type'){
-            this.item.type = button.id;
+            this.resultLead.type = button.id;
             this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.item.type);
         }
 

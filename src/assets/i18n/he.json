@@ -154,5 +154,6 @@
   "ADD_COMMENTS_ACTION": "הוסף הערה...",
   "COMMERCIAL_GROUND": "שטח מסחרי",
   "METER_DATA_INPUT":"הזן מידע במטרים",
-  "MESSAGE_SENT_TITLE": "הודעה נשלחה"
+  "MESSAGE_SENT_TITLE": "הודעה נשלחה",
+  "MESSAGE_SEND": "שלח"
 }

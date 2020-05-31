@@ -18,7 +18,7 @@ import * as firebase from 'firebase/app';
 */
 @Injectable()
 export class LeadsProvider {
-  private leadsDictionary: any = {};
+  private leadsDictionary: {[id:string] : firestore.CollectionReference<firestore.DocumentData> } = {};
 
   private static standardLeadKeys = [
     "name",
@@ -49,13 +49,18 @@ export class LeadsProvider {
     LeadType.getAllLeadTypes().forEach(leadType => {
       let leadsCollectionRef = 
       firebase.firestore().collection("users").doc(userData.email)
-      .collection("leads_" + leadType.id.toString().toLowerCase()).orderBy("created", "desc");    
+      .collection("leads_" + leadType.id.toString().toLowerCase());
       this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
     });
   }
 
   public get(leadTypeId: LeadTypeID): firebase.firestore.Query {
-    return this.leadsDictionary[leadTypeId.toString()].limit(300);
+    let collectionReference = this.leadsDictionary[leadTypeId.toString()];
+    if (!collectionReference){
+      this.initLeadCollections();
+    }
+
+    return collectionReference.orderBy("created", "desc").limit(300);
   }
 
   /**
@@ -122,7 +127,7 @@ export class LeadsProvider {
   }
 
   public getQuerySnapshotPromise(item: Lead): Promise<firestore.QuerySnapshot> {
-    let promise = this.leadsDictionary[item.type.toString()].ref.where("phone", "==", item.phone).where("created", "==", item.created).get();
+    let promise = this.leadsDictionary[item.type.toString()].where("phone", "==", item.phone).where("created", "==", item.created).get();
     return promise;
   }
 

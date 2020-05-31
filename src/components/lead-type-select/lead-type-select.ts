@@ -25,15 +25,21 @@ export class LeadTypeSelectComponent {
       this.selectedLeadType = val;
     }
     else {
-      //this.selectedLeadType = this.leadTypes[0];
+      this.selectedLeadType = this.leadTypes[0];
     }
   }
 
-  public compareWithLeadType(currentValue: LeadType, compareValue: LeadType): boolean {
-    return currentValue.id === compareValue.id;
+  public compareWithLeadType(curr: LeadType, compare: LeadType): boolean {
+    return curr && compare? curr.id === compare.id : curr === compare;
   }
 
-  public leadTypeChanged(leadType: LeadType) {
+  public leadTypeChanged(event: CustomEvent): void{
+    let leadType: LeadType = event.detail.value;
+
+    if (this.selectedLeadType.id === leadType.id){
+      return;
+    }
+
     this.selectedLeadType = leadType;
     this.valueChanged.emit(this.selectedLeadType);
   }

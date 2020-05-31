@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'MESSAGE_PAGE_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end" dir="rtl">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-textarea autofocus="true" class="sms-box" rows="5" placeholder="{{'TYPE_SMS_PLACEHOLDER' | translate}}" [(ngModel)]="messageText"></ion-textarea>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-button slot="end" (click)="send()" [color]="messageText.length? 'secondary': 'medium'">
+        <ion-label>{{'MESSAGE_SEND' | translate}}</ion-label>
+      </ion-button>
+    </ion-item>
+    <ion-list-header class="fab-align">
+      {{'SMS_MESSAGE_WILL_BE_SENT_TO' | translate}}-{{contacts.length}} {{'CONTACTS' | translate}}
+    </ion-list-header>
+    <ion-item *ngFor="let contact of contacts" ion-item>
+      <ion-avatar slot="start"> <img [src]="contact.avatar | avatar: item" /> </ion-avatar>
+      <ion-label>
+        <h3>{{ contact.name }}</h3>
+        <p>{{ contact.phone }}</p>
+      </ion-label>
+      <ion-icon name="close" slot="end" color="danger" (click)="removeContact(contact)" [hidden]="contacts.length === 1"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title> {{ item.name ? item.name : item.phone }} </ion-title>
+    <ion-buttons slot="end" dir="rtl">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -81,7 +86,7 @@
 
 <ion-footer class="ion-no-border">
   <ion-fab vertical="bottom" horizontal="center">
-    <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'gray'" (click)="handleContinueClick()">
+    <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'medium'" (click)="handleContinueClick()">
       <ion-icon name="arrow-back"></ion-icon>
     </ion-fab-button>
   </ion-fab>
