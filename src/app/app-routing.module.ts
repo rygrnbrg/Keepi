@@ -53,6 +53,10 @@ const routes: Routes = [
   {
     path: 'leads-filter',
     loadChildren: () => import('./leads-filter/leads-filter.module').then( m => m.LeadsFilterPageModule)
+  },
+  {
+    path: 'lead-save-contact',
+    loadChildren: () => import('./lead-save-contact/lead-save-contact.module').then( m => m.LeadSaveContactPageModule)
   }
 ];
 @NgModule({

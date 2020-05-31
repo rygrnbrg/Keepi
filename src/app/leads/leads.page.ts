@@ -15,6 +15,7 @@ import { Comment } from '../../models/comment';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { MessagePage } from '../message/message.page';
 import { LeadDetailsPage } from '../lead-details/lead-details.page';
+import { LeadsFilterPage } from '../leads-filter/leads-filter.page';
 
 
 @Component({
@@ -125,193 +126,196 @@ export class LeadsPage implements OnInit {
 
           //this.loading.dismiss();
           console.error(err);
-          // this.showToast(this.translations.LIST_LOADING_ERROR);
         });
     }
   }
 
-  // public async filterLeadsClick(): void {
-  //   let filterModal = this.modalCtrl.create('LeadsFilterPage', { "filters": this.activeFilters, "leadType": this.selectedLeadType });
-  //   filterModal.onDidDismiss((data: LeadFilter[]) => {
-  //     if (!data) {
-  //       return;
-  //     }
-  //     this.queryLeadsSearchResults = []
-  //     let filters = data.filter(item => item.value !== null);
-  //     if (!filters.length) {
-  //       this.activeFilters = null;
-  //       return;
-  //     }
+  public async filterLeadsClick() {
+    let modal = await this.modalCtrl.create({
+      component: LeadsFilterPage,
+      componentProps: { filters: this.activeFilters, leadType: this.selectedLeadType }
+    });
+    modal.present();
+    modal.onDidDismiss().then(async value => {
+      let data: LeadFilter[] = value.data;
 
-  //     this.activeFilters = filters;
-  //     this.filterSearchRunning = true;
-  //     let loading = this.loadingCtrl.create();
-  //     await loading.present();
-  //     this.leadsProvider.filter(this.activeFilters, this.selectedLeadType.id).get().then(
-  //       (querySnapshot) => {
-  //         loading.dismiss();
-  //         this.filterSearchRunning = false;
-  //         this.setBudgetMinMaxValues(querySnapshot);
-  //         this.setShowBudgetSlider();
-  //         querySnapshot.forEach(doc => {
-  //           let data = doc.data();
-  //           this.queryLeadsSearchResults.push(data);
-  //         });
-  //         this.filterLeadsByRange();
-  //       }
-  //     ).catch(reason => loading.dismiss());
-  //   });
+      if (!data) {
+        return;
+      }
+      this.queryLeadsSearchResults = []
+      let filters = data.filter(item => item.value !== null);
+      if (!filters.length) {
+        this.activeFilters = null;
+        return;
+      }
 
-  //   filterModal.present();
-  // }
+      this.activeFilters = filters;
+      this.filterSearchRunning = true;
+      let loading = await this.loadingCtrl.create();
+      loading.present();
+      this.leadsProvider.filter(this.activeFilters, this.selectedLeadType.id).get().then(
+        (querySnapshot) => {
+          loading.dismiss();
+          this.filterSearchRunning = false;
+          this.setBudgetMinMaxValues(querySnapshot);
+          this.setShowBudgetSlider();
+          querySnapshot.forEach(doc => {
+            let data = doc.data();
+            this.queryLeadsSearchResults.push(data);
+          });
+          this.filterLeadsByRange();
+        }
+      ).catch(reason => loading.dismiss());
+    });
+}
 
 
   private sortLeads(leads: Lead[]): Lead[] {
-    let sortedLeads = leads.sort((a, b) => {
-      if (!a.created || !b.created) {
-        return 0;
-      }
+  let sortedLeads = leads.sort((a, b) => {
+    if (!a.created || !b.created) {
+      return 0;
+    }
 
-      return ((<any>b.created).toDate()).getTime() - ((<any>a.created).toDate()).getTime();
-    });
+    return ((<any>b.created).toDate()).getTime() - ((<any>a.created).toDate()).getTime();
+  });
 
-    return sortedLeads;
-  }
+  return sortedLeads;
+}
 
   private async showToast(message: string) {
-    let toast = await this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'top'
-    });
-    toast.present();
-  }
+  let toast = await this.toastCtrl.create({
+    message: message,
+    duration: 3000,
+    position: 'top'
+  });
+  toast.present();
+}
 
   public async sendMessage() {
-    let leads = this.activeFilters ? this.leadsSearchResults : this.leads;
-    let contacts = leads.map((lead: Lead) => new Contact(lead.phone, lead.name));
+  let leads = this.activeFilters ? this.leadsSearchResults : this.leads;
+  let contacts = leads.map((lead: Lead) => new Contact(lead.phone, lead.name));
 
-    let modal = await this.modalCtrl.create({
-      component: MessagePage,
-      componentProps: { contacts: contacts }
-    });
-    modal.present();
-    modal.onDidDismiss().then(value => {
-      if (value.data && value.data.result && value.data.result.success) {
-        let result = value.data.result;
-        let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
-        this.showToast(message);
-        this.addMessageSentComments(result.text, leads);
-      }
-    });
-  }
+  let modal = await this.modalCtrl.create({
+    component: MessagePage,
+    componentProps: { contacts: contacts }
+  });
+  modal.present();
+  modal.onDidDismiss().then(value => {
+    if (value.data && value.data.result && value.data.result.success) {
+      let result = value.data.result;
+      let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
+      this.showToast(message);
+      this.addMessageSentComments(result.text, leads);
+    }
+  });
+}
 
   public budgetChanged(range: rangeValue) {
-    this.budgetValue = range;
-    this.filterLeadsByRange();
-  }
+  this.budgetValue = range;
+  this.filterLeadsByRange();
+}
 
   public leadTypeChanged(leadType: LeadType) {
-    this.selectedLeadType = leadType;
-    this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
-    this.initLeadSubscription();
-    this.cleanFilters();
-  }
+  this.selectedLeadType = leadType;
+  this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
+  this.initLeadSubscription();
+  this.cleanFilters();
+}
 
   private addMessageSentComments(text: string, leads: firebase.firestore.DocumentData[]) {
-    let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
+  let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
 
-    leads.forEach(lead => {
-      let convertedLead = this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id)
-      this.leadsProvider.addComment(convertedLead, comment);
-    });
-  }
+  leads.forEach(lead => {
+    let convertedLead = this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id)
+    this.leadsProvider.addComment(convertedLead, comment);
+  });
+}
 
   private filterLeadsByRange() {
-    let filteredQueryResults = this.queryLeadsSearchResults.filter(x => this.inBudgetRange(x));
-    let leads = filteredQueryResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id));
-    this.leadsSearchResults = this.sortLeads(leads);
-  }
+  let filteredQueryResults = this.queryLeadsSearchResults.filter(x => this.inBudgetRange(x));
+  let leads = filteredQueryResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id));
+  this.leadsSearchResults = this.sortLeads(leads);
+}
 
   private setShowBudgetSlider(): void {
-    if (!this.budgetMinMaxValues || !this.activeFilters) {
-      this.showBudgetSlider = false;
-    }
+  if(!this.budgetMinMaxValues || !this.activeFilters) {
+  this.showBudgetSlider = false;
+}
     else if (this.budgetMinMaxValues.upper === this.budgetMinMaxValues.lower) {
-      this.showBudgetSlider = false;
-    }
-    else {
-      this.showBudgetSlider = true;
-    }
+  this.showBudgetSlider = false;
+}
+else {
+  this.showBudgetSlider = true;
+}
   }
 
   private setBudgetMinMaxValues(querySnapshot: firebase.firestore.QuerySnapshot): void {
-    if (!querySnapshot || querySnapshot.size === 0) {
-      this.budgetMinMaxValues = { lower: 0, upper: 0 };
-      return;
-    }
+  if(!querySnapshot || querySnapshot.size === 0) {
+  this.budgetMinMaxValues = { lower: 0, upper: 0 };
+  return;
+}
 
-    let range: rangeValue = { lower: 100000000, upper: 0 };
-    let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
+let range: rangeValue = { lower: 100000000, upper: 0 };
+let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
 
-    querySnapshot.forEach(doc => {
-      let data = doc.data();
-      let value = <number>data[budgetFilterId.id];
-      if (value < range.lower) {
-        range.lower = value;
-      }
-      if (value > range.upper) {
-        range.upper = value;
-      }
-    });
+querySnapshot.forEach(doc => {
+  let data = doc.data();
+  let value = <number>data[budgetFilterId.id];
+  if (value < range.lower) {
+    range.lower = value;
+  }
+  if (value > range.upper) {
+    range.upper = value;
+  }
+});
 
-    this.budgetMinMaxValues = range;
-    this.budgetValue = range;
+this.budgetMinMaxValues = range;
+this.budgetValue = range;
   }
 
   private inBudgetRange(lead: any) {
-    let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
-    let value = <number>lead[budgetFilterId.id];
-    return value >= this.budgetValue.lower && value <= this.budgetValue.upper;
-  }
+  let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
+  let value = <number>lead[budgetFilterId.id];
+  return value >= this.budgetValue.lower && value <= this.budgetValue.upper;
+}
 
   public cleanFilters() {
-    this.activeFilters = null;
-    this.showBudgetSlider = false;
-  }
+  this.activeFilters = null;
+  this.showBudgetSlider = false;
+}
 
   public searchHasNoResults() {
-    return (!this.filterSearchRunning) && this.leadsSearchResults && this.leadsSearchResults.length === 0 && this.activeFilters;
-  }
+  return (!this.filterSearchRunning) && this.leadsSearchResults && this.leadsSearchResults.length === 0 && this.activeFilters;
+}
 
   public deleteItem(item: Lead) {
-    this.leadsProvider.delete(item);
-  }
+  this.leadsProvider.delete(item);
+}
 
   public async openLeadDetails(item: Lead) {
-    let modal = await this.modalCtrl.create({
-      component: LeadDetailsPage,
-      componentProps: { item: item }
-    });
+  let modal = await this.modalCtrl.create({
+    component: LeadDetailsPage,
+    componentProps: { item: item }
+  });
 
-    modal.present();
-    modal.onDidDismiss().then(value => {
-      if (value.data && value.data.editedItem) {
-        let editedItem = value.data.editedItem;
-        this.updateItem(item, editedItem, this.leads);
-        this.updateItem(item, editedItem, this.leadsSearchResults);
-      }
-    });
-  }
+  modal.present();
+  modal.onDidDismiss().then(value => {
+    if (value.data && value.data.editedItem) {
+      let editedItem = value.data.editedItem;
+      this.updateItem(item, editedItem, this.leads);
+      this.updateItem(item, editedItem, this.leadsSearchResults);
+    }
+  });
+}
 
   private updateItem(item: Lead, editedItem: Lead, leads: any[]) {
-    if (leads) {
-      let index = leads.indexOf(item);
-      if (index > -1) {
-        let lead = <Lead>leads[index];
-        lead.comments = editedItem.comments;
-        lead.relevant = editedItem.relevant;
-      }
+  if (leads) {
+    let index = leads.indexOf(item);
+    if (index > -1) {
+      let lead = <Lead>leads[index];
+      lead.comments = editedItem.comments;
+      lead.relevant = editedItem.relevant;
     }
   }
+}
 }

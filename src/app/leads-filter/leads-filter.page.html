@@ -1,9 +1,63 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>leads-filter</ion-title>
+    <ion-title>
+        {{ "FILTER_PAGE_HEADER" | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content padding>
+  <ion-list>
+    <div *ngFor="let filter of filters">
+      <ion-item class="no-margin" (click)="filterClick(filter)" *ngIf="filter.metadata">
+        <ion-icon [name]="filter.metadata.icon + '-outline'" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h2>{{ filter.metadata.title }}</h2>
+          <p [hidden]="filter.selected || !getFilterValueString(filter)">
+            {{ getFilterValueString(filter) }}
+          </p>
+        </ion-label>
+        <ion-icon [name]="filter.selected ? 'arrow-down' : 'arrow-back'" slot="end"></ion-icon>
+      </ion-item>
+      <div *ngIf="filter.metadata && filter.metadata.type !== leadPropertyType.Budget">
+        <ion-item [hidden]="!filter.selected" class="item-grid">
+          <ion-grid>
+            <ion-row>
+              <ion-col *ngFor="let option of filter.metadata.options" size="6">
+                <ion-button expand="block" size="small" 
+                [color]="option.selected? 'secondary' : 'dark'" 
+                [fill]="option.selected? 'solid': 'outline'"
+                (click)="optionClick(filter, option)">
+                  {{ option.title }}
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </div>
+      <div *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.Budget" [hidden]="!filter.selected">
+        <budget-slider [value]="filter.value" [dealType]="dealType" *ngIf="filter.selected" (valueChanged)="setBudget(filter, $event)"
+          (customValueSelected)="setBudget(filter, $event); filter.selected = false;"></budget-slider>
+      </div>
+    </div>
+    <ion-item class="no-margin">
+      <ion-icon [hidden]="!relevantOnly" name="checkmark" slot="start" color="primary"></ion-icon>
+      <ion-icon [hidden]="relevantOnly"  name="close"     slot="start" color="danger"></ion-icon>
+      <ion-label>{{'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="relevantOnly"></ion-toggle>
+    </ion-item>
+    <ion-item lines="none">
+      
+    </ion-item>
+  </ion-list>
+  <ion-fab horizontal="center">
+      <ion-fab-button color="secondary" (click)="done()">
+        {{ "GENERAL_APPROVE" | translate }}
+      </ion-fab-button>
+    </ion-fab>
 </ion-content>

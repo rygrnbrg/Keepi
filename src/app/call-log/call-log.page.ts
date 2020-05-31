@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, ModalController, LoadingController } from '@ionic/angular';
+import { NavController, Platform, ModalController, LoadingController, AlertController } from '@ionic/angular';
 import { CallLog, CallLogObject } from '@ionic-native/call-log/ngx';
 import { Caller } from '../../models/caller';
 import { Lead } from '../../models/lead';
 import { Router } from '@angular/router';
+import { LeadCreatePage } from '../lead-create/lead-create.page';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-call-log',
@@ -11,16 +13,12 @@ import { Router } from '@angular/router';
     styleUrls: ['./call-log.page.scss'],
     providers: [CallLog]
 })
-export class CallLogPage implements OnInit {
-
-    ngOnInit() {
-
-    }
-
+export class CallLogPage {
     log: Lead[];
     keys: string[];
     private lastLogDate: any;
     private CALL_LOG_DAYS: number = 5;
+    private translations: any;
 
     constructor(
         public navCtrl: NavController,
@@ -28,9 +26,12 @@ export class CallLogPage implements OnInit {
         private platform: Platform,
         private loadingCtrl: LoadingController,
         private modalCtrl: ModalController,
-        private router: Router) {
+        private translateService: TranslateService) {
         this.updateLog();
-    }
+        this.translateService.get(['GENERAL_APPROVE', 'GENERAL_CANCEL', 'LEAD_NAME', 'SAVE_TO_CONTACTS', 'SAVE_LEAD']).subscribe(values => {
+            this.translations = values;
+          });
+    };
 
     public updateLog(refresherEvent?: any) {
         if (this.platform.is("android") && this.platform.is("cordova")) {
@@ -39,8 +40,11 @@ export class CallLogPage implements OnInit {
         else {//todo: mock remove
             if (!(this.log && this.log.length)) {
                 let log: Caller[] = [];
+                for (let index = 0; index < 3; index++) {
+                    log.push(<Caller>{ number: "0528626684" + index });
+                }
                 for (let index = 0; index < 10; index++) {
-                    log.push(<Caller> { number: "0528626684" + index, name: "caller" + index });
+                    log.push(<Caller>{ number: "0528626684" + index, name: "caller" + index });
                 }
 
                 let freshLog = this.getUniqueCallerLog(log);
@@ -103,16 +107,18 @@ export class CallLogPage implements OnInit {
 
     }
 
-    public openItem(item?: Lead) {
-        if (!item) {
-            item = new Lead("", "");
-        }
+    public async addLead(lead: Lead) {
 
-        this.router.navigate(["lead-create"], 
-        { 
-          queryParams: {
-            item: item
-          }
+    }
+
+    private async gotoLeadCreatePage(lead: Lead) {
+        let modal = await this.modalCtrl.create({
+            component: LeadCreatePage,
+            componentProps: { lead: lead }
+        });
+        modal.present();
+        modal.onDidDismiss().then(value => {
+
         });
     }
 

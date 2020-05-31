@@ -6,7 +6,7 @@ import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 import { LeadsProvider } from 'src/providers/leads/leads';
 import { TranslateService } from '@ngx-translate/core';
-import { AlertController, LoadingController, ToastController, IonSlides, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, IonSlides, NavController, NavParams, ModalController } from '@ionic/angular';
 import { User } from 'src/providers';
 import { Location } from '@angular/common';
 
@@ -43,23 +43,23 @@ export class LeadCreatePage implements OnInit {
         private toastCtrl: ToastController,
         private route: ActivatedRoute,
         private navCtrl: NavController,
-        private location: Location
+        private location: Location,
+        private navParams: NavParams,
+        private modalCtrl: ModalController
     ) {
         this.translate.get([
             'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
             'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR']).subscribe(values => {
                 this.translations = values;
             });
-        this.route.queryParams.subscribe(params => {
-            this.item = <Lead>{ name: "ישראל ישראלי", phone: "0528626684" };
-        });
+        this.item = this.navParams.get("lead");
 
         this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
         this.initSlideOptions();
     }
 
     public closePage(){
-        this.location.back();
+        this.modalCtrl.dismiss();
     }
 
     private initSlideOptions() {

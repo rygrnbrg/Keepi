@@ -17,7 +17,7 @@
     <ion-list-header (click)="updateLog()">
       <ion-label>{{ 'MAIN_LATEST_CALLS' | translate }}</ion-label>
     </ion-list-header>
-    <ion-item *ngFor="let item of log" (click)="openItem(item)">
+    <ion-item *ngFor="let item of log" (click)="addLead(item)">
       <ion-avatar slot="start">
         <img [src]="item.avatar | avatar" />
       </ion-avatar>
