@@ -1,9 +1,34 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>lead-save-contact</ion-title>
+    <ion-title>{{'SAVE_LEAD' | translate}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-list class="fixed-rtl-form">
+    <ion-item>
+      <ion-label fixed class="fixed-rtl-form-label">{{ 'GENERAL_PHONE' | translate }}</ion-label>
+      <ion-input *ngIf="phoneDisabled" type="tel" disabled="disabled" [value]="leadPhone"></ion-input>
+      <ion-input *ngIf="!phoneDisabled" type="tel" [(ngModel)]="leadPhone" name="leadPhone"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label fixed class="fixed-rtl-form-label">{{ 'LEAD_NAME' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="leadName" name="leadName"></ion-input>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label>{{'SAVE_TO_CONTACTS' | translate}}</ion-label>
+      <ion-checkbox slot="start" [(ngModel)]="saveToContacts"></ion-checkbox>
+    </ion-item>
+    <ion-item lines="none"></ion-item>
+  </ion-list>
+  <ion-fab horizontal="center">
+      <ion-fab-button [color]="leadName && leadPhone? 'secondary': 'medium'" (click)="submit()">
+        {{ "GENERAL_APPROVE" | translate }}
+      </ion-fab-button>
+    </ion-fab>
 </ion-content>

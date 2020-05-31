@@ -98,7 +98,7 @@
   "ITEM_CREATE_TYPE_SELECT_TITLE": "סוג העסקה",
   "ITEM_CREATE_TYPE_SELECT_HEADER": "הוספת ליד חדש",
   "ITEM_CREATE_CHOOSE_IMAGE": "הוסף תמונה",
-  "ITEM_PHONE_PLACEHOLDER": "טלפון",
+  "GENERAL_PHONE": "טלפון",
   "ITEM_NAME_PLACEHOLDER": "שם",
   "ITEM_CREATE_DETAILS": "פרטים",
   "ITEM_CREATE_VALIDATION": "יש להזין את פרטי הליד במלואם: שם, טלפון וסוג העסקה המבוקש",

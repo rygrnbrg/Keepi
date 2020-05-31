@@ -172,7 +172,6 @@ export class SettingsPage{
    
     const prompt = await this.alertCtrl.create({
       header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations[singleKey]}`,
-      cssClass: "rtl-modal",
       inputs: [
         {
           name: 'item',

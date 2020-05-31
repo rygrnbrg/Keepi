@@ -41,9 +41,7 @@ export class LeadCreatePage implements OnInit {
         private loadingCtrl: LoadingController,
         private user: User,
         private toastCtrl: ToastController,
-        private route: ActivatedRoute,
         private navCtrl: NavController,
-        private location: Location,
         private navParams: NavParams,
         private modalCtrl: ModalController
     ) {
@@ -58,7 +56,7 @@ export class LeadCreatePage implements OnInit {
         this.initSlideOptions();
     }
 
-    public closePage(){
+    public closePage() {
         this.modalCtrl.dismiss();
     }
 
@@ -90,7 +88,7 @@ export class LeadCreatePage implements OnInit {
     }
 
     public setValidity(): void {
-        if (!this.leadPropertiesMetadata[this.activeSlide]){
+        if (!this.leadPropertiesMetadata[this.activeSlide]) {
             return;
         }
 
@@ -103,13 +101,13 @@ export class LeadCreatePage implements OnInit {
         }
     }
 
-    public handleContinueClick(): void{
-        if (this.isSummarySlide){
+    public handleContinueClick(): void {
+        if (this.isSummarySlide) {
             this.submitSummary();
             return;
         }
 
-        if (this.activeSlideValid){
+        if (this.activeSlideValid) {
             this.goToSlide(this.activeSlide + 1);
         }
     }
@@ -146,7 +144,7 @@ export class LeadCreatePage implements OnInit {
             button.selected = true;
         }
 
-        if (slide.id === 'type'){
+        if (slide.id === 'type') {
             this.resultLead.type = button.id;
             this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.item.type);
         }
@@ -181,7 +179,6 @@ export class LeadCreatePage implements OnInit {
         this.newAreaName = "";
         const prompt = await this.alertCtrl.create({
             header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations["AREAS_SINGLE"]}`,
-            cssClass: "rtl-modal",
             inputs: [
                 {
                     name: 'area',

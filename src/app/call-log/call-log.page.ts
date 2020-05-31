@@ -6,6 +6,7 @@ import { Lead } from '../../models/lead';
 import { Router } from '@angular/router';
 import { LeadCreatePage } from '../lead-create/lead-create.page';
 import { TranslateService } from '@ngx-translate/core';
+import { LeadSaveContactPage } from '../lead-save-contact/lead-save-contact.page';
 
 @Component({
     selector: 'app-call-log',
@@ -25,12 +26,8 @@ export class CallLogPage {
         private callLog: CallLog,
         private platform: Platform,
         private loadingCtrl: LoadingController,
-        private modalCtrl: ModalController,
-        private translateService: TranslateService) {
+        private modalCtrl: ModalController) {
         this.updateLog();
-        this.translateService.get(['GENERAL_APPROVE', 'GENERAL_CANCEL', 'LEAD_NAME', 'SAVE_TO_CONTACTS', 'SAVE_LEAD']).subscribe(values => {
-            this.translations = values;
-          });
     };
 
     public updateLog(refresherEvent?: any) {
@@ -107,8 +104,27 @@ export class CallLogPage {
 
     }
 
-    public async addLead(lead: Lead) {
+    public async addLead(lead?: Lead) {
+        if (!lead){
+            lead = new Lead("","");
+        }
+        else if (lead.name){
+            this.gotoLeadCreatePage(lead);
+            return;
+        }
 
+        let modal = await this.modalCtrl.create({
+            component: LeadSaveContactPage,
+            componentProps: { lead: lead }
+        });
+        modal.present();
+        modal.onDidDismiss().then(value => {
+            if (value && value.data && value.data.lead){
+                lead.name = value.data.lead.name;
+                lead.phone = value.data.lead.phone;
+                this.gotoLeadCreatePage(lead);
+            }
+        });
     }
 
     private async gotoLeadCreatePage(lead: Lead) {

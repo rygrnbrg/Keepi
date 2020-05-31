@@ -47,7 +47,9 @@ ion-list-header.list-header {
   text-align: right;
   border-top: none;
 }
-
+.fixed-rtl-form-label {
+  min-width: 80px;
+}
 .pad-left-right {
   padding-left: $content-padding * 2;
   padding-right: $content-padding * 2;
