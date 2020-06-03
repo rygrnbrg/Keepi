@@ -144,7 +144,7 @@ export class SettingsPage {
     loading.present();
     return this.user.removeSetting(this.currentLeadProperty, item.name).then(() => {
       loading.dismiss();
-      this.removeFromView(name);
+      this.removeFromView(item);
     });
   }
 
@@ -175,7 +175,6 @@ export class SettingsPage {
           name: 'item',
           placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]}${this.translations[singleKey]}`,
           value: this.newItemName,
-
         },
       ],
       buttons: [
@@ -188,10 +187,10 @@ export class SettingsPage {
         {
           text: this.translations.GENERAL_APPROVE,
           handler: async data => {
-            if (!data.item) {
+            if (!data.item && !data.item.length) {
               return;
             }
-            this.addItem(this.newItemName);
+            this.addItem(data.item);
           }
         }]
     });

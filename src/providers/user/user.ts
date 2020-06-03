@@ -22,7 +22,6 @@ export interface Area extends UserSetting {
 @Injectable()
 export class User {
   private _user: firebase.User;
-  private _settingsRefs: { [leadProp: string]: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>; } = {};
   private _settingsDocs: { [leadProp: string]: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>; } = {};
   private _settings: { [leadProp: string]: UserSetting[]; } = {};
   public serverSettings: LeadProperty[] = [LeadProperty.area, LeadProperty.property, LeadProperty.source];
@@ -120,25 +119,38 @@ export class User {
     var docs = (await collectionRef).docs;
     docs.forEach(doc => {
       this._settingsDocs[doc.data()["name"]] = doc;
-      let options: string[] = doc.data()["options"];
-      this._settings[doc.data()["name"]] = options.map(x => { return { name: x } });
+      let data = doc.data();
+      let options: string[] = data["options"];
+      let propName: string = data["name"];
+      this._settings[propName] = options.map(x => { return { name: x } });
+      this._settingsDocs[propName] = doc;
     });
   }
 
   public addSetting(prop: LeadProperty, value: string): Promise<void> {
     let setting: UserSetting = { name: value };
-    let ref = this._settingsRefs[prop];
-    return ref.where("name", "==", value).get().then((querySnapshot) => {
-      if (querySnapshot.size == 0) {
-        return ref.add(setting);
+    let doc = this._settingsDocs[prop];
+    return doc.ref.get().then((result) => {
+      let data = result.data();
+      let options: string[] = data["options"];
+      let foundOptionIndex = options.indexOf(value);
+      if (foundOptionIndex === -1) {
+        options.push(value);
+        doc.ref.update({ "options": options });
       }
     }).then(() => this.initSetting(prop));
   }
 
   public removeSetting(prop: LeadProperty, value: string): Promise<void> {
-    return this._settingsRefs[prop].where("name", "==", value).get().then((querySnapshot) => {
-      if (querySnapshot.size > 0) {
-        return querySnapshot.docs[0].ref.delete();
+    let setting: UserSetting = { name: value };
+    let doc = this._settingsDocs[prop];
+    return doc.ref.get().then((result) => {
+      let data = result.data();
+      let options: string[] = data["options"];
+      let foundOptionIndex = options.indexOf(value);
+      if (foundOptionIndex !== -1) {
+        options.splice(foundOptionIndex, 1);
+        doc.ref.update({ "options": options });
       }
     }).then(() => this.initSetting(prop));
   }
