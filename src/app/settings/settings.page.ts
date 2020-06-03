@@ -12,14 +12,14 @@ import { LeadProperty } from 'src/models/LeadProperty';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss']
 })
-export class SettingsPage{
-  public items : UserSetting[];
-  public userData: UserData;  
+export class SettingsPage {
+  public items: UserSetting[];
+  public userData: UserData;
   private translations: any;
   private newItemName: string;
   public multivalueMetadataEditableSettings: EditableSetting[];
   public form: FormGroup;
-
+  private currentLeadProperty: LeadProperty;
   page: string = 'main';
   pageTitleKey: string = 'SETTINGS_TITLE';
   pageTitle: string;
@@ -36,46 +36,51 @@ export class SettingsPage{
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
     private router: Router) {
-      this.multivalueMetadataEditableSettings = [
-        {name: "areas", key: "AREAS"} ,
-        {name: "propertyTypes", key: "PROPERTY_TYPES"} ,
-        {name: "sources", key: "SOURCES"} 
-      ];
+    this.multivalueMetadataEditableSettings = [
+      { name: "areas", key: "AREAS" },
+      { name: "propertyTypes", key: "PROPERTY_TYPES" },
+      { name: "sources", key: "SOURCES" }
+    ];
 
-      let translations = [
-        'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
-        'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER','GENERAL_ACTION_ERROR',
-        'SETTINGS_ITEM_ADD_SUCCESS'];
+    let translations = [
+      'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
+      'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR',
+      'SETTINGS_ITEM_ADD_SUCCESS'];
 
-      this.multivalueMetadataEditableSettings.forEach(x=> translations.push(x.key + "_SINGLE"));
+    this.multivalueMetadataEditableSettings.forEach(x => translations.push(x.key + "_SINGLE"));
 
-      this.translate.get(translations).subscribe(values => {
-          this.translations = values;
-        });
+    this.translate.get(translations).subscribe(values => {
+      this.translations = values;
+    });
 
 
-        this.route.queryParams.subscribe(params => {  
-          this.page = params.page || this.page;
-          this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
-    
-          this.translate.get(this.pageTitleKey).subscribe((res) => {
-            this.pageTitle = res;
-          });
-        });
+    this.route.queryParams.subscribe(params => {
+      this.page = params.page || this.page;
+      this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
+
+      this.translate.get(this.pageTitleKey).subscribe((res) => {
+        this.pageTitle = res;
+      });
+    });
   }
 
- 
+
 
   _buildForm() {
-    
+
     this.userData = this.user.getUserData();
     switch (this.page) {
       case 'main':
         break;
-      case 'areas':
-        this.items = this.userData.settings[LeadProperty.area];
-        break;
+      case 'areas': this.initSettingsPage(LeadProperty.area); break;
+      case 'propertyTypes': this.initSettingsPage(LeadProperty.property); break;
+      case 'sources': this.initSettingsPage(LeadProperty.source); break;
     }
+  }
+
+  initSettingsPage(prop: LeadProperty) {
+    this.currentLeadProperty = prop;
+    this.items = this.userData.settings[prop];
   }
 
   ionViewDidLoad() {
@@ -89,15 +94,15 @@ export class SettingsPage{
     this._buildForm();
   }
 
-  public gotoSettingsPage(setting: EditableSetting){
-    this.router.navigate(["settings"], 
-    { 
-      queryParams: {
-        page: setting.name,
-        pageTitleKey: 'SETTINGS_' + setting.key
-      }
-    });
-}
+  public gotoSettingsPage(setting: EditableSetting) {
+    this.router.navigate(["settings"],
+      {
+        queryParams: {
+          page: setting.name,
+          pageTitleKey: 'SETTINGS_' + setting.key
+        }
+      });
+  }
 
 
   ngOnChanges() {
@@ -110,7 +115,7 @@ export class SettingsPage{
 
   public async confirmItemRemove(setting: EditableSetting, item: UserSetting) {
     let singleKey = `${setting.key}_SINGLE`;
-    let message =   `${this.translations['SETTINGS_ITEM_DELETE_CONFIRM']}${this.translations[singleKey]}`;
+    let message = `${this.translations['SETTINGS_ITEM_DELETE_CONFIRM']}${this.translations[singleKey]}`;
     message += ` "${item.name}"?`;
     const prompt = await this.alertCtrl.create({
       message: message,
@@ -125,15 +130,7 @@ export class SettingsPage{
         {
           text: this.translations.GENERAL_APPROVE,
           handler: data => {
-            switch (setting.name) {
-              case "areas":
-                  this.removeArea(item);    
-                break;
-            
-              default:
-                break;
-            }
-
+            this.removeItem(item)
           },
           cssClass: 'primary'
         }
@@ -142,35 +139,35 @@ export class SettingsPage{
     prompt.present();
   }
 
-  private async removeArea(area: Area): Promise<void>{
+  private async removeItem(item: UserSetting): Promise<void> {
     let loading = await this.loadingCtrl.create();
     loading.present();
-    return this.user.removeSetting(LeadProperty.area, area.name).then(()=>{
+    return this.user.removeSetting(this.currentLeadProperty, item.name).then(() => {
       loading.dismiss();
-      this.removeFromView(area);
+      this.removeFromView(name);
     });
   }
 
-  private async addArea(area: string){
+  private async addItem(name: string) {
     let loading = await this.loadingCtrl.create();
     loading.present();
-    this.user.addSetting(LeadProperty.area, area).then(()=>{
-      this.items = this.user.getUserData().settings[LeadProperty.area];
+    this.user.addSetting(this.currentLeadProperty, name).then(() => {
+      this.items = this.user.getUserData().settings[this.currentLeadProperty];
       loading.dismiss();
-      this.showToast(`"${area}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
-    }, ()=>{            
+      this.showToast(`"${name}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
+    }, () => {
       this.showToast(this.translations.GENERAL_ACTION_ERROR);
     });//todo:handle error
   }
 
-  private removeFromView(item: UserSetting){
-    this.items.splice(this.items.indexOf(item), 1);   
+  private removeFromView(setting: UserSetting) {
+    this.items.splice(this.items.indexOf(setting), 1);
   }
 
   public async addItemModal(setting: EditableSetting) {
     let singleKey = `${setting.key}_SINGLE`;
     this.newItemName = "";
-   
+
     const prompt = await this.alertCtrl.create({
       header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations[singleKey]}`,
       inputs: [
@@ -190,21 +187,13 @@ export class SettingsPage{
         },
         {
           text: this.translations.GENERAL_APPROVE,
-          handler: async data => {            
-            if (!data.item){
+          handler: async data => {
+            if (!data.item) {
               return;
             }
-
-            switch (setting.name) {
-              case "areas":
-                   this.addArea(data.item);
-                break;         
-              default:
-                break;
-            }
+            this.addItem(this.newItemName);
           }
-        }
-      ]
+        }]
     });
     prompt.present();
   }
@@ -219,7 +208,7 @@ export class SettingsPage{
   }
 }
 
-export class EditableSetting{
+export class EditableSetting {
   public name: string;
   public key: string;
 }

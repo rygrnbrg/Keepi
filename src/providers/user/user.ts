@@ -23,6 +23,7 @@ export interface Area extends UserSetting {
 export class User {
   private _user: firebase.User;
   private _settingsRefs: { [leadProp: string]: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>; } = {};
+  private _settingsDocs: { [leadProp: string]: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>; } = {};
   private _settings: { [leadProp: string]: UserSetting[]; } = {};
   public serverSettings: LeadProperty[] = [LeadProperty.area, LeadProperty.property, LeadProperty.source];
   public staticSettings: LeadProperty[] = [LeadProperty.rooms, LeadProperty.meters];
@@ -105,7 +106,7 @@ export class User {
     });
   }
 
-  private initSetting(leadProp: LeadProperty): Promise<void> {
+  private async initSetting(leadProp: LeadProperty): Promise<void> {
     if (!this._user) {
       return Promise.resolve();
     }
@@ -114,16 +115,13 @@ export class User {
     let collectionRef = firebase.firestore()
       .collection("users")
       .doc(this._user.email)
-      .collection(leadProp);//.orderBy("name", "asc");
-    this._settingsRefs[leadProp] = collectionRef;
-
-
-    return collectionRef.get().then(result => {
-      this._settings[leadProp] = [];
-      result.docs.forEach(x => {
-        this._settings[leadProp].push({ name: x.data().name });
-      });
-      this._settings[leadProp] = this._settings[leadProp].sort((a, b) => a.name >= b.name ? 1 : -1);
+      .collection("leadOptions")
+      .get();
+    var docs = (await collectionRef).docs;
+    docs.forEach(doc => {
+      this._settingsDocs[doc.data()["name"]] = doc;
+      let options: string[] = doc.data()["options"];
+      this._settings[doc.data()["name"]] = options.map(x => { return { name: x } });
     });
   }
 
