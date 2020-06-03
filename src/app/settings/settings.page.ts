@@ -45,7 +45,7 @@ export class SettingsPage {
     let translations = [
       'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
       'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR',
-      'SETTINGS_ITEM_ADD_SUCCESS'];
+      'SETTINGS_ITEM_ADD_SUCCESS','GENERAL_ALREADY_EXISTS_IN_LIST', 'GENERAL_TO_ADD'];
 
     this.multivalueMetadataEditableSettings.forEach(x => translations.push(x.key + "_SINGLE"));
 
@@ -115,7 +115,7 @@ export class SettingsPage {
 
   public async confirmItemRemove(setting: EditableSetting, item: UserSetting) {
     let singleKey = `${setting.key}_SINGLE`;
-    let message = `${this.translations['SETTINGS_ITEM_DELETE_CONFIRM']}${this.translations[singleKey]}`;
+    let message = `${this.translations['SETTINGS_ITEM_DELETE_CONFIRM']} ${this.translations[singleKey]}`;
     message += ` "${item.name}"?`;
     const prompt = await this.alertCtrl.create({
       message: message,
@@ -149,6 +149,11 @@ export class SettingsPage {
   }
 
   private async addItem(name: string) {
+    if (this.items.find(x=> x.name === name)){
+      this.showToast(`"${name}" ${this.translations.GENERAL_ALREADY_EXISTS_IN_LIST}`);
+      return;
+    }
+
     let loading = await this.loadingCtrl.create();
     loading.present();
     this.user.addSetting(this.currentLeadProperty, name).then(() => {
@@ -169,11 +174,11 @@ export class SettingsPage {
     this.newItemName = "";
 
     const prompt = await this.alertCtrl.create({
-      header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations[singleKey]}`,
+      // header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations[singleKey]}`,
       inputs: [
         {
           name: 'item',
-          placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]}${this.translations[singleKey]}`,
+          placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]} ${this.translations[singleKey]} ${this.translations["GENERAL_TO_ADD"]}`,
           value: this.newItemName,
         },
       ],
