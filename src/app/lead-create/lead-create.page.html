@@ -39,9 +39,9 @@
             </ion-button>
           </ion-col>
         </ion-row>
-        <ion-row [hidden]="activeSlide !== i">
+        <ion-row *ngIf="slide.type === leadPropertyType.Budget" >
           <ion-col size="12" dir="ltr">
-            <budget-slider *ngIf="slide.type === leadPropertyType.Budget" [dealType]="dealType" [value]="this.resultLead.budget"
+            <budget-slider [dealType]="dealType" [value]="this.resultLead.budget"
               (valueChanged)="setBudget(slide, $event)" (customValueSelected)="setBudgetButton(slide, $event)"></budget-slider>
           </ion-col>
         </ion-row>

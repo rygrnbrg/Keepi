@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { User, Settings } from '../../providers';
 import { Router, ActivatedRoute } from '@angular/router';
+import { LeadProperty } from 'src/models/LeadProperty';
 
 @Component({
   selector: 'app-settings',
@@ -72,7 +73,7 @@ export class SettingsPage{
       case 'main':
         break;
       case 'areas':
-        this.items = this.userData.areas;
+        this.items = this.userData.settings[LeadProperty.area];
         break;
     }
   }
@@ -144,7 +145,7 @@ export class SettingsPage{
   private async removeArea(area: Area): Promise<void>{
     let loading = await this.loadingCtrl.create();
     loading.present();
-    return this.user.removeArea(area).then(()=>{
+    return this.user.removeSetting(LeadProperty.area, area.name).then(()=>{
       loading.dismiss();
       this.removeFromView(area);
     });
@@ -153,8 +154,8 @@ export class SettingsPage{
   private async addArea(area: string){
     let loading = await this.loadingCtrl.create();
     loading.present();
-    this.user.addArea(area).then(()=>{
-      this.items = this.user.getUserData().areas;
+    this.user.addSetting(LeadProperty.area, area).then(()=>{
+      this.items = this.user.getUserData().settings[LeadProperty.area];
       loading.dismiss();
       this.showToast(`"${area}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
     }, ()=>{            

@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadType, LeadTypeID } from 'src/models/lead-property-metadata';
@@ -8,7 +8,8 @@ import { LeadsProvider } from 'src/providers/leads/leads';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController, IonSlides, NavController, NavParams, ModalController } from '@ionic/angular';
 import { User } from 'src/providers';
-import { Location } from '@angular/common';
+import { LeadProperty } from 'src/models/LeadProperty';
+
 
 @Component({
     selector: 'app-lead-create',
@@ -43,7 +44,8 @@ export class LeadCreatePage implements OnInit {
         private toastCtrl: ToastController,
         private navCtrl: NavController,
         private navParams: NavParams,
-        private modalCtrl: ModalController
+        private modalCtrl: ModalController,
+        private router: Router
     ) {
         this.translate.get([
             'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
@@ -122,7 +124,7 @@ export class LeadCreatePage implements OnInit {
 
     private updateAreas() {
         this.leadPropertiesMetadata.find(x => x.id == 'area').options =
-            this.leadPropertyMetadataProvider.getAreasOptions();
+            this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
     }
 
     public addMetersSlide(index: number) {
@@ -146,7 +148,7 @@ export class LeadCreatePage implements OnInit {
 
         if (slide.id === 'type') {
             this.resultLead.type = button.id;
-            this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.item.type);
+            this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.resultLead.type);
         }
 
         if (slide.type === LeadPropertyType.StringSingleValue) {
@@ -202,12 +204,12 @@ export class LeadCreatePage implements OnInit {
 
                         let loading = await this.loadingCtrl.create();
                         loading.present()
-                        this.user.addArea(data.area).then(() => {
-                            let areasOptions = this.leadPropertyMetadataProvider.getAreasOptions();
+                        this.user.addSetting(LeadProperty.area, data.area).then(() => {
+                            let areasOptions = this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
                             let newOption = areasOptions.find(x => x.title == data.area);
                             newOption.selected = true;
                             this.leadPropertiesMetadata.find(x => x.id == 'area').options.unshift(newOption);
-                            this.user.getUserData().areas;
+                            this.user.getUserData().settings[LeadProperty.area];
                             loading.dismiss();
                         }, () => {
                             this.showToast(this.translations.GENERAL_ACTION_ERROR);
@@ -229,7 +231,9 @@ export class LeadCreatePage implements OnInit {
         this.resultLead.meters = this.getSimpleSlideValue("meters");
         this.leads.add(this.resultLead).then(() => {
             loading.dismiss();
-            this.navCtrl.navigateRoot(["TabsPage", { tab: "LeadsPage", params: { leadType: new LeadType(this.resultLead.type) } }]);
+            this.router.navigateByUrl("tabs/tab2", { queryParams: { leadType: this.resultLead.type } }); //todo: fix
+            this.navCtrl.navigateRoot(["tabs/tab2"]);
+            this.modalCtrl.dismiss();
         });
     }
 

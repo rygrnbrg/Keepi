@@ -38,7 +38,7 @@
   <ion-list>
     <leads-list [hidden]="activeFilters || !leads" [leads]="leads" [showOnlyRelevant]="relevantOnly" [showClientSearch]="false" [showLeadCount]="true"
       (itemClicked)="openLeadDetails($event)"></leads-list>
-    <leads-list [hidden]="!activeFilters" [leads]="leadsSearchResults" (itemClicked)="itemClicked($event)" [showLeadCount]="true"></leads-list>
+    <leads-list [hidden]="!activeFilters" [leads]="leadsSearchResults" (itemClicked)="openLeadDetails($event)" [showLeadCount]="true"></leads-list>
   </ion-list>
 </ion-content>
 

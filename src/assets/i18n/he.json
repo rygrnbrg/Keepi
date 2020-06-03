@@ -129,6 +129,8 @@
   "TYPE_SMS_PLACEHOLDER": "כתוב הודעה...",
   "SMS_MESSAGE_WILL_BE_SENT_TO": "הודעתך תישלח ל",
   "CONTACTS": "אנשי קשר",
+  "CONTACT_SAVED_SUCCESS": "איש הקשר נשמר בהצלחה",
+  "CONTACT_SAVED_ERROR": "אירעה תקלה, איש הקשר לא נשמר במכשירך",
   "MESSAGE_PAGE_TITLE": "שליחת מסרון",
   "COMMENT_PAGE_TITLE": "הוספת הערה",
   "ADD_COMMENT_ACTION": "הוסף הערה",

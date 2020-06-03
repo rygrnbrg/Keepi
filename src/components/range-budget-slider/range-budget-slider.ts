@@ -1,13 +1,14 @@
 import { DealType } from './../../models/lead-property-metadata';
-import { Input, Output, EventEmitter } from "@angular/core";
+import { Input, Output, EventEmitter, OnInit } from "@angular/core";
 import { Component } from "@angular/core";
 import { Settings } from "../../providers";
 
 @Component({
   selector: 'range-budget-slider',
-  templateUrl: 'range-budget-slider.html'
+  templateUrl: 'range-budget-slider.html',
+  styleUrls: ['range-budget-slider.scss']
 })
-export class RangeBudgetSliderComponent {
+export class RangeBudgetSliderComponent implements OnInit  {
   @Input() public value: rangeValue;
   @Input() public minMaxValues: rangeValue;
   @Input() public dealType: number;
@@ -20,7 +21,7 @@ export class RangeBudgetSliderComponent {
 
   @Output() valueChanged = new EventEmitter<rangeValue>();
 
-  constructor(private settings: Settings) {
+  constructor() {
 
   }
 
@@ -30,7 +31,7 @@ export class RangeBudgetSliderComponent {
       this.scaleFactor = 100000;
     }
     else {
-      this.scaleFactor = 100;
+      this.scaleFactor = 200;
     }
     this.initValue();
     this.sliderMinMaxValue = this.actualToRangeValue(this.minMaxValues);
@@ -43,8 +44,8 @@ export class RangeBudgetSliderComponent {
     this.sliderValue = this.actualToRangeValue(this.value);
   }
 
-  public onSliderChange(ionRange: any) {
-    this.sliderValue = ionRange.value;
+  public onSliderChange(ionRange: CustomEvent) {
+    this.sliderValue = ionRange.detail.value;
     this.value = this.rangeValueToActual(this.sliderValue);
     this.onValueChange();
   }

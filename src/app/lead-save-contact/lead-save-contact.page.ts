@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NavParams, ModalController, Platform } from '@ionic/angular';
+import { NavParams, ModalController, Platform, ToastController } from '@ionic/angular';
 import { Lead } from 'src/models/lead';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Contact, Contacts, ContactName, ContactField } from '@ionic-native/contacts/ngx';
 import { LeadCreatePage } from '../lead-create/lead-create.page';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-lead-save-contact',
@@ -17,24 +18,31 @@ export class LeadSaveContactPage implements OnInit {
   public leadPhone: string;
   public saveToContacts: boolean;
   public phoneDisabled: boolean;
-
+  private translations: any;
   constructor(
     private navParams: NavParams,
     private modalCtrl: ModalController,
     private androidPermissions: AndroidPermissions,
     private platform: Platform,
-    private contacts: Contacts
+    private contacts: Contacts,
+    private toastCtrl: ToastController,
+    private translateService: TranslateService
   ) {
     this.item = this.navParams.get("lead");
-    if (this.item.phone){
+    if (this.item.phone) {
       this.phoneDisabled = true;
-      this.leadPhone = this.item.phone;      
+      this.leadPhone = this.item.phone;
     }
-    else{
+    else {
       this.phoneDisabled = false;
     }
 
     this.saveToContacts = true;
+
+    this.translateService.get([
+      'CONTACT_SAVED_SUCCESS', 'CONTACT_SAVED_ERROR',]).subscribe(values => {
+        this.translations = values;
+      });
   }
 
   public closePage() {
@@ -42,8 +50,8 @@ export class LeadSaveContactPage implements OnInit {
   }
 
   public submit() {
-    if (!this.leadName || !this.leadPhone){
-      return; 
+    if (!this.leadName || !this.leadPhone) {
+      return;
     }
 
     if (this.saveToContacts) {
@@ -58,19 +66,21 @@ export class LeadSaveContactPage implements OnInit {
 
   private async gotoLeadCreatePage(lead: Lead) {
     let modal = await this.modalCtrl.create({
-        component: LeadCreatePage,
-        componentProps: { lead: lead }
+      component: LeadCreatePage,
+      componentProps: { lead: lead }
     });
     modal.present();
     modal.onDidDismiss().then(value => {
 
     });
-}
+  }
 
   private getPremissionAndSaveContact() {
     if (this.platform.is("cordova")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_CONTACTS).then(
         result => {
+          console.log('Check permission?', result.hasPermission);
+
           if (result.hasPermission) {
             this.saveContact();
             return;
@@ -93,19 +103,35 @@ export class LeadSaveContactPage implements OnInit {
     contact.name = new ContactName(null, this.leadName);
     contact.phoneNumbers = [new ContactField('mobile', this.leadPhone)];
     contact.save().then(
-      () => console.log('Contact saved!', contact),
-      (error: any) => console.error('Error saving contact.', error)
+      () => {
+        console.log('Contact saved!', contact);
+        this.showToast(this.translations.CONTACT_SAVED_SUCCESS);
+      },
+      (error: any) => {
+        console.error('Error saving contact.', error);
+        this.showToast(this.translations.CONTACT_SAVED_ERROR);
+
+      }
     );
   }
 
   private requestUserWriteContactPermission(): Promise<boolean> {
-    return this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(requestResult => {
-      console.log('Request permission?', requestResult.hasPermission)
+    return this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_CONTACTS).then(requestResult => {
+      console.log('Request permission?', requestResult.hasPermission);
       return requestResult.hasPermission;
     });
   }
 
   ngOnInit() {
+  }
+
+  private async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'top'
+    });
+    toast.present();
   }
 
 }

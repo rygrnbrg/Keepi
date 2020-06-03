@@ -1,4 +1,4 @@
-<ion-list-header *ngIf="showLeadCount && filteredLeads">
+<ion-list-header *ngIf="showLeadCount && filteredLeads && filteredLeads.length">
   {{'GENERAL_FOUND' | translate}} {{filteredLeads.length}} {{'GENERAL_RESULTS' | translate}}
   <!-- <button (click)="export()">export</button> -->
 </ion-list-header>

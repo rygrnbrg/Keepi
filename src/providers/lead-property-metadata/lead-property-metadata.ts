@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
 import * as _ from "lodash";
 import { User } from '../../providers';
+import { LeadProperty } from 'src/models/LeadProperty';
 
 @Injectable()
 export class LeadPropertyMetadataProvider {
@@ -11,11 +12,11 @@ export class LeadPropertyMetadataProvider {
   public static relevanceKey = "relevant";
   public static commentKey = "comment";
 
-  constructor(    
+  constructor(
     private user: User) {
     this.properties = [
       {
-        id: 'type',
+        id: LeadProperty.type,
         title: 'סוג עסקה',
         description: 'מעוניין ב',
         options: [
@@ -30,7 +31,7 @@ export class LeadPropertyMetadataProvider {
         mandatory: true
       },
       {
-        id: 'property',
+        id: LeadProperty.property,
         title: 'סוג הנכס',
         description: 'סוג הנכס',
         options: [
@@ -54,7 +55,7 @@ export class LeadPropertyMetadataProvider {
         filterable: true
       },
       {
-        id: 'rooms',
+        id: LeadProperty.rooms,
         title: 'חדרים',
         description: 'מספר חדרים מבוקש',
         options: [
@@ -63,14 +64,15 @@ export class LeadPropertyMetadataProvider {
           new PropertyOption("3"),
           new PropertyOption("4"),
           new PropertyOption("5"),
-          new PropertyOption("יותר מ-5")
+          new PropertyOption("6"),
+          new PropertyOption("יותר מ-6")
         ],
         icon: 'people',
         type: LeadPropertyType.StringSingleValue,
         filterable: true
       },
       {
-        id: 'meters',
+        id: LeadProperty.meters,
         title: 'מטרים',
         description: 'שטח מבוקש במטרים',
         options: [
@@ -78,6 +80,7 @@ export class LeadPropertyMetadataProvider {
           new PropertyOption("50 - 100"),
           new PropertyOption("100 - 200"),
           new PropertyOption("200 - 500"),
+          new PropertyOption("500 - 1,000"),
           new PropertyOption("יותר מ-500")
         ],
         icon: 'code',
@@ -86,7 +89,7 @@ export class LeadPropertyMetadataProvider {
         hidden: true
       },
       {
-        id: 'budget',
+        id: LeadProperty.budget,
         title: 'תקציב',
         description: 'תקציב בשקלים',
         icon: 'cash',
@@ -94,16 +97,16 @@ export class LeadPropertyMetadataProvider {
         filterable: false
       },
       {
-        id: 'area',
+        id: LeadProperty.area,
         title: 'אזור',
         description: 'האזור המבוקש',
-        options: this.getAreasOptions(),
+        options: this.getOptions(LeadProperty.area),
         icon: 'map',
         type: LeadPropertyType.StringMultivalue,
         filterable: true
       },
       {
-        id: 'source',
+        id: LeadProperty.source,
         title: 'מקור',
         description: 'מאיפה הליד הגיע אלינו?',
         options: [
@@ -121,13 +124,13 @@ export class LeadPropertyMetadataProvider {
     ];
   }
 
-  get(): LeadPropertyMetadata[] {
+  public get(): LeadPropertyMetadata[] {
     let copy: LeadPropertyMetadata[] = [];
     this.properties.forEach(prop => copy.push(_.cloneDeep(prop)));
     return copy;
   }
 
-  getDealType(properties: LeadPropertyMetadata[]): DealType {
+  public getDealType(properties: LeadPropertyMetadata[]): DealType {
     let typeProperty = properties.find(prop => prop.id === "type");
 
     if (typeProperty) {
@@ -141,7 +144,7 @@ export class LeadPropertyMetadataProvider {
     return DealType.Sell;
   }
 
-  getDealTypeByLeadType(leadTypeId: LeadTypeID): DealType {
+  public getDealTypeByLeadType(leadTypeId: LeadTypeID): DealType {
     if (leadTypeId === LeadTypeID.Buyer || leadTypeId === LeadTypeID.Seller) {
       return DealType.Sell
     }
@@ -149,9 +152,11 @@ export class LeadPropertyMetadataProvider {
     return DealType.Rent;
   }
 
-  getAreasOptions(): PropertyOption[]{
-    let userData = this.user.getUserData();
-    return userData? userData.areas.map(x=> new PropertyOption(x.name)): [];
+  public getOptions(prop: LeadProperty): PropertyOption[] {
+    return this.user.getUserData().settings[prop].map(x => new PropertyOption(x.name));
+  }
+
+  private getPropertyOptions(prop: LeadProperty) {
+
   }
 }
-
