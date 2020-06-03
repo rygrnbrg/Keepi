@@ -5,6 +5,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Contact, Contacts, ContactName, ContactField } from '@ionic-native/contacts/ngx';
 import { LeadCreatePage } from '../lead-create/lead-create.page';
 import { TranslateService } from '@ngx-translate/core';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Component({
   selector: 'app-lead-save-contact',
@@ -19,6 +20,7 @@ export class LeadSaveContactPage implements OnInit {
   public saveToContacts: boolean;
   public phoneDisabled: boolean;
   private translations: any;
+  private SAVE_CONTACT_CB_VALUE:string = "SAVE_CONTACT_CB_VALUE";
   constructor(
     private navParams: NavParams,
     private modalCtrl: ModalController,
@@ -26,7 +28,8 @@ export class LeadSaveContactPage implements OnInit {
     private platform: Platform,
     private contacts: Contacts,
     private toastCtrl: ToastController,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private nativeStorage: NativeStorage
   ) {
     this.item = this.navParams.get("lead");
     if (this.item.phone) {
@@ -43,6 +46,8 @@ export class LeadSaveContactPage implements OnInit {
       'CONTACT_SAVED_SUCCESS', 'CONTACT_SAVED_ERROR',]).subscribe(values => {
         this.translations = values;
       });
+
+      this.getCheckboxState().then(x=> this.saveToContacts = x);
   }
 
   public closePage() {
@@ -99,6 +104,7 @@ export class LeadSaveContactPage implements OnInit {
   }
 
   private saveContact() {
+    this.setCheckboxState();
     let contact: Contact = this.contacts.create();
     contact.name = new ContactName(null, this.leadName);
     contact.phoneNumbers = [new ContactField('mobile', this.leadPhone)];
@@ -113,6 +119,14 @@ export class LeadSaveContactPage implements OnInit {
 
       }
     );
+  }
+
+  private setCheckboxState(){
+    this.nativeStorage.setItem(this.SAVE_CONTACT_CB_VALUE, this.saveToContacts);
+  }
+
+  private async getCheckboxState() {
+    return await this.nativeStorage.getItem(this.SAVE_CONTACT_CB_VALUE);
   }
 
   private requestUserWriteContactPermission(): Promise<boolean> {

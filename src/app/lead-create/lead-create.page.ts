@@ -27,7 +27,6 @@ export class LeadCreatePage implements OnInit {
     public slideOpts: any = {};
     public activeSlide = 0;
     public isSummarySlide = false;
-    private newAreaName: string;
     private translations: any;
     private activeSlideValid: boolean;
 
@@ -49,7 +48,7 @@ export class LeadCreatePage implements OnInit {
     ) {
         this.translate.get([
             'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
-            'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR']).subscribe(values => {
+            'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD']).subscribe(values => {
                 this.translations = values;
             });
         this.item = this.navParams.get("lead");
@@ -178,47 +177,37 @@ export class LeadCreatePage implements OnInit {
     }
 
     public async addAreaModal() {
-        this.newAreaName = "";
         const prompt = await this.alertCtrl.create({
-            header: `${this.translations["SETTINGS_ITEM_ADD_TITLE"]} ${this.translations["AREAS_SINGLE"]}`,
-            inputs: [
-                {
-                    name: 'area',
-                    placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]}${this.translations["AREAS_SINGLE"]}`,
-                    value: this.newAreaName
-                },
-            ],
+            inputs: [{
+                name: 'area',
+                placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]} ${this.translations["AREAS_SINGLE"]} ${this.translations["GENERAL_TO_ADD"]}`
+            }],
             buttons: [
-                {
-                    text: this.translations.GENERAL_CANCEL,
-                    handler: data => {
-
-                    }
-                },
-                {
-                    text: this.translations.GENERAL_APPROVE,
-                    handler: async data => {
-                        if (!data.area) {
-                            return;
+                { text: this.translations.GENERAL_CANCEL },
+                { text: this.translations.GENERAL_APPROVE, handler: async data => {
+                        if (data.area) {
+                            this.addArea(data.area);
                         }
-
-                        let loading = await this.loadingCtrl.create();
-                        loading.present()
-                        this.user.addSetting(LeadProperty.area, data.area).then(() => {
-                            let areasOptions = this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
-                            let newOption = areasOptions.find(x => x.title == data.area);
-                            newOption.selected = true;
-                            this.leadPropertiesMetadata.find(x => x.id == 'area').options.unshift(newOption);
-                            this.user.getUserData().settings[LeadProperty.area];
-                            loading.dismiss();
-                        }, () => {
-                            this.showToast(this.translations.GENERAL_ACTION_ERROR);
-                        });//todo:handle error
                     }
                 }
             ]
         });
         prompt.present();
+    }
+
+    private async addArea(name: string) {
+        let loading = await this.loadingCtrl.create();
+        loading.present()
+        this.user.addSetting(LeadProperty.area, name).then(() => {
+            let areasOptions = this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
+            let newOption = areasOptions.find(x => x.title == name);
+            newOption.selected = true;
+            this.leadPropertiesMetadata.find(x => x.id == 'area').options.unshift(newOption);
+            this.user.getUserData().settings[LeadProperty.area];
+            loading.dismiss();
+        }, () => {
+            this.showToast(this.translations.GENERAL_ACTION_ERROR);
+        });//todo:handle error
     }
 
     public async submitSummary() {
