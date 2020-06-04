@@ -81,8 +81,8 @@ export class LeadsPage implements OnInit {
   private async initLeadType(): Promise<void> {
     let paramsKey = 'params';
     let leadTypeKey = 'leadType';
-
-    return await this.getFromLocalStorage(paramsKey, leadTypeKey);
+    this.selectedLeadType = this.leadTypes[0];
+    // return await this.getFromLocalStorage(paramsKey, leadTypeKey);
   }
 
   private async getFromLocalStorage(paramsKey: string, leadTypeKey: string) {
@@ -176,7 +176,7 @@ export class LeadsPage implements OnInit {
         return 0;
       }
 
-      return ((<any>b.created).toDate()).getTime() - ((<any>a.created).toDate()).getTime();
+      return ((<any>b.created)).getTime() - ((<any>a.created)).getTime();
     });
 
     return sortedLeads;

@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, IterableDiffers } from "@angular/core";
 import { Lead } from "../../models/lead";
 import { AvatarPipe } from "../../pipes/avatar/avatar";
-// import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: "leads-list",
   templateUrl: "leads-list.html",
-  providers: [AvatarPipe] //, SocialSharing]
+  providers: [AvatarPipe, SocialSharing]
 })
 export class LeadsListComponent {
   @Input()
@@ -26,53 +27,73 @@ export class LeadsListComponent {
   public leadsCount: number;
   public filteredLeads: Lead[];
   private iterableDiffer;
-  private filteredLeadsByRelevance; 
+  private filteredLeadsByRelevance;
 
-  constructor(private iterableDiffers: IterableDiffers) {//, private socialSharing: SocialSharing) {
-    this.iterableDiffer = iterableDiffers.find([]).create(null);
+  constructor(
+    private iterableDiffers: IterableDiffers,
+    private socialSharing: SocialSharing,
+    private platform: Platform) {
+    this.iterableDiffer = this.iterableDiffers.find([]).create(null);
   }
 
   ngDoCheck() {
     let changes = this.iterableDiffer.diff(this.leads);
 
     if (!changes && this.filteredLeads === this.filteredLeadsByRelevance) {
-        return;
+      return;
     }
 
-    if (this.showOnlyRelevant){
-      this.filteredLeads = this.leads.filter(x=> x.relevant);
+    if (this.showOnlyRelevant) {
+      this.filteredLeads = this.leads.filter(x => x.relevant);
       this.filteredLeadsByRelevance = true;
     }
-    else{
-      this.filteredLeads = this.leads;   
-      this.filteredLeadsByRelevance = false;  
+    else {
+      this.filteredLeads = this.leads;
+      this.filteredLeadsByRelevance = false;
     }
   }
- 
+
   public onItemClicked(item: Lead) {
     this.itemClicked.emit(item);
   }
 
-  public export(){
-    // let exports = this.filteredLeads.map(x=> this.leadExport(x));
-    // let result = exports.join("\n");
-    // this.socialSharing.canShareViaEmail().then(() => {
-    //   // Sharing via email is possible
-    //   this.socialSharing.shareViaEmail(result, 'Subject', ['recipient@example.org']).then(() => {
-        
-    //   }).catch((err) => {
-    //     alert(err)
-    //   });
+  public export() {
+    let exports = this.filteredLeads.map(x => this.leadExport(x));
+    let result = exports.map((value, i) => (i + 1).toString().concat(`. ${value}`)).join("\n\n");
+    if (this.platform.is("cordova")) {
+      this.socialSharing.canShareViaEmail().then(() => {
+        // Sharing via email is possible
+        this.socialSharing.share(result, 'Keepi - ייצוא רשימת לידים', []).then(() => {
+        }).catch((err) => {
+          console.error(err);
+        });
 
-    // }).catch((err) => {
-    //   alert(err)
-    // });
+      }).catch((err) => {
+        console.error(err);
+      });
+    }
+    else {
+      alert(result);
+    }
   }
 
-  
-  private leadExport(lead: Lead): string{
-    var result = 
-    `שם: ${lead.name} | טלפון: ${lead.phone} | תאריך יצירה: ${lead.created} | נכס: ${lead.property} | מספר חדרים: ${lead.rooms} | מקור: ${lead.source} | תקציב: ${lead.budget} | אזור: ${lead.area.join(", ")} | מטרים: ${lead.meters}`;
+
+  private leadExport(lead: Lead): string {
+    var result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${lead.created.toLocaleDateString()} \n`;
+    result += lead.property ? `נכס: ${lead.property}, ` : "";
+    result += lead.rooms ? `מספר חדרים: ${lead.rooms}, ` : "";
+    result += lead.budget ? `תקציב: ${lead.budget}, ` : "";
+    result += lead.meters ? `מטרים: ${lead.meters}, ` : "";
+    result = result.substr(0, result.length - 2);
+    result += "\n";
+
+    result += lead.area ? `אזור: ${lead.area.join("/ ")}` : "";
+    result += "\n";
+
+    result += lead.source ? `מקור: ${lead.source}, ` : "";
+
+
+    result = result.substr(0, result.length - 2);
     return result;
   }
 

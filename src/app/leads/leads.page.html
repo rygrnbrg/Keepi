@@ -4,11 +4,11 @@
     <ion-buttons slot="end">
       <ion-button (click)="cleanFilters()" [hidden]="!activeFilters">
         {{"LEADS_CLEAR_FILTERS" | translate}}
-        <ion-icon name="funnel"></ion-icon>
+        <ion-icon name="funnel" color="primary"></ion-icon>
       </ion-button>
       <ion-button (click)="filterLeadsClick()" [hidden]="activeFilters">
         {{ "GENERAL_FILTER" | translate }}
-        <ion-icon name="funnel"></ion-icon>
+        <ion-icon name="funnel" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

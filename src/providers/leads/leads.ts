@@ -18,7 +18,7 @@ import * as firebase from 'firebase/app';
 */
 @Injectable()
 export class LeadsProvider {
-  private leadsDictionary: {[id:string] : firestore.CollectionReference<firestore.DocumentData> } = {};
+  private leadsDictionary: { [id: string]: firestore.CollectionReference<firestore.DocumentData> } = {};
 
   private static standardLeadKeys = [
     "name",
@@ -42,21 +42,21 @@ export class LeadsProvider {
 
   private initLeadCollections() {
     let userData = this.user.getUserData();
-    if (!userData){
+    if (!userData) {
       return;
     }
-    
+
     LeadType.getAllLeadTypes().forEach(leadType => {
-      let leadsCollectionRef = 
-      firebase.firestore().collection("users").doc(userData.email)
-      .collection("leads_" + leadType.id.toString().toLowerCase());
+      let leadsCollectionRef =
+        firebase.firestore().collection("users").doc(userData.email)
+          .collection("leads_" + leadType.id.toString().toLowerCase());
       this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
     });
   }
 
   public get(leadTypeId: LeadTypeID): firebase.firestore.Query {
     let collectionReference = this.leadsDictionary[leadTypeId.toString()];
-    if (!collectionReference){
+    if (!collectionReference) {
       this.initLeadCollections();
     }
 
@@ -113,6 +113,11 @@ export class LeadsProvider {
     let comments = <Object[]>item[LeadPropertyMetadataProvider.commentKey];
     lead.comments = comments && comments.map ? comments.map(comment =>
       new Comment(comment["text"], comment["date"], comment["title"], comment["commentType"])) : [];
+
+    let created = item["created"];
+    if (created) {
+      lead.created = new Date(created.seconds * 1000 + created.nanoseconds / 1000);
+    }
 
     return lead;
   }

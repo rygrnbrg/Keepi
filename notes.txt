@@ -61,6 +61,10 @@ GIT
 Push:
 git push -u origin master
 
+Jetifier
+Installed only for cordova-plugin-x-socialsharing (@ionic-native/social-sharing)
+To run it automatically when dependencies are installed, add "postinstall": "jetifier" in the package.json.
+
 
 
 

@@ -1,7 +1,11 @@
-<ion-list-header *ngIf="showLeadCount && filteredLeads && filteredLeads.length">
-  {{'GENERAL_FOUND' | translate}} {{filteredLeads.length}} {{'GENERAL_RESULTS' | translate}}
-  <!-- <button (click)="export()">export</button> -->
-</ion-list-header>
+<ion-item *ngIf="showLeadCount && filteredLeads && filteredLeads.length">
+  <ion-label>
+    <p>
+      {{'GENERAL_FOUND' | translate}} {{filteredLeads.length}} {{'GENERAL_RESULTS' | translate}}
+    </p>
+  </ion-label>
+  <ion-icon name="share-social-outline" color="primary" (click)="export()" slot="end" size="small"></ion-icon>
+</ion-item>
 <ion-item *ngFor="let item of filteredLeads" (click)="onItemClicked(item)">
   <ion-avatar slot="start">
     <img [src]="item.avatar | avatar" />
@@ -12,7 +16,7 @@
   </ion-label>
 
   <ion-note slot="end" *ngIf="item.created">
-    {{item.created.toDate() | date: "dd/MM/yy"}}
+    {{item.created | date: "dd/MM/yy"}}
     <p class="not-relevant-item" [hidden]="item.relevant">
       {{ 'LEAD_RELEVANCE_STATUS_NO' | translate}}
     </p>

@@ -27,7 +27,7 @@
         </ion-list-header>
 
         <ion-item *ngFor="let setting of multivalueMetadataEditableSettings" (click)="gotoSettingsPage(setting)">
-            <ion-label color="primary">{{ 'SETTINGS_'+ setting.key | translate }}</ion-label>
+            <ion-label>{{ 'SETTINGS_'+ setting.key | translate }}</ion-label>
         </ion-item>
     </ion-list>
     <div *ngFor="let setting of multivalueMetadataEditableSettings">
