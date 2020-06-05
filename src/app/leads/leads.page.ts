@@ -23,12 +23,14 @@ import { Router, ActivatedRoute } from '@angular/router';
   selector: 'app-leads',
   templateUrl: './leads.page.html',
   styleUrls: ['./leads.page.scss'],
-  providers: [LeadsProvider, LeadPropertyMetadataProvider]
+  providers: [LeadsProvider, LeadPropertyMetadataProvider, NavParams]
 })
 
 export class LeadsPage implements OnInit {
   private subscriptions: Subscription[];
   public relevantOnly: boolean = true;
+  public isModal: boolean = false;
+  public enableFiltering = true;
   leadsDictionary: { [id: string]: firebase.firestore.DocumentData[] } = {};
   leads: firebase.firestore.DocumentData[];
   queryLeadsSearchResults: firebase.firestore.DocumentData[];
@@ -56,7 +58,8 @@ export class LeadsPage implements OnInit {
     private user: User,
     private nativeStorage: NativeStorage,
     private platform: Platform,
-    private activatedRoute: ActivatedRoute) {
+    private activatedRoute: ActivatedRoute,
+    public navParams: NavParams) {
     this.subscriptions = [];
     this.leadTypes = LeadType.getAllLeadTypes();
 
@@ -66,9 +69,24 @@ export class LeadsPage implements OnInit {
       });
     this.subscriptions.push(translationSubscription);
 
+    if (this.navParams.get("enableFiltering") === false){
+      this.enableFiltering = false;
+    }
+
+    if (this.navParams.get("isModal") === true){
+      this.isModal = true;
+    }
+
+
     this.initLeadType().then(() => {
       this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
-      this.initLeadSubscription();
+      let paramsFilters = this.navParams.get("filters");
+      if (paramsFilters){
+        this.filterLeads(paramsFilters);
+      }
+      else{
+        this.initLeadSubscription();
+      }
     });
   }
 
@@ -80,16 +98,28 @@ export class LeadsPage implements OnInit {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
+  public closePage() {
+    this.modalCtrl.dismiss({
+      'dismissed': true
+    });
+  }
+
   private async initLeadType(): Promise<void> {
+    let paramsLeadType = this.navParams.get("leadType");
+    if (paramsLeadType) {
+      this.selectedLeadType = this.leadTypes.find(x => x.id.toLowerCase() === paramsLeadType.toLowerCase())
+      return;
+    }
+
     this.activatedRoute.data.forEach(data => {
-      let paramsLeadTypeId = data.leadType;
-      if (paramsLeadTypeId){
-        this.selectedLeadType =  this.leadTypes.find(x=>x.id.toLowerCase() === paramsLeadTypeId.toLowerCase())
+      let dataLeadTypeId = data.leadType;
+      if (dataLeadTypeId) {
+        this.selectedLeadType = this.leadTypes.find(x => x.id.toLowerCase() === dataLeadTypeId.toLowerCase())
       }
-      else{
+      else {
         this.selectedLeadType = this.leadTypes[0];
       }
-    });    
+    });
   }
 
 
@@ -126,35 +156,37 @@ export class LeadsPage implements OnInit {
     modal.present();
     modal.onDidDismiss().then(async value => {
       let data: LeadFilter[] = value.data;
-
-      if (!data) {
-        return;
+      if (data) {
+        this.filterLeads(data);
       }
-      this.queryLeadsSearchResults = []
-      let filters = data.filter(item => item.value !== null);
-      if (!filters.length) {
-        this.activeFilters = null;
-        return;
-      }
-
-      this.activeFilters = filters;
-      this.filterSearchRunning = true;
-      let loading = await this.loadingCtrl.create();
-      loading.present();
-      this.leadsProvider.filter(this.activeFilters, this.selectedLeadType.id).get().then(
-        (querySnapshot) => {
-          loading.dismiss();
-          this.filterSearchRunning = false;
-          this.setBudgetMinMaxValues(querySnapshot);
-          this.setShowBudgetSlider();
-          querySnapshot.forEach(doc => {
-            let data = doc.data();
-            this.queryLeadsSearchResults.push(data);
-          });
-          this.filterLeadsByRange();
-        }
-      ).catch(reason => loading.dismiss());
     });
+  }
+
+  private async filterLeads(data: LeadFilter[]) {
+    this.queryLeadsSearchResults = []
+    let filters = data.filter(item => item.value !== null);
+    if (!filters.length) {
+      this.activeFilters = null;
+      return;
+    }
+
+    this.activeFilters = filters;
+    this.filterSearchRunning = true;
+    let loading = await this.loadingCtrl.create();
+    loading.present();
+    this.leadsProvider.filter(this.activeFilters, this.selectedLeadType.id).get().then(
+      (querySnapshot) => {
+        loading.dismiss();
+        this.filterSearchRunning = false;
+        this.setBudgetMinMaxValues(querySnapshot);
+        this.setShowBudgetSlider();
+        querySnapshot.forEach(doc => {
+          let data = doc.data();
+          this.queryLeadsSearchResults.push(data);
+        });
+        this.filterLeadsByRange();
+      }
+    ).catch(reason => loading.dismiss());
   }
 
 

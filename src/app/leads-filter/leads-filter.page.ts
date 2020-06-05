@@ -56,10 +56,11 @@ export class LeadsFilterPage {
       case LeadPropertyType.StringSingleValue:
         this.handleSingleOptionValueClick(filter, option);
         filter.value = option.selected ? option.title : null;
+        filter.selected = false;
         break;
 
       case LeadPropertyType.StringMultivalue:
-        this.handleSingleOptionValueClick(filter, option);
+        option.selected = !option.selected
         let valueResult = filter.metadata.options.filter(option => option.selected).map(option => option.title);
         filter.value = valueResult.length ? valueResult : null;
         break;
@@ -67,18 +68,13 @@ export class LeadsFilterPage {
       default:
         break;
     }
-
-    filter.selected = false;
   }
 
   public setBudget(filter: LeadFilter, value: number) {
     filter.value = value;
   }
 
-  private handleSingleOptionValueClick(
-    filter: LeadFilter,
-    option: PropertyOption
-  ) {
+  private handleSingleOptionValueClick(filter: LeadFilter, option: PropertyOption) {
     let selected = option.selected;
     filter.metadata.options.forEach(option => (option.selected = false));
     option.selected = !selected;
@@ -123,7 +119,7 @@ export class LeadsFilterPage {
     this.modalCtrl.dismiss(this.filters);
   }
 
-  public closePage(){
+  public closePage() {
     this.modalCtrl.dismiss();
   }
 }

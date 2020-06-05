@@ -180,8 +180,8 @@ export class LeadsProvider {
         filter => filter.metadata && filter.metadata.type === LeadPropertyType.StringMultivalue
       )
       .forEach(filter => {
-        if (filter.value && filter.value.length === 1) {
-          query = query.where(filter.id, "array-contains", filter.value[0]);
+        if (filter.value && filter.value.length > 0) {
+          query = query.where(filter.id, "array-contains-any", filter.value);
         }
       });
 

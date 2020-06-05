@@ -1,16 +1,21 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>{{ 'LEADS_PAGE_TITLE' | translate }}</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="enableFiltering">
       <ion-button (click)="cleanFilters()" [hidden]="!activeFilters">
         {{"LEADS_CLEAR_FILTERS" | translate}}
         <ion-icon name="funnel" color="primary"></ion-icon>
       </ion-button>
       <ion-button (click)="filterLeadsClick()" [hidden]="activeFilters">
         {{ "GENERAL_FILTER" | translate }}
-        <ion-icon name="funnel" color="primary"></ion-icon>
+        <ion-icon name="funnel" color="primary" ></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-buttons slot="end" *ngIf="isModal">
+        <ion-button (click)="closePage()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+      </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

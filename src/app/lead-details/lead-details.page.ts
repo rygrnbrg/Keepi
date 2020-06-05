@@ -1,7 +1,7 @@
 import { Contact } from './../../models/lead';
 import { LeadsProvider } from './../../providers/leads/leads';
 import { Component, OnInit } from "@angular/core";
-import { NavParams, ToastController, ModalController, AlertController, Platform } from "@ionic/angular";
+import { NavParams, ToastController, ModalController, AlertController, Platform, NavController } from "@ionic/angular";
 import { LeadPropertyMetadataProvider } from "../../providers/lead-property-metadata/lead-property-metadata";
 import { LeadPropertyMetadata, LeadPropertyType, LeadType, LeadTypeID } from "../../models/lead-property-metadata";
 import { Lead } from "../../models/lead";
@@ -18,6 +18,7 @@ import { CommentPage } from '../comment/comment.page';
 import { LeadFilter } from 'src/models/lead-filter';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { DocumentData } from '@google-cloud/firestore';
+import { LeadsPage } from '../leads/leads.page';
 
 @Component({
   selector: 'app-lead-details',
@@ -35,7 +36,7 @@ export class LeadDetailsPage implements OnInit {
   private translations: any;
   private leadPropertiesMetadata: LeadPropertyMetadata[];
   private subscriptions: Subscription[];
-
+  private potentialDealFilters: LeadFilter[];
   constructor(
     navParams: NavParams,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
@@ -47,6 +48,7 @@ export class LeadDetailsPage implements OnInit {
     private callNumber: CallNumber,
     private alertCtrl: AlertController,
     private platform: Platform,
+    private navCtrl: NavController
   ) {
     this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get();
     let item = navParams.get("item");
@@ -71,12 +73,19 @@ export class LeadDetailsPage implements OnInit {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  public potentialDealMatchesClick(){
-    if (this.dealCount <= 0){
+  public async potentialDealMatchesClick() {
+    if (this.dealCount <= 0) {
       return;
     }
 
-    
+    let modal = await this.modalCtrl.create({
+      component: LeadsPage,
+      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, isModal: true, enableFiltering: false }
+    });
+    modal.present();
+    modal.onDidDismiss().then(value => {
+
+    });
   }
 
   public async sendMessage(): Promise<void> {
@@ -236,17 +245,17 @@ export class LeadDetailsPage implements OnInit {
   }
 
   private async setPotentialDealCount() {
-    let filters: LeadFilter[];
-    filters = [
+    this.potentialDealFilters = [
       new LeadFilter(LeadProperty.property, LeadPropertyType.StringSingleValue, this.item.property),
       new LeadFilter(LeadProperty.rooms, LeadPropertyType.StringSingleValue, this.item.rooms),
-      // new LeadFilter(LeadProperty.area, LeadPropertyType.StringSingleValue, this.item.area)
+      new LeadFilter(LeadProperty.area, LeadPropertyType.StringMultivalue, this.item.area)
     ];
+
     this.dealCount = -1;
-    this.leadsProvider.filter(filters, this.oppositeLeadType).get().then(
-      (querySnapshot) => {       
+    this.leadsProvider.filter(this.potentialDealFilters, this.oppositeLeadType).get().then(
+      (querySnapshot) => {
         setTimeout(() => {
-          if (querySnapshot.size === 1){
+          if (querySnapshot.size === 1) {
             let lead = querySnapshot.docs[0].data();
             this.singleLeadMatch = lead;
           }
