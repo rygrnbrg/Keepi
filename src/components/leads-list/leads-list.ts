@@ -3,11 +3,13 @@ import { Lead } from "../../models/lead";
 import { AvatarPipe } from "../../pipes/avatar/avatar";
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { Platform } from '@ionic/angular';
+import { LeadTypePipe } from 'src/pipes/lead-type/lead-type';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: "leads-list",
   templateUrl: "leads-list.html",
-  providers: [AvatarPipe, SocialSharing]
+  providers: [AvatarPipe, SocialSharing, LeadTypePipe]
 })
 export class LeadsListComponent {
   @Input()
@@ -28,12 +30,19 @@ export class LeadsListComponent {
   public filteredLeads: Lead[];
   private iterableDiffer;
   private filteredLeadsByRelevance;
+  private translations: any;
 
   constructor(
     private iterableDiffers: IterableDiffers,
     private socialSharing: SocialSharing,
-    private platform: Platform) {
+    private platform: Platform,
+    private leadTypePipe: LeadTypePipe,
+    private translate: TranslateService) {
     this.iterableDiffer = this.iterableDiffers.find([]).create(null);
+    this.translate.get([
+      'BUYER_ACTION','SELLER_ACTION','TENANT_ACTION','LANDLORD_ACTION']).subscribe(values => {
+          this.translations = values;
+      });
   }
 
   ngDoCheck() {
@@ -79,7 +88,10 @@ export class LeadsListComponent {
 
 
   private leadExport(lead: Lead): string {
-    var result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${lead.created.toLocaleDateString()} \n`;
+    let result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${lead.created.toLocaleDateString()} \n`;
+    let leadTypeKey = this.leadTypePipe.transform(lead.type);
+    let leadTypeTranslated = this.translations[leadTypeKey];
+    result+= `מעוניין ${leadTypeTranslated} `;
     result += lead.property ? `נכס: ${lead.property}, ` : "";
     result += lead.rooms ? `מספר חדרים: ${lead.rooms}, ` : "";
     result += lead.budget ? `תקציב: ${lead.budget}, ` : "";

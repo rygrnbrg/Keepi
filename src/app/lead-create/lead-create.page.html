@@ -22,7 +22,6 @@
           </ion-col>
         </ion-row>
         <ion-row *ngIf="slide.options?.length">
-
           <ion-col size="6" *ngFor="let button of slide.options">
             <ion-button dir="ltr"  (click)="answerButtonClick(slide, button, i)" [fill]="button.selected? 'solid': 'outline'" expand="block" [color]="button.selected ? 'secondary' : 'dark'">
               {{ button.title }}
