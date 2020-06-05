@@ -25,7 +25,6 @@
     <div class="filtered-list-header" [hidden]="!activeFilters">
       <filtered-by [filters]="activeFilters"></filtered-by>
     </div>
-
     <ion-item [hidden]="activeFilters">
       <ion-label>{{'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT' | translate }}</ion-label>
       <ion-toggle [(ngModel)]="relevantOnly"></ion-toggle>

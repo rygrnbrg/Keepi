@@ -3,7 +3,7 @@ import { LeadsProvider } from './../../providers/leads/leads';
 import { Component, OnInit } from "@angular/core";
 import { NavParams, ToastController, ModalController, AlertController, Platform } from "@ionic/angular";
 import { LeadPropertyMetadataProvider } from "../../providers/lead-property-metadata/lead-property-metadata";
-import { LeadPropertyMetadata, LeadPropertyType, LeadType } from "../../models/lead-property-metadata";
+import { LeadPropertyMetadata, LeadPropertyType, LeadType, LeadTypeID } from "../../models/lead-property-metadata";
 import { Lead } from "../../models/lead";
 import { AvatarPipe } from "../../pipes/avatar/avatar";
 import { NumberFormatPipe } from "../../pipes/number-format/number-format";
@@ -15,6 +15,9 @@ import { Comment, CommentType } from '../../models/comment';
 import { firestore } from 'firebase';
 import { MessagePage } from '../message/message.page';
 import { CommentPage } from '../comment/comment.page';
+import { LeadFilter } from 'src/models/lead-filter';
+import { LeadProperty } from 'src/models/LeadProperty';
+import { DocumentData } from '@google-cloud/firestore';
 
 @Component({
   selector: 'app-lead-details',
@@ -26,13 +29,16 @@ export class LeadDetailsPage implements OnInit {
   public item: Lead;
   public properties: ItemProperty[];
   public relevant: boolean;
+  public dealCount: number;
+  public oppositeLeadType: LeadTypeID;
+  public singleLeadMatch: DocumentData;
   private translations: any;
   private leadPropertiesMetadata: LeadPropertyMetadata[];
   private subscriptions: Subscription[];
 
   constructor(
     navParams: NavParams,
-    leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
+    private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private toastCtrl: ToastController,
     private leadsProvider: LeadsProvider,
     private numberFormatPipe: NumberFormatPipe,
@@ -40,9 +46,9 @@ export class LeadDetailsPage implements OnInit {
     private modalCtrl: ModalController,
     private callNumber: CallNumber,
     private alertCtrl: AlertController,
-    private platform: Platform
+    private platform: Platform,
   ) {
-    this.leadPropertiesMetadata = leadPropertyMetadataProvider.get();
+    this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get();
     let item = navParams.get("item");
     this.loadItem(item);
     // this.refreshItem();
@@ -65,64 +71,15 @@ export class LeadDetailsPage implements OnInit {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  private loadItem(item: Lead) {
-    this.item = item;
-    this.properties = this.getProperties();
-    this.relevant = this.item.relevant;
+  public potentialDealMatchesClick(){
+    if (this.dealCount <= 0){
+      return;
+    }
+
+    
   }
 
-  private refreshItem() {
-    let promise = this.leadsProvider.getQuerySnapshotPromise(this.item);
-    promise.then((querySnapshot) => {
-      querySnapshot.forEach((x: firestore.QueryDocumentSnapshot) => {
-        let lead = this.leadsProvider.convertDbObjectToLead(x.data(), this.item.type);
-        this.loadItem(lead);
-      });
-    });
-  }
-
-  public getLeadTypeActionLabel(): string {
-    return LeadType.getAllLeadTypes().find(x => x.id == this.item.type).actionTranslation
-  }
-
-  private getProperties(): ItemProperty[] {
-    let props: ItemProperty[] = [];
-    this.leadPropertiesMetadata.filter(x => x.id !== 'type').forEach(item => {
-      props.push({
-        icon: item.icon,
-        title: item.title,
-        value: this.getPropertyString(item)
-      });
-    });
-
-    return props;
-  }
-
-  public call():void {
-    this.callNumber.callNumber(this.item.phone, true)
-      .then(res => console.log('Launched dialer!', res))
-      .catch(err => console.log('Error launching dialer', err));
-  }
-
-  public relevantChanged():void {
-    this.leadsProvider.updateLeadRelevance(this.item, this.relevant).then(() => {
-      this.item.relevant = this.relevant;
-    }).catch(() => {
-      this.showToast(this.translations.GENERAL_ACTION_ERROR);
-      this.relevant = this.item.relevant;
-    });
-  }
-
-  private async showToast(message: string): Promise<void> {
-    let toast = await this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'top'
-    });
-    toast.present();
-  }
-
-  public async sendMessage(): Promise<void>  {
+  public async sendMessage(): Promise<void> {
     let leads = [this.item];
     let contacts = leads.map((lead: Lead) => new Contact(lead.phone, lead.name));
 
@@ -143,7 +100,7 @@ export class LeadDetailsPage implements OnInit {
     });
   }
 
-  public async addNote(): Promise<void>  {
+  public async addNote(): Promise<void> {
     let modal = await this.modalCtrl.create({
       component: CommentPage,
       componentProps: { lead: this.item }
@@ -160,21 +117,6 @@ export class LeadDetailsPage implements OnInit {
         console.log("Failed to add comment");
       }
     });
-  }
-
-
-  private async addMessageSentComments(text: string): Promise<void>  {
-    let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
-
-    let convertedLead = this.leadsProvider.convertDbObjectToLead(this.item, this.item.type)
-    return await this.leadsProvider.addComment(convertedLead, comment);
-  }
-
-  public async openComment(comment: Comment) {
-    const prompt = await this.alertCtrl.create({
-      message: comment.text
-    });
-    prompt.present();
   }
 
   public getCommentTitle(comment: Comment) {
@@ -196,6 +138,75 @@ export class LeadDetailsPage implements OnInit {
     return comments.filter(x => x.commentType == CommentType.MessageSent);
   }
 
+  public closePage() {
+    this.modalCtrl.dismiss(this.item);
+  }
+
+  public getLeadTypeActionLabel(): string {
+    return LeadType.getAllLeadTypes().find(x => x.id == this.item.type).actionTranslation
+  }
+
+  public call(): void {
+    this.callNumber.callNumber(this.item.phone, true)
+      .then(res => console.log('Launched dialer!', res))
+      .catch(err => console.log('Error launching dialer', err));
+  }
+
+  public relevantChanged(): void {
+    this.leadsProvider.updateLeadRelevance(this.item, this.relevant).then(() => {
+      this.item.relevant = this.relevant;
+    }).catch(() => {
+      this.showToast(this.translations.GENERAL_ACTION_ERROR);
+      this.relevant = this.item.relevant;
+    });
+  }
+
+  private loadItem(item: Lead) {
+    this.item = item;
+    this.oppositeLeadType = this.leadPropertyMetadataProvider.getOppositeLeadType(this.item.type);
+    this.properties = this.getProperties();
+    this.relevant = this.item.relevant;
+    this.setPotentialDealCount();
+  }
+
+  private refreshItem() {
+    let promise = this.leadsProvider.getQuerySnapshotPromise(this.item);
+    promise.then((querySnapshot) => {
+      querySnapshot.forEach((x: firestore.QueryDocumentSnapshot) => {
+        let lead = this.leadsProvider.convertDbObjectToLead(x.data(), this.item.type);
+        this.loadItem(lead);
+      });
+    });
+  }
+
+  private getProperties(): ItemProperty[] {
+    let props: ItemProperty[] = [];
+    this.leadPropertiesMetadata.filter(x => x.id !== 'type').forEach(item => {
+      props.push({
+        icon: item.icon,
+        title: item.title,
+        value: this.getPropertyString(item)
+      });
+    });
+
+    return props;
+  }
+
+  private async showToast(message: string): Promise<void> {
+    let toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'top'
+    });
+    toast.present();
+  }
+
+  private async addMessageSentComments(text: string): Promise<void> {
+    let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
+
+    let convertedLead = this.leadsProvider.convertDbObjectToLead(this.item, this.item.type)
+    return await this.leadsProvider.addComment(convertedLead, comment);
+  }
 
   private getPropertyString(property: LeadPropertyMetadata): string {
     switch (property.type) {
@@ -212,13 +223,37 @@ export class LeadDetailsPage implements OnInit {
     }
   }
 
-  public closePage() {
-    this.modalCtrl.dismiss(this.item);
+  public async openComment(comment: Comment) {
+    const prompt = await this.alertCtrl.create({
+      message: comment.text
+    });
+    prompt.present();
   }
 
   private getBudget(value: number): string {
     let transform = this.numberFormatPipe.transform;
     return transform(value).toString();
+  }
+
+  private async setPotentialDealCount() {
+    let filters: LeadFilter[];
+    filters = [
+      new LeadFilter(LeadProperty.property, LeadPropertyType.StringSingleValue, this.item.property),
+      new LeadFilter(LeadProperty.rooms, LeadPropertyType.StringSingleValue, this.item.rooms),
+      // new LeadFilter(LeadProperty.area, LeadPropertyType.StringSingleValue, this.item.area)
+    ];
+    this.dealCount = -1;
+    this.leadsProvider.filter(filters, this.oppositeLeadType).get().then(
+      (querySnapshot) => {       
+        setTimeout(() => {
+          if (querySnapshot.size === 1){
+            let lead = querySnapshot.docs[0].data();
+            this.singleLeadMatch = lead;
+          }
+          this.dealCount = querySnapshot.size;
+        }, 1000);
+      }
+    ).catch();
   }
 }
 

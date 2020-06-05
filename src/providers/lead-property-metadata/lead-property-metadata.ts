@@ -1,4 +1,4 @@
-import { DealType, LeadTypeID } from './../../models/lead-property-metadata';
+import { DealType, LeadTypeID, LeadType } from './../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
 import { Injectable } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
@@ -50,7 +50,7 @@ export class LeadPropertyMetadataProvider {
           new PropertyOption("תעשייה"),
           new PropertyOption("מגרש")
         ],
-        icon: 'home',
+        icon: 'business',
         type: LeadPropertyType.StringSingleValue,
         filterable: true
       },
@@ -142,6 +142,19 @@ export class LeadPropertyMetadataProvider {
     }
 
     return DealType.Sell;
+  }
+
+  public getOppositeLeadType(leadType: LeadTypeID): LeadTypeID {
+    switch (leadType) {
+      case LeadTypeID.Buyer:
+        return LeadTypeID.Seller;
+      case LeadTypeID.Seller:
+        return LeadTypeID.Buyer;
+      case LeadTypeID.Landlord:
+        return LeadTypeID.Tenant;
+      case LeadTypeID.Tenant:
+        return LeadTypeID.Landlord;
+    }
   }
 
   public getDealTypeByLeadType(leadTypeId: LeadTypeID): DealType {

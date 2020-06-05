@@ -6,4 +6,12 @@ export class LeadFilter{
     public selected: boolean;
     public type: LeadPropertyType;
     public value: any;
+
+    constructor(id: string, filterType: LeadPropertyType, value: any){
+        this.metadata = null;
+        this.selected = false;
+        this.id = id;
+        this.type = filterType;
+        this.value = value; 
+    }
 }
