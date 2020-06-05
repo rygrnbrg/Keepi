@@ -9,10 +9,10 @@ export class NumberFormatPipe implements PipeTransform {
       return "0";
     }
     if (value >= 1000000){
-      return Math.round(value/1000000) + "M";
+      return value/1000000 + "M";
     }
     if (value >= 100000){
-      return Math.round(value/1000) + "K";
+      return value/1000 + "K";
     }  
     if (value >= 1000){
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

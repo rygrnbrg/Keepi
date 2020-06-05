@@ -3,7 +3,7 @@
   <ion-row>
     <ion-col size="12" class="swiper-no-swiping">
       <ion-label class="budget-value-label"> {{ value | numberFormat }} </ion-label>
-      <ion-range dir="ltr" dualKnobs="false" [value]="sliderValue" [max]="sliderMaxValue" [min]="sliderMinValue" step="1"
+      <ion-range dir="ltr" snaps="true" dualKnobs="false" [value]="sliderValue" [max]="sliderMaxValue" [min]="sliderMinValue" step="1"
         color="secondary" (ionChange)="onSliderChange($event)">
         <!-- <ion-label slot="start"> 1 </ion-label>
         <ion-label slot="end"> 100 </ion-label> -->

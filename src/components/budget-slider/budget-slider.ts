@@ -27,14 +27,14 @@ export class BudgetSliderComponent implements OnInit {
 
   ngOnInit() {
     var settings =  {
-      defaultBudget: 1500000,
-      minBudget: 500000,
-      maxBudget: 5000000,
-      presetBudgets: [500000, 1000000, 1500000, 2000000, 2500000, 3000000],
-      defaultRentBudget: 4000,
-      minRentBudget: 2000,
-      maxRentBudget: 10000,
-      presetRentBudgets:[3500,4000,4500,5000,5500,6000,6500,7000,8000]
+      defaultBudget: 1500_000,
+      minBudget: 500_000,
+      maxBudget: 5000_000,
+      presetBudgets: [50_0000, 1_000_000, 1_500_000, 2_000_000, 2_500_000, 3_000_000],
+      defaultRentBudget: 4_000,
+      minRentBudget: 2_000,
+      maxRentBudget: 1_0000,
+      presetRentBudgets:[3_500,4_000,4_500,5_000,5_500,6_000,6_500,7_000,8_000]
     };
 
       if (this.dealType === DealType.Sell) {
