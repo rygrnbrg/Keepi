@@ -16,6 +16,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { MessagePage } from '../message/message.page';
 import { LeadDetailsPage } from '../lead-details/lead-details.page';
 import { LeadsFilterPage } from '../leads-filter/leads-filter.page';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -54,7 +55,8 @@ export class LeadsPage implements OnInit {
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private user: User,
     private nativeStorage: NativeStorage,
-    private platform: Platform) {
+    private platform: Platform,
+    private activatedRoute: ActivatedRoute) {
     this.subscriptions = [];
     this.leadTypes = LeadType.getAllLeadTypes();
 
@@ -79,31 +81,17 @@ export class LeadsPage implements OnInit {
   }
 
   private async initLeadType(): Promise<void> {
-    let paramsKey = 'params';
-    let leadTypeKey = 'leadType';
-    this.selectedLeadType = this.leadTypes[0];
-    // return await this.getFromLocalStorage(paramsKey, leadTypeKey);
-  }
-
-  private async getFromLocalStorage(paramsKey: string, leadTypeKey: string) {
-    if (this.platform.is("cordova")) {
-      let value = await this.nativeStorage.getItem(paramsKey);
-      if (value) {
-        let storageParams = value;
-        if (storageParams) {
-          let leadType = (<LeadType>storageParams[leadTypeKey]);
-          if (leadType) {
-            this.selectedLeadType = leadType;
-          }
-          this.nativeStorage.remove(paramsKey);
-        }
+    this.activatedRoute.data.forEach(data => {
+      let paramsLeadTypeId = data.leadType;
+      if (paramsLeadTypeId){
+        this.selectedLeadType =  this.leadTypes.find(x=>x.id.toLowerCase() === paramsLeadTypeId.toLowerCase())
       }
-    }
-
-    if (!this.selectedLeadType) {
-      this.selectedLeadType = this.leadTypes[0];
-    }
+      else{
+        this.selectedLeadType = this.leadTypes[0];
+      }
+    });    
   }
+
 
   private initLeadSubscription() {
     let leadTypeKey = this.selectedLeadType.id.toString().toLowerCase();

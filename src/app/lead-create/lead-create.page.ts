@@ -220,8 +220,7 @@ export class LeadCreatePage implements OnInit {
         this.resultLead.meters = this.getSimpleSlideValue("meters");
         this.leads.add(this.resultLead).then(() => {
             loading.dismiss();
-            this.router.navigateByUrl("tabs/tab2", { queryParams: { leadType: this.resultLead.type } }); //todo: fix
-            this.navCtrl.navigateRoot(["tabs/tab2"]);
+            this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
             this.modalCtrl.dismiss();
         });
     }

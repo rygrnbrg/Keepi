@@ -13,8 +13,35 @@ const routes: Routes = [
         loadChildren: () => import('../call-log/call-log.module').then(m => m.CallLogPageModule)
       },
       {
+
         path: 'tab2',
-        loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule)
+        //loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+        children: [{
+          path: '',
+          loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+          data: { leadType: "buyer" }
+        },
+        {
+          path: 'buyer',
+          loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+          data: { leadType: "buyer" }
+        },
+        {
+          path: 'seller',
+          loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+          data: { leadType: "seller" }
+        },
+        {
+          path: 'tenant',
+          loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+          data: { leadType: "tenant" }
+        },
+        {
+          path: 'landlord',
+          loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
+          data: { leadType: "landlord" }
+        }
+        ]
       },
       {
         path: 'tab3',
@@ -38,4 +65,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }

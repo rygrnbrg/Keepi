@@ -32,6 +32,7 @@
 
     <ion-item (click)="potentialDealMatchesClick()">
       <ion-icon name="bulb-outline" icon slot="start" color="primary"></ion-icon>
+      <ion-icon name="arrow-back" slot="end" color="primary"></ion-icon>
       <ion-label *ngIf="dealCount === -1">
         <h2>
           <ion-skeleton-text animated></ion-skeleton-text>
@@ -40,16 +41,14 @@
           <ion-skeleton-text animated></ion-skeleton-text>
         </p>
       </ion-label>
-      <div *ngIf="dealCount > 0">
-        <ion-label>
+      <ion-label *ngIf="dealCount === 0">
+        <h2>{{'GENERAL_NOT_FOUND' | translate}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() | translate}}
+          {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
+      </ion-label>
+      <ion-label *ngIf="dealCount > 0">
           <h2>{{'GENERAL_FOUND' | translate}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() | translate}}
             {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
           <p>{{singleLeadMatch? singleLeadMatch.name : dealCount}}</p>
-        </ion-label>
-        <ion-icon *ngIf="dealCount > 0" name="arrow-back" slot="end" color="primary" (click)="call()"></ion-icon>
-        <ion-label *ngIf="dealCount === 0">
-          <h2>{{'GENERAL_NOT_FOUND' | translate}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() | translate}}
-            {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
         </ion-label>
     </ion-item>
 
