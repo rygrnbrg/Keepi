@@ -5,8 +5,9 @@ import { rangeValue } from 'src/components/range-budget-slider/range-budget-slid
 import { LeadsProvider } from 'src/providers/leads/leads';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 import { Lead } from 'src/models/lead';
-import { LeadPropertyType, LeadType, LeadTypeID } from 'src/models/lead-property-metadata';
+import { LeadPropertyType, LeadType, LeadTypeID, DealType } from 'src/models/lead-property-metadata';
 import { LeadFilter } from 'src/models/lead-filter';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -26,32 +27,42 @@ export class LeadsViewPage implements OnInit {
   public filters: LeadFilter[];
   public leadType: LeadTypeID;
   public showBudgetSlider: boolean = false;
+  public dealType: DealType;
+
   constructor(
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private leadsProvider: LeadsProvider,
     private navParams: NavParams,
-    private modalCtrl: ModalController) {
-    this.filters = this.navParams.get("filters");
-    this.query = this.navParams.get("query");
-    this.title = this.navParams.get("title");
-    this.leadType = this.navParams.get("leadType");
+    private modalCtrl: ModalController,
+    private route: ActivatedRoute) {
   }
-
-
+  
+  ionViewWillEnter() {
+    if (this.leadType !== undefined) {
+      this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.leadType);
+    }
+  }
   ngOnInit() {
     this.queryLeadsSearchResults = [];
+    this.setBudgetMinMaxValues(this.query);
+    this.setShowBudgetSlider();
     this.query.forEach(doc => {
       let data = doc.data();
       this.queryLeadsSearchResults.push(data);
     });
-    this.setBudgetMinMaxValues(this.queryLeadsSearchResults);
-    this.setShowBudgetSlider();
+
     this.filterLeadsByRange();
   }
+
   public closePage() {
     this.modalCtrl.dismiss({
       'dismissed': true
     });
+  }
+
+  public budgetChanged(range: rangeValue) {
+    this.budgetValue = range;
+    this.filterLeadsByRange();
   }
   private setShowBudgetSlider(): void {
     if (!this.budgetMinMaxValues || !this.filters) {
@@ -71,8 +82,8 @@ export class LeadsViewPage implements OnInit {
     this.leadsSearchResults = this.sortLeads(leads);
   }
 
-  private setBudgetMinMaxValues(documents: firebase.firestore.DocumentData[]): void {
-    if (!documents || documents.length === 0) {
+  private setBudgetMinMaxValues(querySnapshot: firebase.firestore.QuerySnapshot): void {
+    if (!querySnapshot || querySnapshot.size === 0) {
       this.budgetMinMaxValues = { lower: 0, upper: 0 };
       return;
     }
@@ -80,8 +91,9 @@ export class LeadsViewPage implements OnInit {
     let range: rangeValue = { lower: 100000000, upper: 0 };
     let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
 
-    documents.forEach(doc => {
-      let value = <number>doc[budgetFilterId.id];
+    querySnapshot.forEach(doc => {
+      let data = doc.data();
+      let value = <number>data[budgetFilterId.id];
       if (value < range.lower) {
         range.lower = value;
       }

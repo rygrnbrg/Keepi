@@ -12,7 +12,7 @@
 <ion-content>
   <ion-list>
     <filtered-by [filters]="filters"></filtered-by>
-    <range-budget-slider *ngIf="showBudgetSlider" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues" [dealType]="selectedDealType"
+    <range-budget-slider *ngIf="showBudgetSlider && dealType!== undefined" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues" [dealType]="dealType"
       (valueChanged)="budgetChanged($event)">
     </range-budget-slider>
   </ion-list>

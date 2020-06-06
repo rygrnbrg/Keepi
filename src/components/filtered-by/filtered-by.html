@@ -1,5 +1,5 @@
 <!-- <div>{{"LEADS_FILTER_BY" | translate}}</div> -->
-<ion-chip *ngFor="let filter of filters" color="primary">
+<ion-chip *ngFor="let filter of filters" color="primary" [hidden]="!getFilterValueString(filter)">
   <ion-icon *ngIf="filter.metadata" [name]="filter.metadata.icon"></ion-icon>
   <ion-label>{{getFilterValueString(filter)}}</ion-label>
 </ion-chip>

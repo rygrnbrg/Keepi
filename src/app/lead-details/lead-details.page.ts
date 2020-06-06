@@ -62,7 +62,8 @@ export class LeadDetailsPage implements OnInit {
 
     let translationSubscription = this.translateService.get([
       'GENERAL_ACTION_ERROR', 'LEADS_RECIEVED_MESSAGE', 'ITEM_CREATE_TYPE_SELECT_TITLE',
-      'BUYER_ACTION', 'SELLER_ACTION', 'TENANT_ACTION', 'LANDLORD_ACTION']).subscribe(values => {
+      'BUYER_ACTION', 'SELLER_ACTION', 'TENANT_ACTION', 'LANDLORD_ACTION','LEAD_DETAILS_MATCHES_FOUND',
+      'LEAD_TYPE_PLURAL_BUYER','LEAD_TYPE_PLURAL_SELLER','LEAD_TYPE_PLURAL_TENANT','LEAD_TYPE_PLURAL_LANDLORD', 'GENERAL_FOR']).subscribe(values => {
         this.translations = values;
       });
 
@@ -78,7 +79,8 @@ export class LeadDetailsPage implements OnInit {
       return;
     }
     
-    let modalTitleKey = 'LEAD_TYPE_PLURAL_' + this.oppositeLeadType.toUpperCase() ;
+    let modalTitleKey = this.translations[`LEAD_TYPE_PLURAL_${this.oppositeLeadType.toUpperCase()}`];
+    modalTitleKey+= ` ${this.translations['LEAD_DETAILS_MATCHES_FOUND']} ${this.translations['GENERAL_FOR']} ${this.item.name}`
     let modal = await this.modalCtrl.create({
       component: LeadsViewPage,
       componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, title: modalTitleKey, query: this.potentialDealsQuery }
@@ -249,6 +251,7 @@ export class LeadDetailsPage implements OnInit {
     this.potentialDealFilters = [
       new LeadFilter(LeadProperty.property, LeadPropertyType.StringSingleValue, this.item.property),
       new LeadFilter(LeadProperty.rooms, LeadPropertyType.StringSingleValue, this.item.rooms),
+      new LeadFilter("relevant", LeadPropertyType.Boolean, true),
       new LeadFilter(LeadProperty.area, LeadPropertyType.StringMultivalue, this.item.area)
     ];
     this.potentialDealFilters.forEach(x=> x.metadata = this.leadPropertiesMetadata.find(y=>y.id === x.id));
