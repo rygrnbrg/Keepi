@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ title | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <filtered-by [filters]="filters"></filtered-by>
+    <range-budget-slider *ngIf="showBudgetSlider" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues" [dealType]="selectedDealType"
+      (valueChanged)="budgetChanged($event)">
+    </range-budget-slider>
+  </ion-list>
+  <ion-list>
+    <leads-list [leads]="leadsSearchResults" [showOnlyRelevant]="true" [showClientSearch]="false"
+      [showLeadCount]="true" (itemClicked)="openLeadDetails($event)"></leads-list>
+  </ion-list>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-fab horizontal="end" vertical="bottom">
+    <ion-fab-button (click)="sendMessage()" color="secondary">
+      <ion-icon name="chatbox"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

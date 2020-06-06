@@ -57,6 +57,10 @@ const routes: Routes = [
   {
     path: 'lead-save-contact',
     loadChildren: () => import('./lead-save-contact/lead-save-contact.module').then( m => m.LeadSaveContactPageModule)
+  },
+  {
+    path: 'leads-view',
+    loadChildren: () => import('./leads-view/leads-view.module').then( m => m.LeadsViewPageModule)
   }
 ];
 @NgModule({

@@ -220,9 +220,9 @@ export class LeadCreatePage implements OnInit {
         this.resultLead.meters = this.getSimpleSlideValue("meters");
         this.leads.add(this.resultLead).then(() => {
             loading.dismiss();
-            this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
             this.modalCtrl.dismiss();
-        });
+            this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
+        });//todo: handle exception
     }
 
     private handleSingleValueButtonClick(slide: LeadPropertyMetadata, button: PropertyOption) {

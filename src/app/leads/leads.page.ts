@@ -10,14 +10,11 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from '../../providers';
 import { rangeValue } from '../../components/range-budget-slider/range-budget-slider';
-import { SmsResult } from '../../models/smsResult';
 import { Comment } from '../../models/comment';
-import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { MessagePage } from '../message/message.page';
 import { LeadDetailsPage } from '../lead-details/lead-details.page';
 import { LeadsFilterPage } from '../leads-filter/leads-filter.page';
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-leads',
@@ -56,10 +53,8 @@ export class LeadsPage implements OnInit {
     private toastCtrl: ToastController,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private user: User,
-    private nativeStorage: NativeStorage,
-    private platform: Platform,
     private activatedRoute: ActivatedRoute,
-    public navParams: NavParams) {
+    private navParams: NavParams) {
     this.subscriptions = [];
     this.leadTypes = LeadType.getAllLeadTypes();
 
@@ -69,11 +64,11 @@ export class LeadsPage implements OnInit {
       });
     this.subscriptions.push(translationSubscription);
 
-    if (this.navParams.get("enableFiltering") === false){
+    if (this.navParams.get("enableFiltering") === false) {
       this.enableFiltering = false;
     }
 
-    if (this.navParams.get("isModal") === true){
+    if (this.navParams.get("isModal") === true) {
       this.isModal = true;
     }
 
@@ -81,10 +76,10 @@ export class LeadsPage implements OnInit {
     this.initLeadType().then(() => {
       this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
       let paramsFilters = this.navParams.get("filters");
-      if (paramsFilters){
+      if (paramsFilters) {
         this.filterLeads(paramsFilters);
       }
-      else{
+      else {
         this.initLeadSubscription();
       }
     });

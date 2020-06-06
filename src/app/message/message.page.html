@@ -28,7 +28,7 @@
         <h3>{{ contact.name }}</h3>
         <p>{{ contact.phone }}</p>
       </ion-label>
-      <ion-icon name="close" slot="end" color="danger" (click)="removeContact(contact)" [hidden]="contacts.length === 1"></ion-icon>
+      <ion-icon name="close" slot="end" color="danger" size="small" (click)="removeContact(contact)" [hidden]="contacts.length === 1"></ion-icon>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -17,8 +17,7 @@ import { MessagePage } from '../message/message.page';
 import { CommentPage } from '../comment/comment.page';
 import { LeadFilter } from 'src/models/lead-filter';
 import { LeadProperty } from 'src/models/LeadProperty';
-import { DocumentData } from '@google-cloud/firestore';
-import { LeadsPage } from '../leads/leads.page';
+import { LeadsViewPage } from '../leads-view/leads-view.page';
 
 @Component({
   selector: 'app-lead-details',
@@ -32,11 +31,13 @@ export class LeadDetailsPage implements OnInit {
   public relevant: boolean;
   public dealCount: number;
   public oppositeLeadType: LeadTypeID;
-  public singleLeadMatch: DocumentData;
+  public potentialLeadsDisplay: string;
   private translations: any;
   private leadPropertiesMetadata: LeadPropertyMetadata[];
   private subscriptions: Subscription[];
   private potentialDealFilters: LeadFilter[];
+  private potentialDealsQuery: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
+
   constructor(
     navParams: NavParams,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
@@ -47,8 +48,7 @@ export class LeadDetailsPage implements OnInit {
     private modalCtrl: ModalController,
     private callNumber: CallNumber,
     private alertCtrl: AlertController,
-    private platform: Platform,
-    private navCtrl: NavController
+    private platform: Platform
   ) {
     this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get();
     let item = navParams.get("item");
@@ -77,10 +77,11 @@ export class LeadDetailsPage implements OnInit {
     if (this.dealCount <= 0) {
       return;
     }
-
+    
+    let modalTitleKey = 'LEAD_TYPE_PLURAL_' + this.oppositeLeadType.toUpperCase() ;
     let modal = await this.modalCtrl.create({
-      component: LeadsPage,
-      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, isModal: true, enableFiltering: false }
+      component: LeadsViewPage,
+      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, title: modalTitleKey, query: this.potentialDealsQuery }
     });
     modal.present();
     modal.onDidDismiss().then(value => {
@@ -250,16 +251,21 @@ export class LeadDetailsPage implements OnInit {
       new LeadFilter(LeadProperty.rooms, LeadPropertyType.StringSingleValue, this.item.rooms),
       new LeadFilter(LeadProperty.area, LeadPropertyType.StringMultivalue, this.item.area)
     ];
-
+    this.potentialDealFilters.forEach(x=> x.metadata = this.leadPropertiesMetadata.find(y=>y.id === x.id));
     this.dealCount = -1;
     this.leadsProvider.filter(this.potentialDealFilters, this.oppositeLeadType).get().then(
       (querySnapshot) => {
+
+        this.potentialDealsQuery = querySnapshot;
+        this.potentialLeadsDisplay = "";
         setTimeout(() => {
-          if (querySnapshot.size === 1) {
-            let lead = querySnapshot.docs[0].data();
-            this.singleLeadMatch = lead;
-          }
+          let leadArray = [];
           this.dealCount = querySnapshot.size;
+          querySnapshot.forEach(x=> {
+            leadArray.push(x.data()["name"]);
+          });
+
+          this.potentialLeadsDisplay = leadArray.join(", ");
         }, 1000);
       }
     ).catch();
