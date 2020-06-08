@@ -22,7 +22,7 @@
       <ion-toggle [(ngModel)]="relevant" (ionChange)="relevantChanged($event)"></ion-toggle>
     </ion-item>
     <ion-item>
-      <ion-icon name="phone-portrait" icon slot="start" color="primary"></ion-icon>
+      <ion-icon name="phone-portrait-outline" icon slot="start" color="primary"></ion-icon>
       <ion-label>
         <h2>{{'GENERAL_PHONE' | translate}}</h2>
         <p>{{item.phone}}</p>
@@ -31,25 +31,26 @@
     </ion-item>
 
     <ion-item (click)="potentialDealMatchesClick()">
-      <ion-icon name="bulb-outline" icon slot="start" color="primary"></ion-icon>
+      <ion-icon [name]="dealCount > 0? 'bulb': 'bulb-outline'" icon slot="start" color="secondary " ></ion-icon>
       <ion-icon name="arrow-back" slot="end" color="primary" [hidden]="dealCount < 1"></ion-icon>
       <ion-label *ngIf="dealCount === -1">
-        <h2>
-          <ion-skeleton-text animated  style="width: 60%"></ion-skeleton-text>
-        </h2>
-        <p>
-          <ion-skeleton-text animated style="width: 25%"></ion-skeleton-text>
-        </p>
+          <ion-progress-bar type="indeterminate" reversed="true"></ion-progress-bar>
       </ion-label>
       <ion-label *ngIf="dealCount === 0">
         <h2>{{'GENERAL_NOT_FOUND' | translate}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() | translate}}
           {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
       </ion-label>
-      <ion-label *ngIf="dealCount > 0">
-          <h2>{{'GENERAL_FOUND' | translate}} {{dealCount}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() | translate}}
-            {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
-          <p>{{potentialLeadsDisplay}}</p>
-        </ion-label>
+      <ion-label *ngIf="dealCount === 1">
+        <h2>{{'GENERAL_FOUND_SINGLE' | translate}} {{oppositeLeadType.toUpperCase() | translate}}
+          {{'LEAD_DETAILS_MATCH_FOUND' | translate}}</h2>
+        <p>{{potentialLeadsDisplay}}</p>
+      </ion-label>
+      <ion-label *ngIf="dealCount > 1">
+        <h2>{{'GENERAL_FOUND' | translate}} {{dealCount}} {{'LEAD_TYPE_PLURAL_' + oppositeLeadType.toUpperCase() |
+          translate}}
+          {{'LEAD_DETAILS_MATCHES_FOUND' | translate}}</h2>
+        <p>{{potentialLeadsDisplay}}</p>
+      </ion-label>
     </ion-item>
 
     <ion-list-header>

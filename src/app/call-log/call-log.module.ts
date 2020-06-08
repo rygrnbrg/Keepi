@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { CallLogPageRoutingModule } from './call-log-routing.module';
 import { CallLogPage } from './call-log.page';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { ComponentsModule } from 'src/components/components.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { PipesModule } from 'src/pipes/pipes.module';
     IonicModule,
     CallLogPageRoutingModule,
     TranslateModule,
-    PipesModule
+    PipesModule,
+    ComponentsModule
   ],
   declarations: [CallLogPage]
 })

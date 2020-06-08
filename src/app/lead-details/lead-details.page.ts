@@ -83,7 +83,8 @@ export class LeadDetailsPage implements OnInit {
     modalTitleKey+= ` ${this.translations['LEAD_DETAILS_MATCHES_FOUND']} ${this.translations['GENERAL_FOR']} ${this.item.name}`
     let modal = await this.modalCtrl.create({
       component: LeadsViewPage,
-      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, title: modalTitleKey, query: this.potentialDealsQuery }
+      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, 
+        title: modalTitleKey, query: this.potentialDealsQuery, lead: this.item }
     });
     modal.present();
     modal.onDidDismiss().then(value => {

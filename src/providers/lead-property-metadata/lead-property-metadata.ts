@@ -65,7 +65,8 @@ export class LeadPropertyMetadataProvider {
           new PropertyOption("4"),
           new PropertyOption("5"),
           new PropertyOption("6"),
-          new PropertyOption("יותר מ-6")
+          new PropertyOption("יותר מ-6"),
+          new PropertyOption("מסחרי")
         ],
         icon: 'people',
         type: LeadPropertyType.StringSingleValue,

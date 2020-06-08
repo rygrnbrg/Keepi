@@ -1,7 +1,6 @@
 import { DealType } from './../../models/lead-property-metadata';
 import { Input, Output, EventEmitter, OnInit } from "@angular/core";
 import { Component } from "@angular/core";
-import { Settings } from "../../providers";
 
 @Component({
   selector: 'range-budget-slider',
@@ -12,6 +11,7 @@ export class RangeBudgetSliderComponent implements OnInit  {
   @Input() public value: rangeValue;
   @Input() public minMaxValues: rangeValue;
   @Input() public dealType: number;
+  @Input() public title: string;
 
   private sliderValue: rangeValue;
   public sliderMinMaxValue: rangeValue;

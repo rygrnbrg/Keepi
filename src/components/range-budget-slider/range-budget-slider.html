@@ -1,7 +1,8 @@
 <ion-grid padding>
   <ion-row>
     <ion-label class="budget-value-label">
-      <p>טווח תקציב</p>
+      <p [hidden]="title">{{ 'BUDGET_RANGE' | translate }}</p>
+      <p [hidden]="!title">{{ title | translate}}</p>
       <h3>
         {{ value.lower | numberFormat }} - {{ value.upper | numberFormat }}
       </h3>

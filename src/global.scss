@@ -47,6 +47,15 @@ ion-list-header.list-header {
   text-align: right;
   border-top: none;
 }
+
+ion-chip.full {
+  width: 100%;
+  border-radius: 0;
+  margin: 0;
+  ion-label{
+    margin: 0 auto;
+  }
+}
 .fixed-rtl-form-label {
   min-width: 80px;
 }

@@ -1,20 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { NavParams, ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { firestore } from 'firebase';
 import { rangeValue } from 'src/components/range-budget-slider/range-budget-slider';
 import { LeadsProvider } from 'src/providers/leads/leads';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
-import { Lead } from 'src/models/lead';
+import { Lead, Contact } from 'src/models/lead';
 import { LeadPropertyType, LeadType, LeadTypeID, DealType } from 'src/models/lead-property-metadata';
 import { LeadFilter } from 'src/models/lead-filter';
-import { ActivatedRoute } from '@angular/router';
+import { MessagePage } from '../message/message.page';
+import { TranslateService } from '@ngx-translate/core';
+import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
+import { LeadProperty } from 'src/models/LeadProperty';
 
 
 @Component({
   selector: 'app-leads-view',
   templateUrl: './leads-view.page.html',
   styleUrls: ['./leads-view.page.scss'],
-  providers: [LeadsProvider, NavParams, LeadPropertyMetadataProvider]
+  providers: [LeadsProvider, LeadPropertyMetadataProvider, NumberFormatPipe]
 })
 export class LeadsViewPage implements OnInit {
   public title: string;
@@ -28,15 +31,22 @@ export class LeadsViewPage implements OnInit {
   public leadType: LeadTypeID;
   public showBudgetSlider: boolean = false;
   public dealType: DealType;
+  public lead: Lead;
+  private translations: any;
+  public dealTypeStr: string;
 
   constructor(
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private leadsProvider: LeadsProvider,
-    private navParams: NavParams,
     private modalCtrl: ModalController,
-    private route: ActivatedRoute) {
+    private translateService: TranslateService,
+    private toastCtrl: ToastController) {
+    this.translateService.get([
+      'LEADS_RECIEVED_MESSAGE']).subscribe(values => {
+        this.translations = values;
+      });
   }
-  
+
   ionViewWillEnter() {
     if (this.leadType !== undefined) {
       this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.leadType);
@@ -50,7 +60,7 @@ export class LeadsViewPage implements OnInit {
       let data = doc.data();
       this.queryLeadsSearchResults.push(data);
     });
-
+    this.filters = this.filters.filter(x=>x.id !== "relevant");
     this.filterLeadsByRange();
   }
 
@@ -58,6 +68,10 @@ export class LeadsViewPage implements OnInit {
     this.modalCtrl.dismiss({
       'dismissed': true
     });
+  }
+
+  public openLeadDetails(item: Lead){
+
   }
 
   public budgetChanged(range: rangeValue) {
@@ -122,5 +136,31 @@ export class LeadsViewPage implements OnInit {
     let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
     let value = <number>lead[budgetFilterId.id];
     return value >= this.budgetValue.lower && value <= this.budgetValue.upper;
+  }
+
+  private async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'top'
+    });
+    toast.present();
+  }
+
+  public async sendMessage() {
+    let contacts = this.leadsSearchResults.map((lead: Lead) => new Contact(lead.phone, lead.name));
+
+    let modal = await this.modalCtrl.create({
+      component: MessagePage,
+      componentProps: { contacts: contacts }
+    });
+    modal.present();
+    modal.onDidDismiss().then(value => {
+      if (value.data && value.data.result && value.data.result.success) {
+        let result = value.data.result;
+        let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
+        this.showToast(message);
+      }
+    });
   }
 }

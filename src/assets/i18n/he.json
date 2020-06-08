@@ -18,6 +18,7 @@
   "GENERAL_ACTION_ERROR" : "הפעולה נכשלה",
   "GENERAL_REAL_ESTATE": "נדלן",
   "GENERAL_FOUND": "נמצאו",
+  "GENERAL_FOUND_SINGLE": "נמצא",
   "GENERAL_NOT_FOUND": "לא נמצאו",
   "GENERAL_RESULTS": "תוצאות",
   "GENERAL_TO_ADD": "להוספה",
@@ -29,15 +30,12 @@
   "MULTIPLE_SELECTION":"בחירה מרובה",
 
   "MAP_TITLE": "מפה",
-
-  "TUTORIAL_SLIDE4_TITLE": "תקציב",
-  "TUTORIAL_SLIDE4_DESCRIPTION": "תקציב בשקלים",
-
-  "TUTORIAL_SLIDE5_TITLE": "אזור",
-  "TUTORIAL_SLIDE5_DESCRIPTION": "האזור המבוקש",
-
-  "TUTORIAL_SLIDE6_TITLE": "מקור",
-  "TUTORIAL_SLIDE6_DESCRIPTION": "מאיפה הגיע אלינו?",
+  "BUDGET": "תקציב",
+  "TARGET_BUDGET_FOR": "התקציב לעסקה",
+  "TARGET_PRICE": "המחיר המבוקש",
+  "PRICES_RANGE": "טווח מחירים",
+  "BUDGETS_RANGE": "טווח תקציבים",
+  "BUDGET_RANGE": "טווח תקציב",
 
   "SETTINGS_TITLE": "הגדרות",
   "SETTINGS_OPTION1": "אופציה 1",
@@ -150,9 +148,13 @@
   "LANDLORD_ACTION": "להשכיר",
   "LEAD_TYPE_PLURAL_BUYER": "רוכשים",
   "LEAD_TYPE_PLURAL_SELLER": "מוכרים",
-  "LEAD_TYPE_PLURAL_TENANT": "משכירים",
-  "LEAD_TYPE_PLURAL_LANDLORD": "שוכרים",
+  "LEAD_TYPE_PLURAL_TENANT": "שוכרים",
+  "LEAD_TYPE_PLURAL_LANDLORD": "משכירים",
   "LEAD_DETAILS_MATCHES_FOUND": "פוטנציאליים",
+  "LEAD_DETAILS_MATCH_FOUND": "פוטנציאלי",
+  "LEAD_DETAILS_MATCHES_INFORMATION": "ריכזנו עבורך את כל הלידים אשר תואמים את נתוני האזור, סוג וגודל הנכס עבור הליד הנבחר ",
+  "LEAD_DETAILS_MATCHES_INFORMATION_2": "ניתן להמשיך ולמקד את הרשימה באמצעות התאמת טווח התקציב.",
+  "LEAD_DETAILS_FILTERS_TITLE": "מציג לידים רלוונטיים, מסוננים לפי:",
   "GENERAL_FOR": "עבור",
   "LEAD_DETAILS_NO_MATCHES_FOUND": "לא נמצאו התאמות במאגר",
   "DETAILS":"פרטים",
@@ -170,5 +172,6 @@
   "COMMERCIAL_GROUND": "שטח מסחרי",
   "METER_DATA_INPUT":"הזן מידע במטרים",
   "MESSAGE_SENT_TITLE": "הודעה נשלחה",
-  "MESSAGE_SEND": "שלח"
+  "MESSAGE_SEND": "שלח",
+  "ONBOARDING_INFO_CLOSE": "הבנתי"
 }

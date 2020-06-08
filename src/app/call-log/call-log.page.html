@@ -1,18 +1,18 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-     {{'CALL_LOG_TITLE' | translate}}
+      {{'CALL_LOG_TITLE' | translate}}
     </ion-title>
     <div class="header-icon">
       <div class="header-icon-inner"></div>
     </div>
   </ion-toolbar>
 </ion-header>
-<ion-content class="cover-bg">
+<ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="updateLog($event)">
-    <ion-refresher-content  refreshingSpinner="circular"></ion-refresher-content>
+    <ion-refresher-content refreshingSpinner="circular"></ion-refresher-content>
   </ion-refresher>
-  <div class="bg-color">
+  <!-- <app-onboarding-info key="123"> this is my text 2</app-onboarding-info> -->
   <ion-list>
     <ion-list-header (click)="updateLog()">
       <ion-label>{{ 'MAIN_LATEST_CALLS' | translate }}</ion-label>
@@ -22,15 +22,14 @@
         <img [src]="item.avatar | avatar" />
       </ion-avatar>
       <ion-label>
-         <h3>{{item.name}}</h3>
-        <p>{{item.phone}}</p>           
+        <h3>{{item.name}}</h3>
+        <p>{{item.phone}}</p>
       </ion-label>
       <ion-icon name="person-add-outline"></ion-icon>
       <!-- <ion-note item-end *ngIf="item.created">{{item.created | date : 'dd/MM/yy'}}</ion-note> -->
     </ion-item>
     <ion-item class="fab-pad" lines="none"></ion-item>
   </ion-list>
-  </div>
 </ion-content>
 <ion-footer class="ion-no-border">
   <ion-fab horizontal="end" vertical="bottom">

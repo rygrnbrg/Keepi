@@ -23,7 +23,8 @@
         </ion-row>
         <ion-row *ngIf="slide.options?.length">
           <ion-col size="6" *ngFor="let button of slide.options">
-            <ion-button dir="ltr"  (click)="answerButtonClick(slide, button, i)" [fill]="button.selected? 'solid': 'outline'" expand="block" [color]="button.selected ? 'secondary' : 'dark'">
+            <ion-button dir="ltr"  (click)="answerButtonClick(slide, button, i)" fill="solid" 
+            expand="full" [color]="button.selected ? 'secondary' : 'light'">
               {{ button.title }}
             </ion-button>
           </ion-col>
@@ -33,7 +34,7 @@
         </ion-row>
         <ion-row *ngIf="slide.id === 'rooms'" class="margin-top">
           <ion-col size="12">
-            <ion-button color="secondary" expand="block" (click)="addMetersSlide(i);">
+            <ion-button color="secondary" expand="full" (click)="addMetersSlide(i);">
               {{ 'METER_DATA_INPUT' | translate }}
             </ion-button>
           </ion-col>

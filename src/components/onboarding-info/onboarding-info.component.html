@@ -1,0 +1,19 @@
+<ion-list [hidden]="!isRelevant">
+  <ion-item lines="none">
+    <ion-card color="primary">
+      <ion-card-content>
+        <ion-icon name="bulb" color="secondary"></ion-icon>
+        <!-- {{ message | translate}} -->
+        <ng-content></ng-content>
+      </ion-card-content>
+      <ion-item color="primary" lines="none">
+        <ion-button color="secondary" slot="end" (click)="markNotrelevant()">
+          <ion-label color="dark">
+            <ion-icon slot="start" name="checkmark"></ion-icon>
+            {{ 'ONBOARDING_INFO_CLOSE' | translate}}
+          </ion-label>
+        </ion-button>
+      </ion-item>
+    </ion-card>
+  </ion-item>
+</ion-list>

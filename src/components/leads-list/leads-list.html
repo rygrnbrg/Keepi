@@ -15,12 +15,18 @@
     <p>{{item.phone}}</p>
   </ion-label>
 
-  <ion-note slot="end" *ngIf="item.created">
+  <ion-note slot="end" *ngIf="item.created && !showBudget">
     {{item.created | date: "dd/MM/yy"}}
     <p class="not-relevant-item" [hidden]="item.relevant">
       {{ 'LEAD_RELEVANCE_STATUS_NO' | translate}}
     </p>
   </ion-note>
+  <p [hidden]="!showBudget">
+      <ion-chip color="primary" size="small" class="budget-chip">
+        <ion-icon name="cash"></ion-icon>
+        <ion-label>{{item.budget | numberFormat}}</ion-label>
+      </ion-chip>
+    </p>
 </ion-item>
 <ion-item lines="none" [hidden]="!leads || leads?.length" text-center>
   <p>

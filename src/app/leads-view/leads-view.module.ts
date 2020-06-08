@@ -6,6 +6,7 @@ import { LeadsViewPageRoutingModule } from './leads-view-routing.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { LeadsViewPage } from './leads-view.page';
 import { ComponentsModule } from 'src/components/components.module';
+import { PipesModule } from 'src/pipes/pipes.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { ComponentsModule } from 'src/components/components.module';
     IonicModule,
     LeadsViewPageRoutingModule,
     TranslateModule,
-    ComponentsModule
+    ComponentsModule,
+    PipesModule
   ],
   declarations: [LeadsViewPage]
 })

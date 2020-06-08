@@ -8,23 +8,27 @@ import { FilteredByComponent } from './filtered-by/filtered-by';
 import { LeadTypeSelectComponent } from './lead-type-select/lead-type-select';
 import { RangeBudgetSliderComponent } from './range-budget-slider/range-budget-slider';
 import { CommonModule } from '@angular/common';
+import { OnboardingInfoComponent } from './onboarding-info/onboarding-info.component';
+
 
 @NgModule({
-	declarations: [LeadsListComponent,
-    BudgetSliderComponent,
-    FilteredByComponent,
-    LeadTypeSelectComponent,
-    RangeBudgetSliderComponent],
-	imports: [
-		TranslateModule.forChild(),
-		PipesModule,
+    declarations: [LeadsListComponent,
+        BudgetSliderComponent,
+        FilteredByComponent,
+        LeadTypeSelectComponent,
+        RangeBudgetSliderComponent,
+        OnboardingInfoComponent],
+    imports: [
+        TranslateModule.forChild(),
+        PipesModule,
         IonicModule,
         CommonModule
-	],
-	exports: [LeadsListComponent,
-    BudgetSliderComponent,
-    FilteredByComponent,
-    LeadTypeSelectComponent,
-    RangeBudgetSliderComponent]
+    ],
+    exports: [LeadsListComponent,
+        BudgetSliderComponent,
+        FilteredByComponent,
+        LeadTypeSelectComponent,
+        RangeBudgetSliderComponent,
+        OnboardingInfoComponent]
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

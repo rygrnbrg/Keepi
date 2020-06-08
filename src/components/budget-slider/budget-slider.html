@@ -12,8 +12,8 @@
   </ion-row>
   <ion-row>
     <ion-col size="6" *ngFor="let item of presetBudgets">
-      <ion-button (click)="setValue(item)" dir="ltr" expand="block" [fill]="item===value ? 'solid': 'outline'" expand="block"
-        [color]="item===value ? 'secondary' : 'dark'">
+      <ion-button (click)="setValue(item)" dir="ltr" expand="full"  fill="solid"
+        [color]="item===value ? 'secondary' : 'light'">
         {{ item | numberFormat }}
       </ion-button>
     </ion-col>

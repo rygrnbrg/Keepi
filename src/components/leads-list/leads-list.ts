@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: "leads-list",
   templateUrl: "leads-list.html",
+  styleUrls: ['leads-list.scss'],
   providers: [AvatarPipe, SocialSharing, LeadTypePipe]
 })
 export class LeadsListComponent {
@@ -24,6 +25,8 @@ export class LeadsListComponent {
   showClientSearch: boolean;
   @Input()
   showExport: boolean;
+  @Input()
+  showBudget: boolean
   @Output() itemClicked = new EventEmitter<Lead>();
 
   public leadsCount: number;
