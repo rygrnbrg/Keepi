@@ -11,22 +11,22 @@
 
 <ion-content>
   <app-onboarding-info [hidden]="!showBudgetSlider">
-    {{'LEAD_DETAILS_MATCHES_INFORMATION' | translate}} - {{lead.name + "."}}
-    {{'LEAD_DETAILS_MATCHES_INFORMATION_2' | translate}}
+    {{'ONBOARDING_LEAD_DETAILS_MATCHES_INFORMATION' | translate}} - {{lead.name + "."}}
+    {{'ONBOARDING_LEAD_DETAILS_MATCHES_INFORMATION_2' | translate}}
   </app-onboarding-info>
   <ion-list>
     <ion-list-header>{{'LEAD_DETAILS_FILTERS_TITLE'| translate}} </ion-list-header>
     <filtered-by [filters]="filters"></filtered-by>
     <range-budget-slider *ngIf="showBudgetSlider && dealType!== undefined" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues"
-      [dealType]="dealType" (valueChanged)="budgetChanged($event)" [title]="leadType === 'Buyer' || leadType === 'Landlord'? 'BUDGETS_RANGE' : 'PRICES_RANGE'">
+      [dealType]="dealType" (valueChanged)="budgetChanged($event)" [title]="leadType === 'Buyer' || leadType === 'Tenant'? 'BUDGETS_RANGE' : 'PRICES_RANGE'">
     </range-budget-slider>
   </ion-list>
   <ion-list>
     <ion-chip class="full" color="secondary">
-      <ion-label [hidden]="leadType === 'Buyer' || leadType === 'Landlord'">
+      <ion-label [hidden]="leadType === 'Buyer' || leadType === 'Tenant'">
         {{ 'TARGET_BUDGET_FOR'|translate}}: {{lead.budget | numberFormat}}
       </ion-label>
-      <ion-label [hidden]="leadType === 'Seller' || leadType === 'Tenant'">
+      <ion-label [hidden]="leadType === 'Seller' || leadType === 'Landlord'">
         {{ 'TARGET_PRICE'|translate}}: {{lead.budget | numberFormat}}
       </ion-label>
     </ion-chip>

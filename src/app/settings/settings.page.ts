@@ -6,11 +6,14 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { User, Settings } from '../../providers';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LeadProperty } from 'src/models/LeadProperty';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss']
+  styleUrls: ['./settings.page.scss'],
+  providers: [LeadPropertyMetadataProvider]
+
 })
 export class SettingsPage {
   public items: UserSetting[];
@@ -35,12 +38,12 @@ export class SettingsPage {
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
-    private router: Router) {
-    this.multivalueMetadataEditableSettings = [
-      { name: "areas", key: "AREAS" },
-      { name: "propertyTypes", key: "PROPERTY_TYPES" },
-      { name: "sources", key: "SOURCES" }
-    ];
+    private router: Router,
+    private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,) {
+    this.multivalueMetadataEditableSettings = this.leadPropertyMetadataProvider.get().filter(x=>x.editable)
+    .map(x=> {  
+      return { name: x.id, key: x.stringsKey }
+    });
 
     let translations = [
       'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
@@ -59,7 +62,7 @@ export class SettingsPage {
       this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
 
       this.translate.get(this.pageTitleKey).subscribe((res) => {
-        this.pageTitle = res;
+        this.pageTitle = res; 
       });
     });
   }
@@ -72,9 +75,9 @@ export class SettingsPage {
     switch (this.page) {
       case 'main':
         break;
-      case 'areas': this.initSettingsPage(LeadProperty.area); break;
-      case 'propertyTypes': this.initSettingsPage(LeadProperty.property); break;
-      case 'sources': this.initSettingsPage(LeadProperty.source); break;
+      default:
+      this.initSettingsPage(LeadProperty[this.page]); 
+      break;
     }
   }
 

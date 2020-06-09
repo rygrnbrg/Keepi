@@ -48,11 +48,24 @@ ion-list-header.list-header {
   border-top: none;
 }
 
+ion-row.tight {
+  margin: 0;
+  padding: 0;
+  ion-col {
+    margin: 0;
+    padding: 0;
+
+    ion-button {
+      margin: 1px;
+      height: 50px;
+    }
+  }
+}
 ion-chip.full {
   width: 100%;
   border-radius: 0;
   margin: 0;
-  ion-label{
+  ion-label {
     margin: 0 auto;
   }
 }

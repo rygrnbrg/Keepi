@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, Platform, ModalController, LoadingController, AlertController } from '@ionic/angular';
+import { NavController, Platform, ModalController } from '@ionic/angular';
 import { CallLog, CallLogObject } from '@ionic-native/call-log/ngx';
 import { Caller } from '../../models/caller';
 import { Lead } from '../../models/lead';
-import { Router } from '@angular/router';
 import { LeadCreatePage } from '../lead-create/lead-create.page';
-import { TranslateService } from '@ngx-translate/core';
 import { LeadSaveContactPage } from '../lead-save-contact/lead-save-contact.page';
+import { Trinary } from 'src/models/trinary';
 
 @Component({
     selector: 'app-call-log',
@@ -18,97 +17,84 @@ export class CallLogPage {
     log: Lead[];
     keys: string[];
     private lastLogDate: any;
-    private CALL_LOG_DAYS: number = 5;
-    private translations: any;
+    private CALL_LOG_DAYS: number = 10;
+    private gotCallLogReadPermission: Trinary;
 
     constructor(
         public navCtrl: NavController,
         private callLog: CallLog,
         private platform: Platform,
-        private loadingCtrl: LoadingController,
         private modalCtrl: ModalController) {
+        this.gotCallLogReadPermission = Trinary.Unknown;
         this.updateLog();
     };
 
     public updateLog(refresherEvent?: any) {
         if (this.platform.is("android") && this.platform.is("cordova")) {
-            this.handleAndroidCallLog();
-        }
-        else {//todo: mock remove
-            if (!(this.log && this.log.length)) {
-                let log: Caller[] = [];
-                for (let index = 0; index < 3; index++) {
-                    log.push(<Caller>{ number: "0528626684" + index });
-                }
-                for (let index = 0; index < 10; index++) {
-                    log.push(<Caller>{ number: "0528626684" + index, name: "caller" + index });
-                }
-
-                let freshLog = this.getUniqueCallerLog(log);
-                this.log = freshLog;
+            if (this.gotCallLogReadPermission === Trinary.Yes) {
+                this.refreshAndroidCallLog(refresherEvent);
+                return;
             }
-            setTimeout(() => {
-                console.log('Async operation has ended');
-                if (refresherEvent) {
-                    refresherEvent.target.complete();
+
+            this.hasAndroidPermissions().then(hasPermission => {
+                if (hasPermission) {//todo: test when only got fresh permission
+                    this.gotCallLogReadPermission = Trinary.Yes;
+                    this.refreshAndroidCallLog(refresherEvent);
                 }
-            }, 2000);
+                else {
+                    this.gotCallLogReadPermission = Trinary.No;
+                    //todo: show refresh button
+                }
+            });
+        }
+        else {
+            this.mockLog();
         }
     }
 
-    private handleAndroidCallLog(refresherEvent?: any) {
-        this.callLog.hasReadPermission().then(async hasPermission => {
+    private hasAndroidPermissions(): Promise<boolean> {
+        return this.callLog.hasReadPermission().then(async hasPermission => {
             if (hasPermission) {
-                let loading: HTMLIonLoadingElement;
-                if (!event) {
-                    loading = await this.loadingCtrl.create();
-                    loading.present();
-                }
-                this.callLog.getCallLog(this.getLogFilter(this.CALL_LOG_DAYS)).then((result: Caller[]) => {
-                    if (loading) {
-                        loading.dismiss();
-                    }
-                    if (refresherEvent) {
-                        refresherEvent.target.complete();
-                    }
-                    if (result && result.length && result[0].date !== this.lastLogDate) {
-                        this.lastLogDate = result[0].date
-                        this.log = this.getUniqueCallerLog(result);
-                    }
-                }).catch((reason) => {
-                    loading.dismiss();
-                });
+                return true;
             }
             else {
-                this.callLog.requestReadPermission().then((value) => {
-                    this.updateLog(refresherEvent.target.complete());
-                });
+                return this.callLog.requestReadPermission();
+            }
+        });
+    }
+
+    private refreshAndroidCallLog(refresherEvent?: any) {
+        this.callLog.getCallLog(this.getLogFilter(this.CALL_LOG_DAYS)).then((result: Caller[]) => {
+            if (result && result.length && result[0].date !== this.lastLogDate) {
+                this.lastLogDate = result[0].date
+                this.log = this.getUniqueCallerLog(result);
+            }
+        }).finally(() => {
+            if (refresherEvent) {
+                refresherEvent.target.complete();
             }
         });
     }
 
     private getUniqueCallerLog(log: Caller[]): Lead[] {
         let fullLog = log.slice(0, 20).map((x) => new Lead(x.number ? x.number : "", x.name ? x.name : ""));
-        // let uniqueItemsLog: Lead[] = [];
 
-        // fullLog.forEach(item => {
-        //   let existingItem = uniqueItemsLog.find(x => x.phone === item.phone);
+        let uniqueItemsLog: Lead[] = [];
+        fullLog.slice(0,20).forEach(item => {
+            let existingItem = uniqueItemsLog.find(x => x.phone === item.phone && x.name === item.name);
+            if (!existingItem) {
+                uniqueItemsLog.push(item);
+            }
+        });
 
-        //   if (!existingItem) {
-        //     uniqueItemsLog.push(item);
-        //   }
-        //  });
-
-        // return uniqueItemsLog;
-        return fullLog;
-
+        return uniqueItemsLog;
     }
 
     public async addLead(lead?: Lead) {
-        if (!lead){
-            lead = new Lead("","");
+        if (!lead) {
+            lead = new Lead("", "");
         }
-        else if (lead.name){
+        else if (lead.name) {
             this.gotoLeadCreatePage(lead);
             return;
         }
@@ -146,4 +132,24 @@ export class CallLogPage {
         }];
         return logFilter
     }
+
+    private mockLog(refresherEvent?: any) {
+        let log: Caller[] = [];
+        for (let index = 0; index < 3; index++) {
+            log.push(<Caller>{ number: "0528626684" + index });
+        }
+        for (let index = 0; index < 10; index++) {
+            log.push(<Caller>{ number: "0528626684" + index, name: "איש קשר מספר " + index });
+        }
+
+        let freshLog = this.getUniqueCallerLog(log);
+        this.log = freshLog;
+
+        setTimeout(() => {
+            if (refresherEvent) {
+                refresherEvent.target.complete();
+            }
+        }, 2000);
+    }
+
 }

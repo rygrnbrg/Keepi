@@ -152,8 +152,6 @@
   "LEAD_TYPE_PLURAL_LANDLORD": "משכירים",
   "LEAD_DETAILS_MATCHES_FOUND": "פוטנציאליים",
   "LEAD_DETAILS_MATCH_FOUND": "פוטנציאלי",
-  "LEAD_DETAILS_MATCHES_INFORMATION": "ריכזנו עבורך את כל הלידים אשר תואמים את נתוני האזור, סוג וגודל הנכס עבור הליד הנבחר ",
-  "LEAD_DETAILS_MATCHES_INFORMATION_2": "ניתן להמשיך ולמקד את הרשימה באמצעות התאמת טווח התקציב.",
   "LEAD_DETAILS_FILTERS_TITLE": "מציג לידים רלוונטיים, מסוננים לפי:",
   "GENERAL_FOR": "עבור",
   "LEAD_DETAILS_NO_MATCHES_FOUND": "לא נמצאו התאמות במאגר",
@@ -173,5 +171,8 @@
   "METER_DATA_INPUT":"הזן מידע במטרים",
   "MESSAGE_SENT_TITLE": "הודעה נשלחה",
   "MESSAGE_SEND": "שלח",
-  "ONBOARDING_INFO_CLOSE": "הבנתי"
+  "ONBOARDING_INFO_CLOSE": "הבנתי",
+  "ONBOARDING_LEAD_DETAILS_MATCHES_INFORMATION": "ריכזנו עבורך את כל הלידים אשר תואמים את נתוני האזור, סוג וגודל הנכס עבור הליד הנבחר ",
+  "ONBOARDING_LEAD_DETAILS_MATCHES_INFORMATION_2": "ניתן להמשיך ולמקד את הרשימה באמצעות התאמת טווח התקציב.",
+  "ONBOARDING_CALL_LOG_CLICK":"סיימת לדבר עם ליד? בחר אותו מתוך יומן השיחות שלפניך והוסף אותו למאגר הלידים שלך."
 }

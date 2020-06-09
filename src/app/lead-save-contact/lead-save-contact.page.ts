@@ -66,7 +66,7 @@ export class LeadSaveContactPage implements OnInit {
     this.item.name = this.leadName;
     this.item.phone = this.leadPhone;
     this.gotoLeadCreatePage(this.item)
-    //this.modalCtrl.dismiss({ lead: this.item });
+    this.modalCtrl.dismiss();
   }
 
   private async gotoLeadCreatePage(lead: Lead) {

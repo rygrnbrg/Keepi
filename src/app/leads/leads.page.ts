@@ -197,15 +197,6 @@ export class LeadsPage implements OnInit {
     return sortedLeads;
   }
 
-  private async showToast(message: string) {
-    let toast = await this.toastCtrl.create({
-      message: message,
-      duration: 3000,
-      position: 'top'
-    });
-    toast.present();
-  }
-
   public async sendMessage() {
     let leads = this.activeFilters ? this.leadsSearchResults : this.leads;
     let contacts = leads.map((lead: Lead) => new Contact(lead.phone, lead.name));
@@ -218,8 +209,6 @@ export class LeadsPage implements OnInit {
     modal.onDidDismiss().then(value => {
       if (value.data && value.data.result && value.data.result.success) {
         let result = value.data.result;
-        let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
-        this.showToast(message);
         this.addMessageSentComments(result.text, leads);
       }
     });

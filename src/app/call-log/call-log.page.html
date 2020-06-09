@@ -12,7 +12,9 @@
   <ion-refresher slot="fixed" (ionRefresh)="updateLog($event)">
     <ion-refresher-content refreshingSpinner="circular"></ion-refresher-content>
   </ion-refresher>
-  <!-- <app-onboarding-info key="123"> this is my text 2</app-onboarding-info> -->
+  <app-onboarding-info key="CLICK_ON_LOG_ITEM">
+    {{ 'ONBOARDING_CALL_LOG_CLICK' | translate }}
+  </app-onboarding-info>
   <ion-list>
     <ion-list-header (click)="updateLog()">
       <ion-label>{{ 'MAIN_LATEST_CALLS' | translate }}</ion-label>

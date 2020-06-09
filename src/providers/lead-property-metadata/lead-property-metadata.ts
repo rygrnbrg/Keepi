@@ -18,12 +18,12 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.type,
         title: 'סוג עסקה',
-        description: 'מעוניין ב',
+        description: 'מה {leadName} מעוניין לבצע?',
         options: [
-          new PropertyOption("להשכיר", false, LeadTypeID.Landlord),
           new PropertyOption("לרכוש", false, LeadTypeID.Buyer),
+          new PropertyOption("למכור", false, LeadTypeID.Seller),
           new PropertyOption("לשכור", false, LeadTypeID.Tenant),
-          new PropertyOption("למכור", false, LeadTypeID.Seller)
+          new PropertyOption("להשכיר", false, LeadTypeID.Landlord)
         ],
         icon: 'key',
         type: LeadPropertyType.StringSingleValue,
@@ -33,7 +33,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.property,
         title: 'סוג הנכס',
-        description: 'סוג הנכס',
+        description: 'מה {leadName} מעוניין {dealType}?',
         options: [
           new PropertyOption("דירה"),
           new PropertyOption("קוטג' / בית פרטי"),
@@ -52,21 +52,23 @@ export class LeadPropertyMetadataProvider {
         ],
         icon: 'business',
         type: LeadPropertyType.StringSingleValue,
-        filterable: true
+        filterable: true,
+        editable: true,
+        stringsKey: "PROPERTY_TYPES"
       },
       {
         id: LeadProperty.rooms,
-        title: 'חדרים',
-        description: 'מספר חדרים מבוקש',
+        title: 'מספר חדרים',
+        description: 'במידה והכנס מסחרי, תוכל להזין גודל נכס במטרים',
         options: [
+          new PropertyOption("מסחרי"),
           new PropertyOption("1"),
           new PropertyOption("2"),
           new PropertyOption("3"),
           new PropertyOption("4"),
           new PropertyOption("5"),
           new PropertyOption("6"),
-          new PropertyOption("יותר מ-6"),
-          new PropertyOption("מסחרי")
+          new PropertyOption("יותר מ-6")
         ],
         icon: 'people',
         type: LeadPropertyType.StringSingleValue,
@@ -75,14 +77,14 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.meters,
         title: 'מטרים',
-        description: 'שטח מבוקש במטרים',
+        description: 'שטח מסחרי מבוקש במטרים',
         options: [
           new PropertyOption("עד 50"),
-          new PropertyOption("50 - 100"),
-          new PropertyOption("100 - 200"),
-          new PropertyOption("200 - 500"),
-          new PropertyOption("500 - 1,000"),
-          new PropertyOption("יותר מ-500")
+          new PropertyOption("51 - 100"),
+          new PropertyOption("101 - 200"),
+          new PropertyOption("201 - 500"),
+          new PropertyOption("501 - 1,000"),
+          new PropertyOption("יותר מ-1,000")
         ],
         icon: 'code',
         type: LeadPropertyType.StringSingleValue,
@@ -92,7 +94,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.budget,
         title: 'תקציב',
-        description: 'תקציב בשקלים',
+        description: 'מה המחיר (בשקלים) בו {leadName} מוכן {dealType}?',
         icon: 'cash',
         type: LeadPropertyType.Budget,
         filterable: false
@@ -100,16 +102,18 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.area,
         title: 'אזור',
-        description: 'האזור המבוקש',
+        description: '',
         options: this.getOptions(LeadProperty.area),
         icon: 'map',
         type: LeadPropertyType.StringMultivalue,
-        filterable: true
+        filterable: true,
+        editable: true,
+        stringsKey: "AREAS"
       },
       {
         id: LeadProperty.source,
         title: 'מקור',
-        description: 'מאיפה הליד הגיע אלינו?',
+        description: 'היכן {leadName} שמע עליך?',
         options: [
           new PropertyOption('יד 2'),
           new PropertyOption('אתר הבית'),
@@ -120,7 +124,9 @@ export class LeadPropertyMetadataProvider {
         ],
         icon: 'link',
         type: LeadPropertyType.StringSingleValue,
-        filterable: false
+        filterable: false,
+        editable: true,
+        stringsKey: "SOURCES"
       }
     ];
   }

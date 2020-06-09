@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Contact } from './../../models/lead';
-import { NavController, NavParams, AlertController, Platform, ModalController } from '@ionic/angular';
+import { NavController, NavParams, AlertController, Platform, ModalController, ToastController } from '@ionic/angular';
 import { SMS } from '@ionic-native/sms/ngx';
 import { TranslateService } from '@ngx-translate/core';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -27,10 +27,11 @@ export class MessagePage {
     private translateService: TranslateService,
     private platform: Platform,
     private androidPermissions: AndroidPermissions,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController
   ) {
     this.translateService.get([
-      'SMS_MESSAGE_WILL_BE_SENT_TO', 'CONTACTS', 'GENERAL_CANCEL', 'GENERAL_APPROVE']).subscribe(values => {
+      'SMS_MESSAGE_WILL_BE_SENT_TO', 'CONTACTS', 'GENERAL_CANCEL', 'GENERAL_APPROVE', 'LEADS_RECIEVED_MESSAGE']).subscribe(values => {
         this.translations = values;
       });
 
@@ -84,17 +85,14 @@ export class MessagePage {
       'dismissed': true
     });
   }
-
-  private getSmsPermission(): void {
-    if (this.platform.is("cordova")) {
-      this.sms.hasPermission().then((granted: boolean) => {
-        if (!granted) {
-          this.modalCtrl.dismiss({
-            'dismissed': true
-          });
-        }
-      });
-    }
+  
+  private async showToast(message: string) {
+    let toast = await this.toastCtrl.create({
+      message: message,
+      duration: 3000,
+      position: 'top'
+    });
+    toast.present();
   }
 
 
@@ -127,6 +125,7 @@ export class MessagePage {
       console.log("Contacts list for SMS send is empty");
       return;
     }
+
     let allPhones = this.contacts.map(contact => contact.phone);
     let phones = Array.from(new Set(allPhones.map((item:any)=> item)));
     
@@ -142,8 +141,12 @@ export class MessagePage {
                 console.log(value + " " + phone);              
               });             
             }
-          }   
-          this.modalCtrl.dismiss(result);
+          }  
+          if (value.data && value.data.result && value.data.result.success) {
+            let result = value.data.result;
+            let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
+            this.showToast(message).then(()=>this.modalCtrl.dismiss(result));
+          }
        },
         (reason) => {
           console.log(reason);
@@ -155,7 +158,8 @@ export class MessagePage {
     }
     else {
       let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
-      this.modalCtrl.dismiss(result);
+      let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
+      this.showToast(message).then(()=>this.modalCtrl.dismiss(result));
     }
 
   }

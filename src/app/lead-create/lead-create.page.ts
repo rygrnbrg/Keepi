@@ -27,8 +27,11 @@ export class LeadCreatePage implements OnInit {
     public slideOpts: any = {};
     public activeSlide = 0;
     public isSummarySlide = false;
+    public dealTypeDescription: string;
     private translations: any;
     private activeSlideValid: boolean;
+    private submitted = false;
+    private areasMultiselect;
 
     @ViewChild(IonSlides) slides: IonSlides;
 
@@ -43,14 +46,17 @@ export class LeadCreatePage implements OnInit {
         private toastCtrl: ToastController,
         private navCtrl: NavController,
         private navParams: NavParams,
-        private modalCtrl: ModalController,
-        private router: Router
+        private modalCtrl: ModalController
     ) {
-        this.translate.get([
-            'GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'AREAS_SINGLE',
-            'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD']).subscribe(values => {
-                this.translations = values;
-            });
+        let translations = ['GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 
+        'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD'];
+        let editablePropertiesKeys = this.leadPropertyMetadataProvider.get().filter(x => x.editable).map(x => x.stringsKey);
+        editablePropertiesKeys.forEach(x => translations.push(x + '_SINGLE'));
+
+        this.translate.get(translations).subscribe(values => {
+            this.translations = values;
+        });
+
         this.item = this.navParams.get("lead");
 
         this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
@@ -137,6 +143,15 @@ export class LeadCreatePage implements OnInit {
         this.goToSlide(index + 1);
     }
 
+
+    public removeMetersSlide(index: number) {
+        let metersId = "meters";
+        let slide = this.leadPropertiesMetadata.find(x => x.id === metersId);
+        if (slide && this.leadPropertiesMetadata.indexOf(slide) === index + 1) {
+            this.leadPropertiesMetadata.splice(index + 1, 1);
+        }
+    }
+
     answerButtonClick(slide: LeadPropertyMetadata, button: PropertyOption, index: number): void {
         if (slide.type === LeadPropertyType.StringMultivalue) {
             button.selected = !button.selected;
@@ -145,14 +160,49 @@ export class LeadCreatePage implements OnInit {
             button.selected = true;
         }
 
-        if (slide.id === 'type') {
-            this.resultLead.type = button.id;
-            this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.resultLead.type);
-        }
+        this.handleSpecificSlidesBehavior(slide, button, index);
 
         if (slide.type === LeadPropertyType.StringSingleValue) {
             this.handleSingleValueButtonClick(slide, button);
             this.goToSlide(index + 1);
+        }
+    }
+
+    private handleSpecificSlidesBehavior(slide: LeadPropertyMetadata, button: PropertyOption, index: number) {
+        switch (slide.id) {
+            case LeadProperty.type:
+                this.resultLead.type = button.id;
+                this.dealTypeDescription = button.title;
+                this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.resultLead.type);
+                if (button.selected && (button.id === LeadTypeID.Buyer || button.id === LeadTypeID.Tenant)) {
+                    this.areasMultiselect = true;
+                }
+                else {
+                    this.areasMultiselect = false;
+                }
+                break;
+            case LeadProperty.rooms:
+                if (button.title === "מסחרי") {
+                    this.addMetersSlide(index);
+                }
+                else {
+                    this.removeMetersSlide(index);
+                }
+                break;
+            case LeadProperty.area:
+                if (this.areasMultiselect) {
+
+                }
+                else {
+                    this.handleSingleValueButtonClick(slide, button);
+                    this.goToSlide(index + 1);
+                }
+                break;
+
+
+
+            default:
+                break;
         }
     }
 
@@ -176,17 +226,18 @@ export class LeadCreatePage implements OnInit {
         this.goToSlide(this.activeSlide + 1);
     }
 
-    public async addAreaModal() {
+    public async addOptionModal(slide: LeadPropertyMetadata) {
         const prompt = await this.alertCtrl.create({
             inputs: [{
-                name: 'area',
-                placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]} ${this.translations["AREAS_SINGLE"]} ${this.translations["GENERAL_TO_ADD"]}`
+                name: slide.id,
+                placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]} ${this.translations[slide.stringsKey + "_SINGLE"]} ${this.translations["GENERAL_TO_ADD"]}`
             }],
             buttons: [
                 { text: this.translations.GENERAL_CANCEL },
-                { text: this.translations.GENERAL_APPROVE, handler: async data => {
-                        if (data.area) {
-                            this.addArea(data.area);
+                {
+                    text: this.translations.GENERAL_APPROVE, handler: async data => {
+                        if (data[slide.id]) {
+                            this.addPropValue(LeadProperty[slide.id], data[slide.id]);
                         }
                     }
                 }
@@ -195,15 +246,22 @@ export class LeadCreatePage implements OnInit {
         prompt.present();
     }
 
-    private async addArea(name: string) {
+    private async addPropValue(prop: LeadProperty, name: string) {
         let loading = await this.loadingCtrl.create();
         loading.present()
-        this.user.addSetting(LeadProperty.area, name).then(() => {
-            let areasOptions = this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
-            let newOption = areasOptions.find(x => x.title == name);
+        this.user.addSetting(prop, name).then(() => {
+            let options = this.leadPropertyMetadataProvider.getOptions(prop);
+            let newOption = options.find(x => x.title == name);
+            if (prop === LeadProperty.area && this.areasMultiselect) {
+                newOption.selected = true;
+            }
+            else {
+                let propMetadata = this.leadPropertiesMetadata.find(x => x.id === prop);
+                this.handleSingleValueButtonClick(propMetadata, newOption);
+            }
             newOption.selected = true;
-            this.leadPropertiesMetadata.find(x => x.id == 'area').options.unshift(newOption);
-            this.user.getUserData().settings[LeadProperty.area];
+            this.leadPropertiesMetadata.find(x => x.id == prop).options.unshift(newOption);
+            this.user.getUserData().settings[prop];
             loading.dismiss();
         }, () => {
             this.showToast(this.translations.GENERAL_ACTION_ERROR);
@@ -211,6 +269,10 @@ export class LeadCreatePage implements OnInit {
     }
 
     public async submitSummary() {
+        if (this.submitted) {
+            return;
+        }
+        this.submitted = true;
         let loading = await this.loadingCtrl.create();
         loading.present();
         this.resultLead.area = this.getSimpleSlideValue("area");
@@ -222,16 +284,15 @@ export class LeadCreatePage implements OnInit {
             loading.dismiss();
             this.modalCtrl.dismiss();
             this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
-        });//todo: handle exception
+        }, () => loading.dismiss());//todo: handle exception
     }
 
     private handleSingleValueButtonClick(slide: LeadPropertyMetadata, button: PropertyOption) {
-        if (button.selected) {
-            slide.options.forEach(item => {
-                item.selected = item === button ? true : false;
-            });
-        }
+        slide.options.forEach(item => {
+            item.selected = item === button ? true : false;
+        });
     }
+
     private getSlide(propertyId: string) {
         return this.leadPropertiesMetadata.find(slide => slide.id === propertyId);
     }

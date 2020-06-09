@@ -104,8 +104,6 @@ export class LeadDetailsPage implements OnInit {
     modal.onDidDismiss().then(value => {
       if (value && value.data && value.data.success) {
         let result: SmsResult = value.data;
-        let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
-        this.showToast(message);
         this.addMessageSentComments(result.text).then(() => {
           this.refreshItem();
         });
@@ -255,6 +253,12 @@ export class LeadDetailsPage implements OnInit {
       new LeadFilter("relevant", LeadPropertyType.Boolean, true),
       new LeadFilter(LeadProperty.area, LeadPropertyType.StringMultivalue, this.item.area)
     ];
+
+    if (this.item.meters){
+      this.potentialDealFilters.push(
+        new LeadFilter(LeadProperty.meters, LeadPropertyType.StringSingleValue, this.item.meters)
+      )
+    }
     this.potentialDealFilters.forEach(x=> x.metadata = this.leadPropertiesMetadata.find(y=>y.id === x.id));
     this.dealCount = -1;
     this.leadsProvider.filter(this.potentialDealFilters, this.oppositeLeadType).get().then(

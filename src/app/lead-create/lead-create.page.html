@@ -9,46 +9,50 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [class]="!activeSlideValid? 'swiper-no-swiping':''">
   <div class="scrollbar-container"></div>
   <ion-slides scrollbar="true" [options]="slideOpts" (ionSlideDidChange)="setActiveSlide($event)">
-    <ion-slide *ngFor="let slide of leadPropertiesMetadata; let i = index" [class]="!activeSlideValid? 'swiper-no-swiping':''">
+    <ion-slide *ngFor="let slide of leadPropertiesMetadata; let i = index">
       <ion-grid>
         <ion-row>
           <ion-col size="12">
             <ion-icon [name]="slide.icon + '-outline'" class="slide-icon"></ion-icon>
             <h3 class="slide-title">{{ slide.title | translate }}</h3>
-            <ion-note class="slide-sub-title" [hidden]="slide.type !== leadPropertyType.StringMultivalue">{{ 'MULTIPLE_SELECTION' | translate }}</ion-note>
+            <ion-note class="slide-sub-title">
+              <p *ngIf="slide.id === 'area' && areasMultiselect">{{ 'MULTIPLE_SELECTION' | translate }}</p>
+              <p *ngIf="slide.description">
+                {{ slide.description
+                .replace("{leadName}", item.name)
+                .replace("{dealType}", dealTypeDescription)
+                }}
+              </p>
+            </ion-note>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="slide.options?.length">
+        <ion-row *ngIf="slide.options?.length" class="tight">
           <ion-col size="6" *ngFor="let button of slide.options">
-            <ion-button dir="ltr"  (click)="answerButtonClick(slide, button, i)" fill="solid" 
-            expand="full" [color]="button.selected ? 'secondary' : 'light'">
+            <ion-button dir="ltr" (click)="answerButtonClick(slide, button, i)" fill="solid" expand="full" [color]="button.selected ? 'secondary' : 'light'">
               {{ button.title }}
             </ion-button>
           </ion-col>
         </ion-row>
-        <ion-row [hidden]="slide.type !== leadPropertyType.StringMultivalue">
-          <ion-item class="fab-pad"></ion-item>
-        </ion-row>
-        <ion-row *ngIf="slide.id === 'rooms'" class="margin-top">
+        <!-- <ion-row *ngIf="slide.id === 'rooms'" class="margin-top">
           <ion-col size="12">
             <ion-button color="secondary" expand="full" (click)="addMetersSlide(i);">
               {{ 'METER_DATA_INPUT' | translate }}
             </ion-button>
           </ion-col>
-        </ion-row>
-        <ion-row *ngIf="slide.type === leadPropertyType.Budget" >
+        </ion-row> -->
+        <ion-row *ngIf="slide.type === leadPropertyType.Budget">
           <ion-col size="12" dir="ltr">
-            <budget-slider [dealType]="dealType" [value]="this.resultLead.budget"
-              (valueChanged)="setBudget(slide, $event)" (customValueSelected)="setBudgetButton(slide, $event)"></budget-slider>
+            <budget-slider [dealType]="dealType" [value]="this.resultLead.budget" (valueChanged)="setBudget(slide, $event)"
+              (customValueSelected)="setBudgetButton(slide, $event)"></budget-slider>
           </ion-col>
         </ion-row>
       </ion-grid>
 
-      <ion-fab vertical="top" horizontal="end" *ngIf="slide.id == 'area'">
-        <ion-fab-button mini (click)="addAreaModal()" color="secondary">
+      <ion-fab vertical="top" horizontal="end" *ngIf="slide.editable">
+        <ion-fab-button mini (click)="addOptionModal(slide)" color="secondary">
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>

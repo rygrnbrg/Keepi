@@ -6,6 +6,7 @@ import { LeadFilter } from './../../models/lead-filter';
 import { Component } from '@angular/core';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
 import { TranslateService } from '@ngx-translate/core';
+import { LeadProperty } from 'src/models/LeadProperty';
 
 @Component({
   selector: 'filtered-by',
@@ -16,7 +17,7 @@ export class FilteredByComponent {
   @Input()
   filters: LeadFilter[];
   private translations: any;
-  
+
   public leadPropertyType = LeadPropertyType;
 
   constructor(public numberFormatPipe: NumberFormatPipe, public translateService: TranslateService) {
@@ -26,13 +27,29 @@ export class FilteredByComponent {
       });
   }
 
+  ngOnChanges() {
+    this.moveAreaLast();
+  }
+
+  private moveAreaLast(): void {
+    if (!this.filters) {
+      return;
+    }
+    
+    let index = this.filters.findIndex(x => x.id === LeadProperty.area);
+    if (index > -1) {
+      let removed = this.filters.splice(index, 1);
+      this.filters.concat(removed);
+    }
+  }
+
   public getFilterValueString(filter: LeadFilter): string {
-    if (filter.id === LeadPropertyMetadataProvider.relevanceKey){
+    if (filter.id === LeadPropertyMetadataProvider.relevanceKey) {
       if (filter.value === true) {
         return this.translations.LEAD_RELEVANCE_SHOW_ONLY_RELEVANT_TRUE;
       }
     }
-    if (!filter.metadata){
+    if (!filter.metadata) {
       return "";
     }
     let value = LeadPropertyMetadata.getValueString(filter.metadata, filter.value);

@@ -10,10 +10,11 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "debug android": "ionic capacitor run android -l --externaly"
+    "debug": "ionic capacitor run android -l --externaly"
 
   },
   "private": true,
+  "postinstall": "jetifier",
   "dependencies": {
     "@angular/common": "~9.1.6",
     "@angular/core": "~9.1.6",

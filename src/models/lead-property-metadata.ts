@@ -17,6 +17,8 @@ export class LeadPropertyMetadata {
   public filterable: boolean;
   public hidden?: boolean;
   public mandatory?: boolean;
+  public editable?: boolean;
+  public stringsKey?: string;
 
   static getValueString(
     leadPropertyMetadata: LeadPropertyMetadata,
