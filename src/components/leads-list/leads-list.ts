@@ -72,7 +72,7 @@ export class LeadsListComponent {
   public export() {
     let exports = this.filteredLeads.map(x => this.leadExport(x));
     let result = exports.map((value, i) => (i + 1).toString().concat(`. ${value}`)).join("\n\n");
-    if (this.platform.is("cordova")) {
+    if (this.platform.is("android")) {
       this.socialSharing.canShareViaEmail().then(() => {
         // Sharing via email is possible
         this.socialSharing.share(result, 'Keepi - ייצוא רשימת לידים', []).then(() => {
@@ -91,7 +91,8 @@ export class LeadsListComponent {
 
 
   private leadExport(lead: Lead): string {
-    let result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${lead.created.toLocaleDateString()} \n`;
+    let formattedDate = `${lead.created.getDay()}/${lead.created.getMonth()}/${lead.created.getFullYear()}`;
+    let result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${formattedDate} \n`;
     let leadTypeKey = this.leadTypePipe.transform(lead.type);
     let leadTypeTranslated = this.translations[leadTypeKey];
     result+= `מעוניין ${leadTypeTranslated} `;

@@ -20,7 +20,7 @@ export class LeadSaveContactPage implements OnInit {
   public saveToContacts: boolean;
   public phoneDisabled: boolean;
   private translations: any;
-  private SAVE_CONTACT_CB_VALUE:string = "SAVE_CONTACT_CB_VALUE";
+  private SAVE_CONTACT_CB_VALUE: string = "SAVE_CONTACT_CB_VALUE";
   constructor(
     private navParams: NavParams,
     private modalCtrl: ModalController,
@@ -47,7 +47,7 @@ export class LeadSaveContactPage implements OnInit {
         this.translations = values;
       });
 
-      this.getCheckboxState().then(x=> this.saveToContacts = x);
+    this.getCheckboxState().then(x => this.saveToContacts = x);
   }
 
   public closePage() {
@@ -62,7 +62,7 @@ export class LeadSaveContactPage implements OnInit {
     if (this.saveToContacts) {
       this.getPremissionAndSaveContact();
     }
-
+    this.setCheckboxState();
     this.item.name = this.leadName;
     this.item.phone = this.leadPhone;
     this.gotoLeadCreatePage(this.item)
@@ -81,7 +81,7 @@ export class LeadSaveContactPage implements OnInit {
   }
 
   private getPremissionAndSaveContact() {
-    if (this.platform.is("cordova")) {
+    if (this.platform.is("android")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_CONTACTS).then(
         result => {
           console.log('Check permission?', result.hasPermission);
@@ -104,7 +104,6 @@ export class LeadSaveContactPage implements OnInit {
   }
 
   private saveContact() {
-    this.setCheckboxState();
     let contact: Contact = this.contacts.create();
     contact.name = new ContactName(null, this.leadName);
     contact.phoneNumbers = [new ContactField('mobile', this.leadPhone)];
@@ -121,12 +120,22 @@ export class LeadSaveContactPage implements OnInit {
     );
   }
 
-  private setCheckboxState(){
-    this.nativeStorage.setItem(this.SAVE_CONTACT_CB_VALUE, this.saveToContacts);
+  private setCheckboxState() {
+    console.log(`Saving item to native storage: ${this.SAVE_CONTACT_CB_VALUE}, value: ${this.saveToContacts}`);
+    this.nativeStorage.setItem(this.SAVE_CONTACT_CB_VALUE, this.saveToContacts).then(value => {
+      console.log(`Saved item to native storage: ${this.SAVE_CONTACT_CB_VALUE}, value: ${this.saveToContacts}, ${value}`);
+    });
+
   }
 
   private async getCheckboxState() {
-    return await this.nativeStorage.getItem(this.SAVE_CONTACT_CB_VALUE);
+    return await this.nativeStorage.getItem(this.SAVE_CONTACT_CB_VALUE).then(value => {
+      console.log(`Getting item from native storage: ${this.SAVE_CONTACT_CB_VALUE}, value: ${value}`);
+      return value;
+    }, reason => {
+      console.log(`Failed getting item from native storage: ${this.SAVE_CONTACT_CB_VALUE}, reason: ${reason}`);
+      return false;
+    });
   }
 
   private requestUserWriteContactPermission(): Promise<boolean> {

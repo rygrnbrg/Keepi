@@ -12,9 +12,15 @@
 <ion-content>
   <ion-list>
     <ion-item>
-      <ion-textarea autofocus="true" class="sms-box" rows="5" placeholder="{{'TYPE_SMS_PLACEHOLDER' | translate}}" [(ngModel)]="messageText"></ion-textarea>
+      <ion-textarea autofocus="true" class="sms-box" rows="5" placeholder="{{'TYPE_SMS_PLACEHOLDER' | translate}}"
+        [(ngModel)]="messageText"></ion-textarea>
     </ion-item>
     <ion-item lines="none">
+      <ion-buttons slot="end">
+        <ion-button (click)="send()" [color]="messageText.length? 'secondary': 'medium'">
+          <ion-label>{{'MESSAGE_SEND' | translate}}</ion-label>
+        </ion-button>
+      </ion-buttons>
       <ion-button slot="end" (click)="send()" [color]="messageText.length? 'secondary': 'medium'">
         <ion-label>{{'MESSAGE_SEND' | translate}}</ion-label>
       </ion-button>

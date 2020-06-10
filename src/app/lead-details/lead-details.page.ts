@@ -32,11 +32,13 @@ export class LeadDetailsPage implements OnInit {
   public dealCount: number;
   public oppositeLeadType: LeadTypeID;
   public potentialLeadsDisplay: string;
+  public potentialLeadsArray: any[];
   private translations: any;
   private leadPropertiesMetadata: LeadPropertyMetadata[];
   private subscriptions: Subscription[];
   private potentialDealFilters: LeadFilter[];
   private potentialDealsQuery: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
+  private disableNavigation: boolean;
 
   constructor(
     navParams: NavParams,
@@ -52,6 +54,7 @@ export class LeadDetailsPage implements OnInit {
   ) {
     this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get();
     let item = navParams.get("item");
+    this.disableNavigation = navParams.get("disableNavigation");
     this.loadItem(item);
     // this.refreshItem();
   }
@@ -62,8 +65,8 @@ export class LeadDetailsPage implements OnInit {
 
     let translationSubscription = this.translateService.get([
       'GENERAL_ACTION_ERROR', 'LEADS_RECIEVED_MESSAGE', 'ITEM_CREATE_TYPE_SELECT_TITLE',
-      'BUYER_ACTION', 'SELLER_ACTION', 'TENANT_ACTION', 'LANDLORD_ACTION','LEAD_DETAILS_MATCHES_FOUND',
-      'LEAD_TYPE_PLURAL_BUYER','LEAD_TYPE_PLURAL_SELLER','LEAD_TYPE_PLURAL_TENANT','LEAD_TYPE_PLURAL_LANDLORD', 'GENERAL_FOR']).subscribe(values => {
+      'BUYER_ACTION', 'SELLER_ACTION', 'TENANT_ACTION', 'LANDLORD_ACTION', 'LEAD_DETAILS_MATCHES_FOUND',
+      'LEAD_TYPE_PLURAL_BUYER', 'LEAD_TYPE_PLURAL_SELLER', 'LEAD_TYPE_PLURAL_TENANT', 'LEAD_TYPE_PLURAL_LANDLORD', 'GENERAL_FOR']).subscribe(values => {
         this.translations = values;
       });
 
@@ -78,14 +81,39 @@ export class LeadDetailsPage implements OnInit {
     if (this.dealCount <= 0) {
       return;
     }
-    
+
+    if (this.dealCount === 1) {
+      let dbLead = this.potentialLeadsArray[0];
+      let lead = this.leadsProvider.convertDbObjectToLead(dbLead, this.oppositeLeadType);
+      this.openLeadDetailsPage(lead);
+      return;
+    }
+
+    this.openLeadsViewPage();
+  }
+
+  private async openLeadsViewPage() {
     let modalTitleKey = this.translations[`LEAD_TYPE_PLURAL_${this.oppositeLeadType.toUpperCase()}`];
-    modalTitleKey+= ` ${this.translations['LEAD_DETAILS_MATCHES_FOUND']} ${this.translations['GENERAL_FOR']} ${this.item.name}`
+    modalTitleKey += ` ${this.translations['LEAD_DETAILS_MATCHES_FOUND']} ${this.translations['GENERAL_FOR']} ${this.item.name}`
     let modal = await this.modalCtrl.create({
       component: LeadsViewPage,
-      componentProps: { filters: this.potentialDealFilters, leadType: this.oppositeLeadType, 
-        title: modalTitleKey, query: this.potentialDealsQuery, lead: this.item }
+      componentProps: {
+        filters: this.potentialDealFilters, leadType: this.oppositeLeadType,
+        title: modalTitleKey, query: this.potentialDealsQuery, lead: this.item
+      }
     });
+    modal.present();
+    modal.onDidDismiss().then(value => {
+
+    });
+  }
+
+  private async openLeadDetailsPage(item: Lead) {
+    let modal = await this.modalCtrl.create({
+      component: LeadDetailsPage,
+      componentProps: { item: item, disableNavigation: true },
+    });
+
     modal.present();
     modal.onDidDismiss().then(value => {
 
@@ -254,12 +282,12 @@ export class LeadDetailsPage implements OnInit {
       new LeadFilter(LeadProperty.area, LeadPropertyType.StringMultivalue, this.item.area)
     ];
 
-    if (this.item.meters){
+    if (this.item.meters) {
       this.potentialDealFilters.push(
         new LeadFilter(LeadProperty.meters, LeadPropertyType.StringSingleValue, this.item.meters)
       )
     }
-    this.potentialDealFilters.forEach(x=> x.metadata = this.leadPropertiesMetadata.find(y=>y.id === x.id));
+    this.potentialDealFilters.forEach(x => x.metadata = this.leadPropertiesMetadata.find(y => y.id === x.id));
     this.dealCount = -1;
     this.leadsProvider.filter(this.potentialDealFilters, this.oppositeLeadType).get().then(
       (querySnapshot) => {
@@ -267,13 +295,13 @@ export class LeadDetailsPage implements OnInit {
         this.potentialDealsQuery = querySnapshot;
         this.potentialLeadsDisplay = "";
         setTimeout(() => {
-          let leadArray = [];
+          this.potentialLeadsArray = [];
           this.dealCount = querySnapshot.size;
-          querySnapshot.forEach(x=> {
-            leadArray.push(x.data()["name"]);
+          querySnapshot.forEach(x => {
+            this.potentialLeadsArray.push(x.data());
           });
 
-          this.potentialLeadsDisplay = leadArray.join(", ");
+          this.potentialLeadsDisplay = this.potentialLeadsArray.map(x=>x["name"]).join(", ");
         }, 1000);
       }
     ).catch();

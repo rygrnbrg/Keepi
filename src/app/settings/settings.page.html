@@ -9,6 +9,9 @@
 </ion-header>
 
 <ion-content>
+    <app-onboarding-info key="ONBOARDING_SETTINGS" *ngIf="page === 'main'">
+        {{ 'ONBOARDING_SETTINGS' | translate }}
+    </app-onboarding-info>
     <ion-list *ngIf="page == 'main'" class="items-list">
         <ion-list-header>
             {{ 'SETTINGS_ACCOUNT' | translate }}

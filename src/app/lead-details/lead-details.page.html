@@ -30,7 +30,7 @@
       <ion-icon name="call" slot="end" color="primary" (click)="call()"></ion-icon>
     </ion-item>
 
-    <ion-item (click)="potentialDealMatchesClick()">
+    <ion-item (click)="potentialDealMatchesClick()" *ngIf="!disableNavigation">
       <ion-icon [name]="dealCount > 0? 'bulb': 'bulb-outline'" icon slot="start" color="secondary " ></ion-icon>
       <ion-icon name="arrow-back" slot="end" color="primary" [hidden]="dealCount < 1"></ion-icon>
       <ion-label *ngIf="dealCount === -1">

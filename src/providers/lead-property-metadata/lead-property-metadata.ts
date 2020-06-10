@@ -94,7 +94,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.budget,
         title: 'תקציב',
-        description: 'מה המחיר (בשקלים) בו {leadName} מוכן {dealType}?',
+        description: 'מה המחיר (בשקלים) בו {leadName} מוכנ/ה {dealType}?',
         icon: 'cash',
         type: LeadPropertyType.Budget,
         filterable: false

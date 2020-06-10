@@ -7,6 +7,7 @@ import { SettingsPageRoutingModule } from './settings-routing.module';
 import { SettingsPage } from './settings.page';
 import { TranslateModule } from '@ngx-translate/core';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { ComponentsModule } from 'src/components/components.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { PipesModule } from 'src/pipes/pipes.module';
     IonicModule,
     SettingsPageRoutingModule,
     TranslateModule,
-    PipesModule
+    PipesModule,
+    ComponentsModule
   ],
   providers: [NavParams, FormBuilder],
   declarations: [SettingsPage]

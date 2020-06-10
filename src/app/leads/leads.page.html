@@ -8,18 +8,21 @@
       </ion-button>
       <ion-button (click)="filterLeadsClick()" [hidden]="activeFilters">
         {{ "GENERAL_FILTER" | translate }}
-        <ion-icon name="funnel" color="primary" ></ion-icon>
+        <ion-icon name="funnel" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end" *ngIf="isModal">
-        <ion-button (click)="closePage()">
-            <ion-icon name="close"></ion-icon>
-          </ion-button>
-      </ion-buttons>
+      <ion-button (click)="closePage()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <app-onboarding-info key="ONBOARDING_CALL_LOG_CLICK">
+    {{"ONBOARDING_LEADS" | translate}}
+  </app-onboarding-info>
   <ion-list [hidden]="filterSearchRunning">
     <lead-type-select *ngIf="selectedLeadType" [value]="selectedLeadType" [dropdownSelect]="true" [iconsView]="false"
       label="LEAD_TYPE_SELECTION" (valueChanged)="leadTypeChanged($event)"></lead-type-select>

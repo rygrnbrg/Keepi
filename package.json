@@ -10,7 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "debug": "ionic capacitor run android -l --externaly"
+    "debug": "ionic capacitor run android -l --address=0.0.0.0",
+    "sync": "ionic capacitor copy android"
 
   },
   "private": true,

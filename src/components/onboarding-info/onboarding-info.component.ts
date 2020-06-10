@@ -15,25 +15,35 @@ export class OnboardingInfoComponent implements OnInit {
 
   public isRelevant = false;
   constructor(private nativeStorage: NativeStorage, private platform: Platform) {
-    if (this.platform.is("cordova")) {
-      nativeStorage.getItem(this.key).then((value) => {
+
+  }
+
+  public markNotrelevant() {
+    console.log(`Saving item to native storage: ${this.key}, value: ${true}}`);
+    this.nativeStorage.setItem(this.key, true).then(value => {
+      console.log(`Saved item to native storage: ${this.key}, value: ${true}, ${value}}`);
+    });
+    this.isRelevant = false;
+  }
+
+  ngOnInit() {
+    if (this.platform.is("android")) {
+      console.log(`Getting item from native storage: ${this.key}}`);
+      this.nativeStorage.getItem(this.key).then((value) => {
+        console.log(`Got item from native storage: ${this.key}, value: ${value}}`);
         if (value) {
           this.isRelevant = false;
         }
         else {
           this.isRelevant = true;
         }
+      }, reason => {
+        console.log(`Failed getting item from native storage: ${this.key}, reason: ${reason}}`);
+        this.isRelevant = true;
       });
     }
-    else{
+    else {
       this.isRelevant = true;
     }
   }
-
-  public markNotrelevant() {
-    this.nativeStorage.setItem(this.key, true);
-    this.isRelevant = false;
-  }
-  ngOnInit() { }
-
 }

@@ -11,6 +11,7 @@ import { MessagePage } from '../message/message.page';
 import { TranslateService } from '@ngx-translate/core';
 import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
 import { LeadProperty } from 'src/models/LeadProperty';
+import { LeadDetailsPage } from '../lead-details/lead-details.page';
 
 
 @Component({
@@ -60,7 +61,7 @@ export class LeadsViewPage implements OnInit {
       let data = doc.data();
       this.queryLeadsSearchResults.push(data);
     });
-    this.filters = this.filters.filter(x=>x.id !== "relevant");
+    this.filters = this.filters.filter(x => x.id !== "relevant");
     this.filterLeadsByRange();
   }
 
@@ -70,8 +71,16 @@ export class LeadsViewPage implements OnInit {
     });
   }
 
-  public openLeadDetails(item: Lead){
+  public async openLeadDetails(item: Lead) {
+    let modal = await this.modalCtrl.create({
+      component: LeadDetailsPage,
+      componentProps: { item: item, disableNavigation: true },
+    });
 
+    modal.present();
+    modal.onDidDismiss().then(value => {
+
+    });
   }
 
   public budgetChanged(range: rangeValue) {

@@ -17,7 +17,7 @@ export class CallLogPage {
     log: Lead[];
     keys: string[];
     private lastLogDate: any;
-    private CALL_LOG_DAYS: number = 10;
+    private CALL_LOG_DAYS: number = 7;
     private gotCallLogReadPermission: Trinary;
 
     constructor(
@@ -30,7 +30,7 @@ export class CallLogPage {
     };
 
     public updateLog(refresherEvent?: any) {
-        if (this.platform.is("android") && this.platform.is("cordova")) {
+        if (this.platform.is("android")) {
             if (this.gotCallLogReadPermission === Trinary.Yes) {
                 this.refreshAndroidCallLog(refresherEvent);
                 return;
@@ -49,6 +49,9 @@ export class CallLogPage {
         }
         else {
             this.mockLog();
+            if (refresherEvent) {
+                refresherEvent.target.complete();
+            }
         }
     }
 
@@ -77,31 +80,37 @@ export class CallLogPage {
     }
 
     private getUniqueCallerLog(log: Caller[]): Lead[] {
-        let fullLog = log.slice(0, 20).map((x) => new Lead(x.number ? x.number : "", x.name ? x.name : ""));
+        let fullLog = log.map((x) => new Lead(x.number ? x.number : "", x.name ? x.name : ""));
 
-        let uniqueItemsLog: Lead[] = [];
-        fullLog.slice(0,20).forEach(item => {
-            let existingItem = uniqueItemsLog.find(x => x.phone === item.phone && x.name === item.name);
-            if (!existingItem) {
-                uniqueItemsLog.push(item);
+        let uniqueItemsMap = {};
+        let uniqueItemsArray = [];
+
+        fullLog.forEach(item => {
+            let itemStr = `${item.phone}_${item.name}`;          
+            if (!uniqueItemsMap[itemStr]){
+                uniqueItemsMap[itemStr] = true;
+                uniqueItemsArray.push(item);
             }
         });
 
-        return uniqueItemsLog;
+        return uniqueItemsArray.slice(0,50);
     }
 
+
     public async addLead(lead?: Lead) {
-        if (!lead) {
-            lead = new Lead("", "");
-        }
-        else if (lead.name) {
+        if (lead.name && lead.phone) {
             this.gotoLeadCreatePage(lead);
             return;
         }
 
+        let leadToAdd = new Lead("", "");
+        if (lead) {
+            leadToAdd = new Lead(lead.phone, lead.name);
+        }
+
         let modal = await this.modalCtrl.create({
             component: LeadSaveContactPage,
-            componentProps: { lead: lead }
+            componentProps: { lead: leadToAdd }
         });
         modal.present();
         modal.onDidDismiss().then(value => {
@@ -138,7 +147,8 @@ export class CallLogPage {
         for (let index = 0; index < 3; index++) {
             log.push(<Caller>{ number: "0528626684" + index });
         }
-        for (let index = 0; index < 10; index++) {
+        for (let index = 0; index < 400; index++) {
+            log.push(<Caller>{ number: "0528626684" + index, name: "איש קשר מספר " + index });
             log.push(<Caller>{ number: "0528626684" + index, name: "איש קשר מספר " + index });
         }
 

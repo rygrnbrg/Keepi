@@ -1,0 +1,16 @@
+@import "../../theme/variables.scss";
+
+.onboarding-logo {
+  background-image: url("../../assets/img/keepi-face-sm.png");
+  background-position: center;
+  background-size: contain;
+  height: 50px;
+  background-repeat: no-repeat;
+}
+
+.onboarding-pre{
+    font-weight: bold;
+    text-align: center;
+    margin: $content-margin/2 0;
+    // margin-left: $content-margin;
+}

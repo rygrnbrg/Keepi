@@ -44,7 +44,7 @@ export class MessagePage {
   }
 
   private askAndroidSMSPermissions() {
-    if (this.platform.is("cordova")) {
+    if (this.platform.is("android")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
         result => result.hasPermission? console.log('Ceck permission?', result.hasPermission) : this.requestUserSMSPermission(),
         err => this.requestUserSMSPermission()
@@ -129,7 +129,7 @@ export class MessagePage {
     let allPhones = this.contacts.map(contact => contact.phone);
     let phones = Array.from(new Set(allPhones.map((item:any)=> item)));
     
-    if (this.platform.is("cordova")) {
+    if (this.platform.is("android")) {
       this.sms.send(phones[0], this.messageText).then(
         (value) => {
           console.log(value + " " + phones[0]);

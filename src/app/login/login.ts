@@ -33,8 +33,14 @@ export class LoginPage {
   }
 
   ionViewWillEnter() {
+    console.log(`Getting item from native storage: ${AuthProvider.emailStorageKey}`);
     this.storage.getItem(AuthProvider.emailStorageKey).then(
-      (email) => this.account.email = email
+      (email) => {
+        console.log(`Got item from native storage: ${AuthProvider.emailStorageKey}, value: ${email}`);
+        this.account.email = email;
+      }, reason => {
+        console.log(`Failed getting item from native storage: ${AuthProvider.emailStorageKey}, reason: ${reason}`);
+      }
     );
   }
 

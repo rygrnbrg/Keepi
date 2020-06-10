@@ -26,7 +26,8 @@ ANDROID
 Open in Android studio:
     ionic cap open android
 Live reload:
-    ionic cap run android -l --external
+    ionic cap run android -l --external (npm run debug)
+
 Permissions for android:
 android/app/src/main/AndroidManifest.xml
 
