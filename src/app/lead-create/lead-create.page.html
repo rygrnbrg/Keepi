@@ -90,7 +90,8 @@
 <ion-footer class="ion-no-border">
   <ion-fab vertical="bottom" horizontal="center">
     <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'medium'" (click)="handleContinueClick()">
-      <ion-icon name="arrow-back"></ion-icon>
+      <ion-icon name="arrow-back" [hidden]="isSummarySlide"></ion-icon>
+      <ion-label [hidden]="!isSummarySlide">{{'GENERAL_APPROVE' | translate}}</ion-label>
     </ion-fab-button>
   </ion-fab>
 </ion-footer>

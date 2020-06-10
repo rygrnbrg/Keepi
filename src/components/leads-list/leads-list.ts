@@ -72,7 +72,7 @@ export class LeadsListComponent {
   public export() {
     let exports = this.filteredLeads.map(x => this.leadExport(x));
     let result = exports.map((value, i) => (i + 1).toString().concat(`. ${value}`)).join("\n\n");
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is("hybrid")) {
       this.socialSharing.canShareViaEmail().then(() => {
         // Sharing via email is possible
         this.socialSharing.share(result, 'Keepi - ייצוא רשימת לידים', []).then(() => {

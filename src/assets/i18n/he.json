@@ -22,6 +22,7 @@
   "GENERAL_NOT_FOUND": "לא נמצאו",
   "GENERAL_RESULTS": "תוצאות",
   "GENERAL_TO_ADD": "להוספה",
+  "GENERAL_ADD_VALUE": "הוספת ערך",
   "NAME": "שם",
   "PASSWORD": "סיסמה",
   "EMAIL": "דואר אלקטרוני",
@@ -38,11 +39,6 @@
   "BUDGET_RANGE": "טווח תקציב",
 
   "SETTINGS_TITLE": "הגדרות",
-  "SETTINGS_OPTION1": "אופציה 1",
-  "SETTINGS_OPTION2": "אופציה 2",
-  "SETTINGS_OPTION3": "אופציה 3",
-  "SETTINGS_OPTION4": "אופציה 4",
-
   "SETTINGS_PAGE_PROFILE": "עריכת פרופיל",
   "SETTINGS_PREFERENCES": "התאמה אישית",
   "SETTINGS_ACCOUNT": "חשבון",

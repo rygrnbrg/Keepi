@@ -17,13 +17,10 @@
     </ion-item>
     <ion-item lines="none">
       <ion-buttons slot="end">
-        <ion-button (click)="send()" [color]="messageText.length? 'secondary': 'medium'">
+        <ion-button size="medium" (click)="send()" [color]="messageText.length? 'secondary': 'medium'" fill="solid"> 
           <ion-label>{{'MESSAGE_SEND' | translate}}</ion-label>
         </ion-button>
       </ion-buttons>
-      <ion-button slot="end" (click)="send()" [color]="messageText.length? 'secondary': 'medium'">
-        <ion-label>{{'MESSAGE_SEND' | translate}}</ion-label>
-      </ion-button>
     </ion-item>
     <ion-list-header class="fab-align">
       {{'SMS_MESSAGE_WILL_BE_SENT_TO' | translate}}-{{contacts.length}} {{'CONTACTS' | translate}}

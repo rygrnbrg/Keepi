@@ -18,6 +18,7 @@ export class MessagePage {
   public contactsHeaderLimit: number = 5;
   public messageText: string = "";
   private translations: any;
+  private messageSent: boolean;
 
   constructor(
     public navCtrl: NavController,
@@ -44,9 +45,9 @@ export class MessagePage {
   }
 
   private askAndroidSMSPermissions() {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is("hybrid")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
-        result => result.hasPermission? console.log('Ceck permission?', result.hasPermission) : this.requestUserSMSPermission(),
+        result => result.hasPermission ? console.log('Ceck permission?', result.hasPermission) : this.requestUserSMSPermission(),
         err => this.requestUserSMSPermission()
       );
     }
@@ -59,15 +60,15 @@ export class MessagePage {
   }
 
   public removeContact(contact: Contact): void {
-    if (this.contacts.length == 1){
+    if (this.contacts.length == 1) {
       return;
     }
-    
+
     this.contacts.splice(this.contacts.indexOf(contact), 1);
   }
 
   public send() {
-    if (this.contacts.length == 0 || !this.messageText || !this.messageText.length){
+    if (this.contacts.length == 0 || !this.messageText || !this.messageText.length) {
       console.log("Contacts list for SMS send is empty");
       return;
     }
@@ -85,7 +86,7 @@ export class MessagePage {
       'dismissed': true
     });
   }
-  
+
   private async showToast(message: string) {
     let toast = await this.toastCtrl.create({
       message: message,
@@ -121,33 +122,34 @@ export class MessagePage {
   }
 
   private sendSMS() {
-    if (this.contacts.length == 0 || !this.messageText || !this.messageText.length){
+    if (this.messageSent === true){
+      return;
+    }
+    
+    if (this.contacts.length == 0 || !this.messageText || !this.messageText.length) {
       console.log("Contacts list for SMS send is empty");
       return;
     }
 
     let allPhones = this.contacts.map(contact => contact.phone);
-    let phones = Array.from(new Set(allPhones.map((item:any)=> item)));
-    
-    if (this.platform.is("android")) {
+    let phones = Array.from(new Set(allPhones.map((item: any) => item)));
+
+    if (this.platform.is("android") && this.platform.is("hybrid")) {
       this.sms.send(phones[0], this.messageText).then(
         (value) => {
-          console.log(value + " " + phones[0]);
-          let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
-          if (phones.length > 1){
+          this.messageSent = true;
+          console.log("Meassage sent to " + phones[0], "value is: " + value);
+          if (phones.length > 1) {
             for (let index = 1; index < phones.length; index++) {
               let phone = phones[index];
-              this.sms.send(phone, this.messageText).then((value)=>{
-                console.log(value + " " + phone);              
-              });             
+              this.sms.send(phone, this.messageText).then((value) => {
+                console.log("Meassage sent to " + phone, "value is: " + value);
+              });
             }
-          }  
-          if (value.data && value.data.result && value.data.result.success) {
-            let result = value.data.result;
-            let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
-            this.showToast(message).then(()=>this.modalCtrl.dismiss(result));
           }
-       },
+          let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", phones.length);
+          this.showToast(message).then(() => this.modalCtrl.dismiss());
+        },
         (reason) => {
           console.log(reason);
           if (reason === "User has denied permission") {
@@ -159,7 +161,7 @@ export class MessagePage {
     else {
       let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
       let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", result.sentCount);
-      this.showToast(message).then(()=>this.modalCtrl.dismiss(result));
+      this.showToast(message).then(() => this.modalCtrl.dismiss(result));
     }
 
   }

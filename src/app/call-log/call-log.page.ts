@@ -30,7 +30,7 @@ export class CallLogPage {
     };
 
     public updateLog(refresherEvent?: any) {
-        if (this.platform.is("android")) {
+        if (this.platform.is("android") && this.platform.is("hybrid")) {
             if (this.gotCallLogReadPermission === Trinary.Yes) {
                 this.refreshAndroidCallLog(refresherEvent);
                 return;

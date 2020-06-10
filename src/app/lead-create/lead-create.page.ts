@@ -48,8 +48,8 @@ export class LeadCreatePage implements OnInit {
         private navParams: NavParams,
         private modalCtrl: ModalController
     ) {
-        let translations = ['GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 
-        'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD'];
+        let translations = ['GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'GENERAL_ADD_VALUE',
+            'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD'];
         let editablePropertiesKeys = this.leadPropertyMetadataProvider.get().filter(x => x.editable).map(x => x.stringsKey);
         editablePropertiesKeys.forEach(x => translations.push(x + '_SINGLE'));
 
@@ -228,6 +228,7 @@ export class LeadCreatePage implements OnInit {
 
     public async addOptionModal(slide: LeadPropertyMetadata) {
         const prompt = await this.alertCtrl.create({
+            header: this.translations["GENERAL_ADD_VALUE"],
             inputs: [{
                 name: slide.id,
                 placeholder: `${this.translations["SETTINGS_ITEM_ADD_PLACEHOLDER"]} ${this.translations[slide.stringsKey + "_SINGLE"]} ${this.translations["GENERAL_TO_ADD"]}`
@@ -248,7 +249,7 @@ export class LeadCreatePage implements OnInit {
 
     private async addPropValue(prop: LeadProperty, name: string) {
         let loading = await this.loadingCtrl.create();
-        loading.present()
+        loading.present();
         this.user.addSetting(prop, name).then(() => {
             let options = this.leadPropertyMetadataProvider.getOptions(prop);
             let newOption = options.find(x => x.title == name);
@@ -262,10 +263,9 @@ export class LeadCreatePage implements OnInit {
             newOption.selected = true;
             this.leadPropertiesMetadata.find(x => x.id == prop).options.unshift(newOption);
             this.user.getUserData().settings[prop];
-            loading.dismiss();
         }, () => {
             this.showToast(this.translations.GENERAL_ACTION_ERROR);
-        });//todo:handle error
+        }).finally(() => loading.dismiss());
     }
 
     public async submitSummary() {
@@ -281,10 +281,9 @@ export class LeadCreatePage implements OnInit {
         this.resultLead.source = this.getSimpleSlideValue("source");
         this.resultLead.meters = this.getSimpleSlideValue("meters");
         this.leads.add(this.resultLead).then(() => {
-            loading.dismiss();
             this.modalCtrl.dismiss();
             this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
-        }, () => loading.dismiss());//todo: handle exception
+        }, ).finally(() => loading.dismiss());//todo: handle exception
     }
 
     private handleSingleValueButtonClick(slide: LeadPropertyMetadata, button: PropertyOption) {

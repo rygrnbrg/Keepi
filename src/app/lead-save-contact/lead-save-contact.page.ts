@@ -81,7 +81,7 @@ export class LeadSaveContactPage implements OnInit {
   }
 
   private getPremissionAndSaveContact() {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is("hybrid")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_CONTACTS).then(
         result => {
           console.log('Check permission?', result.hasPermission);

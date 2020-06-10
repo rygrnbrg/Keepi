@@ -27,7 +27,7 @@ export class OnboardingInfoComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.platform.is("android")) {
+    if (this.platform.is("android") && this.platform.is("hybrid")) {
       console.log(`Getting item from native storage: ${this.key}}`);
       this.nativeStorage.getItem(this.key).then((value) => {
         console.log(`Got item from native storage: ${this.key}, value: ${value}}`);
