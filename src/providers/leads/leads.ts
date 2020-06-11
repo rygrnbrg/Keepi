@@ -132,7 +132,7 @@ export class LeadsProvider {
   }
 
   public getQuerySnapshotPromise(item: Lead): Promise<firestore.QuerySnapshot> {
-    let promise = this.leadsDictionary[item.type.toString()].where("phone", "==", item.phone).where("created", "==", item.created).get();
+    let promise = this.leadsDictionary[item.type.toString()].where("phone", "==", item.phone).where("name", "==", item.name).get();
     return promise;
   }
 

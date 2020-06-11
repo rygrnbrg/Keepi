@@ -16,6 +16,7 @@ import { Trinary } from 'src/models/trinary';
 export class CallLogPage {
     log: Lead[];
     keys: string[];
+    public refreshing :boolean;
     private lastLogDate: any;
     private CALL_LOG_DAYS: number = 7;
     private gotCallLogReadPermission: Trinary;
@@ -48,10 +49,7 @@ export class CallLogPage {
             });
         }
         else {
-            this.mockLog();
-            if (refresherEvent) {
-                refresherEvent.target.complete();
-            }
+            this.mockLog(refresherEvent);
         }
     }
 
@@ -67,6 +65,7 @@ export class CallLogPage {
     }
 
     private refreshAndroidCallLog(refresherEvent?: any) {
+        this.refreshing = true;
         this.callLog.getCallLog(this.getLogFilter(this.CALL_LOG_DAYS)).then((result: Caller[]) => {
             if (result && result.length && result[0].date !== this.lastLogDate) {
                 this.lastLogDate = result[0].date
@@ -76,6 +75,7 @@ export class CallLogPage {
             if (refresherEvent) {
                 refresherEvent.target.complete();
             }
+            this.refreshing = false;
         });
     }
 
@@ -155,10 +155,12 @@ export class CallLogPage {
         let freshLog = this.getUniqueCallerLog(log);
         this.log = freshLog;
 
+        this.refreshing = true;
         setTimeout(() => {
             if (refresherEvent) {
                 refresherEvent.target.complete();
             }
+            this.refreshing = false;
         }, 2000);
     }
 

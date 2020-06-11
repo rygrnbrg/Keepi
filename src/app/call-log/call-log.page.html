@@ -16,8 +16,14 @@
     {{ 'ONBOARDING_CALL_LOG_CLICK' | translate }}
   </app-onboarding-info>
   <ion-list>
-    <ion-list-header (click)="updateLog()">
-      <ion-label>{{ 'MAIN_LATEST_CALLS' | translate }}</ion-label>
+    <ion-list-header>
+      <ion-label>
+        {{ 'MAIN_LATEST_CALLS' | translate }}
+      </ion-label>
+      <ion-button (click)="updateLog()">
+        <ion-icon class="header-inline-icon" name="refresh" [hidden]="refreshing"></ion-icon>
+        <ion-spinner name="crescent" [hidden]="!refreshing"></ion-spinner>
+      </ion-button>
     </ion-list-header>
     <ion-item *ngFor="let item of log" (click)="addLead(item)">
       <ion-avatar slot="start">

@@ -118,28 +118,28 @@ export class LeadsPage implements OnInit {
   }
 
 
-  private initLeadSubscription() {
+  private async initLeadSubscription() {
     let leadTypeKey = this.selectedLeadType.id.toString().toLowerCase();
 
     if (this.leadsDictionary[leadTypeKey]) {
       this.leads = this.leadsDictionary[leadTypeKey];
     }
     else {
+      let loading = await this.loadingCtrl.create();
+      loading.present();
+
       this.leadsProvider.get(this.selectedLeadType.id).get().then(
         (res) => {
           let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id));
           this.leadsDictionary[leadTypeKey] = this.sortLeads(leads);
           this.leads = this.leadsDictionary[leadTypeKey];
-          //this.loading.dismiss();
         },
         (err) => {
           if (this.user.getUserData() === null) {
             return;
           }
-
-          //this.loading.dismiss();
           console.error(err);
-        });
+        }).finally(()=> loading.dismiss());
     }
   }
 
@@ -181,7 +181,7 @@ export class LeadsPage implements OnInit {
         });
         this.filterLeadsByRange();
       }
-    ).catch(reason => loading.dismiss());
+    ).finally(() => loading.dismiss());
   }
 
 
