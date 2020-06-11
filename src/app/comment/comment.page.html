@@ -15,7 +15,7 @@
       <ion-textarea class="sms-box" rows="5" placeholder="{{'ADD_COMMENT_PLACEHOLDER' | translate}}" [(ngModel)]="text"></ion-textarea>
     </ion-item>
     <ion-item lines="none">
-      <ion-button slot="end" (click)="submit()" [color]="text.length? 'secondary': 'medium'">
+      <ion-button  size="medium"  slot="end" (click)="submit()" [color]="text.length? 'secondary': 'medium'">
         <ion-label>{{'GENERAL_SAVE' | translate}}</ion-label>
       </ion-button>
     </ion-item>

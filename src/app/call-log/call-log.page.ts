@@ -98,7 +98,7 @@ export class CallLogPage {
 
 
     public async addLead(lead?: Lead) {
-        if (lead.name && lead.phone) {
+        if (lead && lead.name && lead.phone) {
             this.gotoLeadCreatePage(lead);
             return;
         }
