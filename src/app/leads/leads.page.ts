@@ -125,22 +125,38 @@ export class LeadsPage implements OnInit {
       this.leads = this.leadsDictionary[leadTypeKey];
     }
     else {
-      let loading = await this.loadingCtrl.create();
-      loading.present();
-
-      this.leadsProvider.get(this.selectedLeadType.id).get().then(
-        (res) => {
-          let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id));
-          this.leadsDictionary[leadTypeKey] = this.sortLeads(leads);
-          this.leads = this.leadsDictionary[leadTypeKey];
-        },
-        (err) => {
-          if (this.user.getUserData() === null) {
-            return;
-          }
-          console.error(err);
-        }).finally(()=> loading.dismiss());
+      this.refreshLeads();
     }
+  }
+
+  public async refreshLeads(refresherEvent?: any) {
+    let leadTypeKey = this.selectedLeadType.id.toString().toLowerCase();
+    let loading;
+    
+    if (!refresherEvent) {
+      loading = await this.loadingCtrl.create();
+      loading.present();
+    }
+
+    this.leadsProvider.get(this.selectedLeadType.id).get().then(
+      (res) => {
+        let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id));
+        this.leadsDictionary[leadTypeKey] = this.sortLeads(leads);
+        this.leads = this.leadsDictionary[leadTypeKey];
+      },
+      (err) => {
+        if (this.user.getUserData() === null) {
+          return;
+        }
+        console.error(err);
+      }).finally(() => {
+        if (loading) {
+          loading.dismiss()
+        }
+        if (refresherEvent) {
+          refresherEvent.target.complete();
+        }
+      });
   }
 
   public async filterLeadsClick() {

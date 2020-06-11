@@ -16,7 +16,7 @@ import { Trinary } from 'src/models/trinary';
 export class CallLogPage {
     log: Lead[];
     keys: string[];
-    public refreshing :boolean;
+    public refreshing: boolean;
     private lastLogDate: any;
     private CALL_LOG_DAYS: number = 7;
     private gotCallLogReadPermission: Trinary;
@@ -65,7 +65,9 @@ export class CallLogPage {
     }
 
     private refreshAndroidCallLog(refresherEvent?: any) {
-        this.refreshing = true;
+        if (!refresherEvent) {
+            this.refreshing = true;
+        }
         this.callLog.getCallLog(this.getLogFilter(this.CALL_LOG_DAYS)).then((result: Caller[]) => {
             if (result && result.length && result[0].date !== this.lastLogDate) {
                 this.lastLogDate = result[0].date
@@ -86,14 +88,14 @@ export class CallLogPage {
         let uniqueItemsArray = [];
 
         fullLog.forEach(item => {
-            let itemStr = `${item.phone}_${item.name}`;          
-            if (!uniqueItemsMap[itemStr]){
+            let itemStr = `${item.phone}_${item.name}`;
+            if (!uniqueItemsMap[itemStr]) {
                 uniqueItemsMap[itemStr] = true;
                 uniqueItemsArray.push(item);
             }
         });
 
-        return uniqueItemsArray.slice(0,50);
+        return uniqueItemsArray.slice(0, 50);
     }
 
 
@@ -155,7 +157,9 @@ export class CallLogPage {
         let freshLog = this.getUniqueCallerLog(log);
         this.log = freshLog;
 
-        this.refreshing = true;
+        if (!refresherEvent) {
+            this.refreshing = true;
+        }
         setTimeout(() => {
             if (refresherEvent) {
                 refresherEvent.target.complete();

@@ -20,6 +20,9 @@
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refreshLeads($event)">
+    <ion-refresher-content refreshingSpinner="circular"></ion-refresher-content>
+  </ion-refresher>
   <app-onboarding-info key="ONBOARDING_CALL_LOG_CLICK">
     {{"ONBOARDING_LEADS" | translate}}
   </app-onboarding-info>

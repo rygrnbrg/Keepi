@@ -113,7 +113,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.source,
         title: 'מקור',
-        description: 'היכן {leadName} שמע עליך?',
+        description: 'היכן {leadName} שמע/ה עליך?',
         options: [
           new PropertyOption('יד 2'),
           new PropertyOption('אתר הבית'),
