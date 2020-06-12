@@ -36,10 +36,11 @@ export class FilteredByComponent {
       return;
     }
     
+    this.filters = this.filters.map(x=>Object.assign({}, x));
     let index = this.filters.findIndex(x => x.id === LeadProperty.area);
     if (index > -1) {
       let removed = this.filters.splice(index, 1);
-      this.filters.concat(removed);
+      this.filters.push(removed[0]);
     }
   }
 
