@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-        {{ "FILTER_PAGE_HEADER" | translate }}
+      {{ "FILTER_PAGE_HEADER" | translate }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="closePage()">
@@ -24,20 +24,17 @@
         </ion-label>
         <ion-icon [name]="filter.selected ? 'arrow-down' : 'arrow-back'" slot="end"></ion-icon>
       </ion-item>
-      <div *ngIf="filter.metadata && filter.metadata.type !== leadPropertyType.Budget">
-        <ion-item [hidden]="!filter.selected" class="item-grid">
-          <ion-grid>
-            <ion-row>
-              <ion-col *ngFor="let option of filter.metadata.options" size="6">
-                <ion-button expand="block" size="small" 
-                [color]="option.selected? 'secondary' : 'dark'" 
-                [fill]="option.selected? 'solid': 'outline'"
-                (click)="optionClick(filter, option)">
-                  {{ option.title }}
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+      <ion-radio-group (ionChange)="handleSingleOptionValueClick(filter, $event)" [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringSingleValue">
+        <ion-item *ngFor="let option of filter.metadata.options">
+          <ion-label>{{option.title}}</ion-label>
+          <ion-radio [value]="option.title" slot="start"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+
+      <div [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringMultivalue">
+        <ion-item *ngFor="let option of filter.metadata.options">
+          <ion-label>{{option.title}}</ion-label>
+          <ion-checkbox [checked]="option.selected" slot="start" (ionChange)="handleMultivalueOptionValueClick(filter, option, $event)"></ion-checkbox>
         </ion-item>
       </div>
       <div *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.Budget" [hidden]="!filter.selected">
@@ -47,17 +44,17 @@
     </div>
     <ion-item class="no-margin">
       <ion-icon [hidden]="!relevantOnly" name="checkmark" slot="start" color="primary"></ion-icon>
-      <ion-icon [hidden]="relevantOnly"  name="close"     slot="start" color="danger"></ion-icon>
+      <ion-icon [hidden]="relevantOnly" name="close" slot="start" color="danger"></ion-icon>
       <ion-label>{{'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT' | translate }}</ion-label>
       <ion-toggle [(ngModel)]="relevantOnly"></ion-toggle>
     </ion-item>
     <ion-item lines="none">
-      
+
     </ion-item>
   </ion-list>
   <ion-fab horizontal="center">
-      <ion-fab-button color="secondary" (click)="done()">
-        {{ "GENERAL_APPROVE" | translate }}
-      </ion-fab-button>
-    </ion-fab>
+    <ion-fab-button color="secondary" (click)="done()">
+      {{ "GENERAL_APPROVE" | translate }}
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

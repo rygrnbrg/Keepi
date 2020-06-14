@@ -51,33 +51,20 @@ export class LeadsFilterPage {
     filter.selected = !selected;
   }
 
-  public optionClick(filter: LeadFilter, option: PropertyOption): void {
-    switch (filter.type) {
-      case LeadPropertyType.StringSingleValue:
-        this.handleSingleOptionValueClick(filter, option);
-        filter.value = option.selected ? option.title : null;
-        filter.selected = false;
-        break;
-
-      case LeadPropertyType.StringMultivalue:
-        option.selected = !option.selected
-        let valueResult = filter.metadata.options.filter(option => option.selected).map(option => option.title);
-        filter.value = valueResult.length ? valueResult : null;
-        break;
-
-      default:
-        break;
-    }
-  }
-
   public setBudget(filter: LeadFilter, value: number) {
     filter.value = value;
   }
 
-  private handleSingleOptionValueClick(filter: LeadFilter, option: PropertyOption) {
-    let selected = option.selected;
-    filter.metadata.options.forEach(option => (option.selected = false));
-    option.selected = !selected;
+  public handleSingleOptionValueClick(filter: LeadFilter, event: CustomEvent) {
+    filter.value = event.detail.value;
+    filter.selected = false;
+  }
+
+  public handleMultivalueOptionValueClick(filter: LeadFilter, option: PropertyOption, event: CustomEvent) {
+    let checkboxValue = event.detail.checked;
+    option.selected = checkboxValue;
+    let valueResult = filter.metadata.options.filter(option => option.selected).map(option => option.title);
+    filter.value = valueResult.length ? valueResult : null;
   }
 
   ionViewWillEnter() {

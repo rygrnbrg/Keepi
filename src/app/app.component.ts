@@ -32,8 +32,8 @@ export class AppComponent {
       this.translate.setDefaultLang('he');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.subscribeToAuthChange();
     });
-    this.subscribeToAuthChange();
   }
 
     openPage(page) {

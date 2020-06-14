@@ -58,7 +58,7 @@ export class AuthProvider {
     if (!firebase.auth().currentUser) {
       return Promise.resolve();
     }
-    return firebase.auth().signOut();
+    return firebase.auth().signOut().then(()=> console.log("User signed out"));
   }
 
   doSendVerificationEmail(): Promise<void> {

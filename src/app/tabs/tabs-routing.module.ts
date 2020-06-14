@@ -15,7 +15,6 @@ const routes: Routes = [
       {
 
         path: 'tab2',
-        //loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),
         children: [{
           path: '',
           loadChildren: () => import('../leads/leads.module').then(m => m.LeadsPageModule),

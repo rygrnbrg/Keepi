@@ -1,11 +1,14 @@
 <ion-list [hidden]="!isRelevant">
   <ion-item lines="none">
     <ion-card color="light">
-      <ion-card-content>
+      <ion-card-content size="large">
         <!-- <ion-icon name="bulb" color="secondary"></ion-icon> -->
         <div class="onboarding-logo"></div>
         <p class="onboarding-pre">{{"ONBOARDING_PRE" | translate}}</p>
-        <ng-content></ng-content>
+        <ion-text>
+          <ng-content></ng-content>
+        </ion-text>
+
       </ion-card-content>
       <ion-item color="light" lines="none">
         <ion-button color="secondary" slot="end" (click)="markNotrelevant()">

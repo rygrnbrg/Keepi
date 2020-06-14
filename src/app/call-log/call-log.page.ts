@@ -18,7 +18,7 @@ export class CallLogPage {
     keys: string[];
     public refreshing: boolean;
     private lastLogDate: any;
-    private CALL_LOG_DAYS: number = 7;
+    private CALL_LOG_DAYS: number = 3;
     private gotCallLogReadPermission: Trinary;
 
     constructor(
@@ -77,7 +77,10 @@ export class CallLogPage {
             if (refresherEvent) {
                 refresherEvent.target.complete();
             }
-            this.refreshing = false;
+            setTimeout(() => {
+                this.refreshing = false;
+            }, 1000);
+
         });
     }
 
@@ -155,17 +158,17 @@ export class CallLogPage {
         }
 
         let freshLog = this.getUniqueCallerLog(log);
-        this.log = freshLog;
 
         if (!refresherEvent) {
             this.refreshing = true;
         }
         setTimeout(() => {
+            this.log = freshLog;
             if (refresherEvent) {
                 refresherEvent.target.complete();
             }
             this.refreshing = false;
-        }, 2000);
+        }, 1000);
     }
 
 }

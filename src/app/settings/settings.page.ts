@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Area, UserData, UserSetting } from './../../providers/user/user';
+import { UserData, UserSetting } from './../../providers/user/user';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';

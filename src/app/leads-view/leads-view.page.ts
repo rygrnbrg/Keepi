@@ -10,7 +10,6 @@ import { LeadFilter } from 'src/models/lead-filter';
 import { MessagePage } from '../message/message.page';
 import { TranslateService } from '@ngx-translate/core';
 import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
-import { LeadProperty } from 'src/models/LeadProperty';
 import { LeadDetailsPage } from '../lead-details/lead-details.page';
 
 
