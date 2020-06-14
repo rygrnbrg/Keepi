@@ -141,8 +141,9 @@ export class User {
   }
 
   public addSetting(prop: LeadProperty, value: string): Promise<void> {
-    let setting: UserSetting = { name: value };
+    value = value.trim();
     let doc = this._settingsDocs[prop];
+
     return doc.ref.get().then((result) => {
       let data = result.data();
       let options: string[] = data["options"];
@@ -155,7 +156,6 @@ export class User {
   }
 
   public removeSetting(prop: LeadProperty, value: string): Promise<void> {
-    let setting: UserSetting = { name: value };
     let doc = this._settingsDocs[prop];
     return doc.ref.get().then((result) => {
       let data = result.data();
