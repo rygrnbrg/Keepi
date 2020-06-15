@@ -8,7 +8,7 @@
 </ion-item>
 <ion-item *ngFor="let item of filteredLeads" (click)="onItemClicked(item)">
   <ion-avatar slot="start">
-    <img [src]="item.avatar | avatar" />
+    <img [src]="item.avatar | avatar: item" />
   </ion-avatar>
   <ion-label>
     <h3>{{item.name}}</h3>

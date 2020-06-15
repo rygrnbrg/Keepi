@@ -4,11 +4,11 @@
     <ion-buttons slot="end" *ngIf="enableFiltering">
       <ion-button (click)="cleanFilters()" [hidden]="!activeFilters">
         {{"LEADS_CLEAR_FILTERS" | translate}}
-        <ion-icon name="funnel" color="primary"></ion-icon>
+        <ion-icon name="close" color="primary"></ion-icon>
       </ion-button>
-      <ion-button (click)="filterLeadsClick()" [hidden]="activeFilters">
+      <ion-button (click)="filterLeadsClick()">
         {{ "GENERAL_FILTER" | translate }}
-        <ion-icon name="funnel" color="primary"></ion-icon>
+        <ion-icon [name]="activeFilters? 'funnel': 'funnel-outline'" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end" *ngIf="isModal">

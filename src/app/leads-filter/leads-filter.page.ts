@@ -78,7 +78,7 @@ export class LeadsFilterPage {
           value: null
         }
     );
-
+    this.relevantOnly = this.navParams.get("relevantOnly");
     let paramsfilters: LeadFilter[] = this.navParams.get("filters");
     let leadType: LeadType = this.navParams.get("leadType");
     this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(leadType.id);

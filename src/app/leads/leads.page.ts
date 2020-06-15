@@ -162,7 +162,7 @@ export class LeadsPage implements OnInit {
   public async filterLeadsClick() {
     let modal = await this.modalCtrl.create({
       component: LeadsFilterPage,
-      componentProps: { filters: this.activeFilters, leadType: this.selectedLeadType }
+      componentProps: { filters: this.activeFilters, leadType: this.selectedLeadType, relevantOnly: this.relevantOnly }
     });
     modal.present();
     modal.onDidDismiss().then(async value => {
