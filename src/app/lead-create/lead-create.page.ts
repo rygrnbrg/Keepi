@@ -1,21 +1,20 @@
-import { ActivatedRoute, Router } from '@angular/router';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Lead } from 'src/models/lead';
-import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadType, LeadTypeID } from 'src/models/lead-property-metadata';
-import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
+import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadTypeID } from 'src/models/lead-property-metadata';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 import { LeadsProvider } from 'src/providers/leads/leads';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController, IonSlides, NavController, NavParams, ModalController } from '@ionic/angular';
 import { User } from 'src/providers';
 import { LeadProperty } from 'src/models/LeadProperty';
-
+import { LeadOptionPipe } from 'src/pipes/lead-option/lead-option.pipe';
+import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
 
 @Component({
     selector: 'app-lead-create',
     templateUrl: './lead-create.page.html',
     styleUrls: ['./lead-create.page.scss'],
-    providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadsProvider]
+    providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadsProvider, LeadOptionPipe]
 })
 
 export class LeadCreatePage implements OnInit {

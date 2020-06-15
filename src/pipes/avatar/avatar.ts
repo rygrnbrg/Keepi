@@ -17,9 +17,6 @@ export class AvatarPipe implements PipeTransform {
   }
 
   transform(value: string, item?: Lead): any {
-    // if (value && value.length) {
-    //   return this.domSanitizer.bypassSecurityTrustUrl(value);
-    // }
     if (!item || item.relevant){
       return 'assets/img/profile_avatar.png';      
     }

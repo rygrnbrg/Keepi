@@ -19,21 +19,21 @@
         <ion-label>
           <h2>{{ filter.metadata.title }}</h2>
           <p [hidden]="filter.selected || !getFilterValueString(filter)">
-            {{ getFilterValueString(filter) }}
+            {{ getFilterValueString(filter) | leadOption: filter.metadata.id}}
           </p>
         </ion-label>
         <ion-icon [name]="filter.selected ? 'arrow-down' : 'arrow-back'" slot="end"></ion-icon>
       </ion-item>
       <ion-radio-group (ionChange)="handleSingleOptionValueClick(filter, $event)" [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringSingleValue">
         <ion-item *ngFor="let option of filter.metadata.options">
-          <ion-label>{{option.title}}</ion-label>
+          <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
           <ion-radio [value]="option.title" slot="start"></ion-radio>
         </ion-item>
       </ion-radio-group>
 
       <div [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringMultivalue">
         <ion-item *ngFor="let option of filter.metadata.options">
-          <ion-label>{{option.title}}</ion-label>
+          <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
           <ion-checkbox [checked]="option.selected" slot="start" (ionChange)="handleMultivalueOptionValueClick(filter, option, $event)"></ion-checkbox>
         </ion-item>
       </div>

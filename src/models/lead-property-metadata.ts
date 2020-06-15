@@ -1,3 +1,5 @@
+import { LeadProperty } from './LeadProperty';
+
 export enum LeadPropertyType {
   Budget,
   StringMultivalue,
@@ -7,7 +9,7 @@ export enum LeadPropertyType {
 }
 
 export class LeadPropertyMetadata {
-  public id: string;
+  public id: LeadProperty;
   public title: string;
   public description: string;
   public options?: PropertyOption[];

@@ -32,7 +32,7 @@
         <ion-row *ngIf="slide.options?.length" class="tight">
           <ion-col size="6" *ngFor="let button of slide.options">
             <ion-button dir="ltr" (click)="answerButtonClick(slide, button, i)" fill="solid" expand="full" [color]="button.selected ? 'secondary' : 'light'">
-              {{ button.title }}
+              {{ button.title | leadOption: slide.id }}
             </ion-button>
           </ion-col>
         </ion-row>
@@ -79,7 +79,7 @@
           <ion-icon [name]="slide.icon + '-outline'" slot="start" color="primary"></ion-icon>
           <ion-label>
             <h2>{{ slide.title }}</h2>
-            <p><span dir="ltr">{{getSlideValueString(slide)}}</span></p>
+            <p><span dir="ltr">{{getSlideValueString(slide) | leadOption: slide.id}}</span></p>
           </ion-label>
         </ion-item>
       </ion-list>

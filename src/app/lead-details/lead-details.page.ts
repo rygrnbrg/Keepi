@@ -18,12 +18,13 @@ import { CommentPage } from '../comment/comment.page';
 import { LeadFilter } from 'src/models/lead-filter';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { LeadsViewPage } from '../leads-view/leads-view.page';
+import { LeadOptionPipe } from 'src/pipes/lead-option/lead-option.pipe';
 
 @Component({
   selector: 'app-lead-details',
   templateUrl: './lead-details.page.html',
   styleUrls: ['./lead-details.page.scss'],
-  providers: [AvatarPipe, CallNumber, LeadPropertyMetadataProvider, LeadsProvider, NumberFormatPipe]
+  providers: [AvatarPipe, CallNumber, LeadPropertyMetadataProvider, LeadsProvider, NumberFormatPipe, LeadOptionPipe]
 })
 export class LeadDetailsPage implements OnInit {
   public item: Lead;
@@ -222,6 +223,7 @@ export class LeadDetailsPage implements OnInit {
     let props: ItemProperty[] = [];
     this.leadPropertiesMetadata.filter(x => x.id !== 'type').forEach(item => {
       props.push({
+        id: item.id,
         icon: item.icon,
         title: item.title,
         value: this.getPropertyString(item)
@@ -254,11 +256,11 @@ export class LeadDetailsPage implements OnInit {
         return this.getBudget(this.item.budget);
 
       case LeadPropertyType.StringMultivalue:
-        let value: string[] = this.item[property.id];
+        let value: string[] = this.item[property.id.toString()];
         return value.join(", ");
 
       default:
-        return this.item[property.id];
+        return this.item[property.id.toString()];
     }
   }
 
@@ -309,6 +311,7 @@ export class LeadDetailsPage implements OnInit {
 }
 
 export interface ItemProperty {
+  id: LeadProperty;
   icon: string;
   title: string;
   value: any;

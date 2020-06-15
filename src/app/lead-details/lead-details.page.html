@@ -67,7 +67,7 @@
       <ion-icon [name]="prop.icon + '-outline'" slot="start" color="primary"></ion-icon>
       <ion-label>
         <h2>{{prop.title}}</h2>
-        <p>{{prop.value}}</p>
+        <p>{{prop.value | leadOption: prop.id}}</p>
       </ion-label>
     </ion-item>
   </ion-list>
