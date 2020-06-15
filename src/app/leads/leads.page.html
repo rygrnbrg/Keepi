@@ -3,8 +3,8 @@
     <ion-title>{{ 'LEADS_PAGE_TITLE' | translate }}</ion-title>
     <ion-buttons slot="end" *ngIf="enableFiltering">
       <ion-button (click)="cleanFilters()" [hidden]="!activeFilters">
-        {{"LEADS_CLEAR_FILTERS" | translate}}
-        <ion-icon name="close" color="primary"></ion-icon>
+        <ion-label>{{"LEADS_CLEAR_FILTERS" | translate}}</ion-label>
+        <ion-icon name="close" color="danger"></ion-icon>
       </ion-button>
       <ion-button (click)="filterLeadsClick()">
         {{ "GENERAL_FILTER" | translate }}
@@ -28,9 +28,20 @@
   </app-onboarding-info>
   <ion-list [hidden]="filterSearchRunning">
     <lead-type-select *ngIf="selectedLeadType" [value]="selectedLeadType" [dropdownSelect]="true" [iconsView]="false"
-      label="LEAD_TYPE_SELECTION" (valueChanged)="leadTypeChanged($event)"></lead-type-select>
-    <div class="filtered-list-header" [hidden]="!activeFilters">
-      <filtered-by [filters]="activeFilters"></filtered-by>
+      label="LEAD_TYPE_SELECTION" (valueChanged)="leadTypeChanged($event)" [hidden]="activeFilters"></lead-type-select>
+    <div [hidden]="!activeFilters">
+      <ion-item lines="none">
+        <ion-label>{{ "LEAD_FILTERS_TITLE" | translate}}</ion-label>
+        <!-- <ion-buttons slot="end">
+          <ion-button (click)="cleanFilters()" [hidden]="!activeFilters" color="danger" fill="clear">
+            <ion-label>{{"LEADS_CLEAR_FILTERS" | translate}}</ion-label>
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons> -->
+      </ion-item>
+      <div class="filtered-list-header" [hidden]="!activeFilters">
+        <filtered-by (click)="filterLeadsClick()" [filters]="activeFilters" [leadType]="selectedLeadType"></filtered-by>
+      </div>
     </div>
     <ion-item [hidden]="activeFilters">
       <ion-label>{{'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT' | translate }}</ion-label>

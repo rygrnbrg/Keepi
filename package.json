@@ -11,8 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "debug": "ionic capacitor run android -l --address=0.0.0.0",
-    "sync": "ionic capacitor copy android"
-
+    "sync": "ionic capacitor copy android",
+    "resources": "capacitor-resources -p android"
   },
   "private": true,
   "postinstall": "jetifier",

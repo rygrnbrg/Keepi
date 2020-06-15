@@ -50,7 +50,6 @@ export class LeadsPage implements OnInit {
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
     private translateService: TranslateService,
-    private toastCtrl: ToastController,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private user: User,
     private activatedRoute: ActivatedRoute,

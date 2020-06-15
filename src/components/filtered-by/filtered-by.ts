@@ -1,6 +1,6 @@
 import { LeadPropertyMetadataProvider } from './../../providers/lead-property-metadata/lead-property-metadata';
 import { NumberFormatPipe } from './../../pipes/number-format/number-format';
-import { LeadPropertyMetadata } from './../../models/lead-property-metadata';
+import { LeadPropertyMetadata, LeadType, LeadTypeID } from './../../models/lead-property-metadata';
 import { Input } from '@angular/core';
 import { LeadFilter } from './../../models/lead-filter';
 import { Component } from '@angular/core';
@@ -15,17 +15,25 @@ import { LeadProperty } from 'src/models/LeadProperty';
 })
 export class FilteredByComponent {
   @Input()
-  filters: LeadFilter[];
+  public filters: LeadFilter[];
+  @Input() 
+  public leadType:LeadType;
+
+  public leadTypeIcon:string;
+  public leadPropertyType = LeadPropertyType;
   private translations: any;
 
-  public leadPropertyType = LeadPropertyType;
-
-  constructor(public numberFormatPipe: NumberFormatPipe, public translateService: TranslateService) {
+  constructor(
+    public numberFormatPipe: NumberFormatPipe, 
+    public translateService: TranslateService,
+    leadPropertyMetadataProvider: LeadPropertyMetadataProvider) {
     this.translateService.get([
       'LEAD_RELEVANCE_SHOW_ONLY_RELEVANT_TRUE']).subscribe(values => {
         this.translations = values;
       });
-  }
+      
+      this.leadTypeIcon = leadPropertyMetadataProvider.get().find(x=> x.id === LeadProperty.type).icon;
+   }
 
   ngOnChanges() {
     this.moveAreaLast();
