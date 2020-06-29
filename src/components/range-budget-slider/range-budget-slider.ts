@@ -13,7 +13,7 @@ export class RangeBudgetSliderComponent implements OnInit  {
   @Input() public dealType: number;
   @Input() public title: string;
 
-  private sliderValue: rangeValue;
+  public sliderValue: rangeValue;
   public sliderMinMaxValue: rangeValue;
 
   private scaleFactor = 10000;

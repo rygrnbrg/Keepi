@@ -2,8 +2,8 @@
 <ion-grid>
   <ion-row>
     <ion-col size="12" class="swiper-no-swiping">
-      <ion-label class="budget-value-label"> {{ value | numberFormat }} </ion-label>
-      <ion-range dir="ltr" snaps="true" dualKnobs="false" [value]="sliderValue" [max]="sliderMaxValue" [min]="sliderMinValue" step="1"
+      <ion-label class="budget-value-label" color="secondary" (click)="manualPriceClick()"> {{ value | numberFormat }} ₪</ion-label>
+      <ion-range dir="ltr" snaps="false" dualKnobs="false" [value]="sliderValue" [max]="sliderMaxValue" [min]="sliderMinValue" step="1" debounce="10"
         color="secondary" (ionChange)="onSliderChange($event)">
         <!-- <ion-label slot="start"> 1 </ion-label>
         <ion-label slot="end"> 100 </ion-label> -->
