@@ -17,7 +17,14 @@
         <ion-row>
           <ion-col size="12">
             <ion-icon [name]="slide.icon + '-outline'" class="slide-icon"></ion-icon>
-            <h3 class="slide-title">{{ slide.title | translate }}</h3>
+            <h3 class="slide-title">
+              <span *ngIf="slide.type !== leadPropertyType.Budget">
+                {{ slide.title | translate }}
+              </span>
+              <span *ngIf="slide.type === leadPropertyType.Budget">
+                {{ slide.title  | budgetPerLeadType : resultLead.type: isCommercial| translate }}
+              </span>
+            </h3>
             <ion-note class="slide-sub-title">
               <p *ngIf="slide.id === 'area' && areasMultiselect">{{ 'MULTIPLE_SELECTION' | translate }}</p>
               <p *ngIf="slide.description">
@@ -31,7 +38,8 @@
         </ion-row>
         <ion-row *ngIf="slide.options?.length" class="tight">
           <ion-col size="6" *ngFor="let button of slide.options">
-            <ion-button dir="ltr" (click)="answerButtonClick(slide, button, i)" fill="solid" expand="full" [color]="button.selected ? 'secondary' : 'light'">
+            <ion-button dir="ltr" (click)="answerButtonClick(slide, button, i)" fill="solid" expand="full"
+              [color]="button.selected ? 'secondary' : 'light'">
               {{ button.title | leadOption: slide.id }}
             </ion-button>
           </ion-col>
@@ -45,8 +53,9 @@
         </ion-row> -->
         <ion-row *ngIf="slide.type === leadPropertyType.Budget">
           <ion-col size="12" dir="ltr">
-            <budget-slider [dealType]="dealType" [value]="this.resultLead.budget" (valueChanged)="setBudget(slide, $event)"
-              (customValueSelected)="setBudgetButton(slide, $event)"></budget-slider>
+            <budget-slider [dealType]="dealType" [commercial]="isCommercial" [value]="this.resultLead.budget"
+              (valueChanged)="setBudget(slide, $event)" (customValueSelected)="setBudgetButton(slide, $event)">
+            </budget-slider>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -78,7 +87,13 @@
         <ion-item *ngFor="let slide of leadPropertiesMetadata; let i = index" (click)="goToSlide(i)">
           <ion-icon [name]="slide.icon + '-outline'" slot="start" color="primary"></ion-icon>
           <ion-label>
-            <h2>{{ slide.title }}</h2>
+            <h2>
+              <span *ngIf="slide.type !== leadPropertyType.Budget">
+                {{ slide.title | translate }}
+              </span>
+              <span *ngIf="slide.type === leadPropertyType.Budget">
+                {{ slide.title  | budgetPerLeadType : resultLead.type: isCommercial| translate }}
+              </span></h2>
             <p><span dir="ltr">{{getSlideValueString(slide) | leadOption: slide.id}}</span></p>
           </ion-label>
         </ion-item>
@@ -89,7 +104,8 @@
 
 <ion-footer class="ion-no-border">
   <ion-fab vertical="bottom" horizontal="center">
-    <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'medium'" (click)="handleContinueClick()">
+    <ion-fab-button [hidden]="!activeSlideValid" [color]="activeSlideValid? 'secondary':'medium'"
+      (click)="handleContinueClick()">
       <ion-icon name="arrow-back" [hidden]="isSummarySlide"></ion-icon>
       <ion-label [hidden]="!isSummarySlide">{{'GENERAL_APPROVE' | translate}}</ion-label>
     </ion-fab-button>

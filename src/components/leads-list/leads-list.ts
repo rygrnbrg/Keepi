@@ -95,7 +95,7 @@ export class LeadsListComponent {
     let result = `שם: ${lead.name} ,טלפון: ${lead.phone} , נוצר בתאריך: ${formattedDate} \n`;
     let leadTypeKey = this.leadTypePipe.transform(lead.type);
     let leadTypeTranslated = this.translations[leadTypeKey];
-    result+= `מעוניין ${leadTypeTranslated} `;
+    result+= `מעוניינ/ת ${leadTypeTranslated} `;
     result += lead.property ? `נכס: ${lead.property}, ` : "";
     result += lead.rooms ? `מספר חדרים: ${lead.rooms}, ` : "";
     result += lead.budget ? `תקציב: ${lead.budget}, ` : "";

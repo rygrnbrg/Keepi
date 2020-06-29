@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class BudgetSliderComponent implements OnInit {
   @Input() public value: number;
   @Input() public dealType: number;
+  @Input() public commercial: boolean;
 
   public sliderMaxValue: number;
   public sliderMinValue: number;
@@ -27,7 +28,7 @@ export class BudgetSliderComponent implements OnInit {
     private alertCtrl: AlertController,
     private translate: TranslateService
   ) {
-    let translations = ['GENERAL_INPUT', 'GENERAL_CANCEL', 'GENERAL_APPROVE', ' BUDGET'];
+    let translations = ['GENERAL_INPUT', 'GENERAL_CANCEL', 'GENERAL_APPROVE', 'BUDGET_MANUAL_INPUT_TITLE', 'GENERAL_BUDGET_INPUT'];
     this.translate.get(translations).subscribe(values => {
       this.translations = values;
     });
@@ -42,7 +43,11 @@ export class BudgetSliderComponent implements OnInit {
       defaultRentBudget: 4_000,
       minRentBudget: 2_000,
       maxRentBudget: 1_0000,
-      presetRentBudgets: [3_500, 4_000, 4_500, 5_000, 5_500, 6_000, 6_500, 7_000, 8_000]
+      presetRentBudgets: [3_500, 4_000, 4_500, 5_000, 5_500, 6_000, 6_500, 7_000, 8_000],
+      defaultRentCommercialBudget: 50,
+      minRentCommercialBudget: 10,
+      maxRentCommercialBudget: 150,
+      presetRentCommercialBudgets: [10, 20, 30, 50, 75, 100, 125, 150]
     };
 
     if (this.dealType === DealType.Sell) {
@@ -53,11 +58,20 @@ export class BudgetSliderComponent implements OnInit {
       this.presetBudgets = settings.presetBudgets;
     }
     else {
-      this.scaleFactor = 100;
-      this.maxValue = settings.maxRentBudget;
-      this.minValue = settings.minRentBudget;
-      this.initValue(settings.defaultRentBudget);
-      this.presetBudgets = settings.presetRentBudgets;
+      if (this.commercial) {
+        this.scaleFactor = 1;
+        this.maxValue = settings.maxRentCommercialBudget;
+        this.minValue = settings.minRentCommercialBudget;
+        this.initValue(settings.defaultRentCommercialBudget);
+        this.presetBudgets = settings.presetRentCommercialBudgets;
+      }
+      else {
+        this.scaleFactor = 100;
+        this.maxValue = settings.maxRentBudget;
+        this.minValue = settings.minRentBudget;
+        this.initValue(settings.defaultRentBudget);
+        this.presetBudgets = settings.presetRentBudgets;
+      }
     }
     this.sliderMaxValue = this.actualToRangeValue(this.maxValue);
     this.sliderMinValue = this.actualToRangeValue(this.minValue);
@@ -65,7 +79,11 @@ export class BudgetSliderComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     let dealTypeChange = changes["dealType"];
-    if (dealTypeChange && dealTypeChange.currentValue != dealTypeChange.previousValue) {
+    let commercialChange = changes["commercial"];
+    if (
+      (dealTypeChange && dealTypeChange.currentValue != dealTypeChange.previousValue) ||
+      (commercialChange && commercialChange.currentValue != commercialChange.previousValue)
+    ) {
       this.ngOnInit();
     }
   }
@@ -93,16 +111,22 @@ export class BudgetSliderComponent implements OnInit {
 
   public async manualPriceClick() {
     const prompt = await this.alertCtrl.create({
-      header: `${this.translations["GENERAL_INPUT"]} ${this.translations["BUDGET"]}`,
+      header: `${this.translations["BUDGET_MANUAL_INPUT_TITLE"]}`,
       inputs: [{
         name: "budget",
         type: "number",
-        placeholder: `${this.translations["GENERAL_INPUT"]}`
+        placeholder: `${this.translations["GENERAL_BUDGET_INPUT"]}`
       }],
       buttons: [
-        { text: this.translations.GENERAL_CANCEL },
         {
-          text: this.translations.GENERAL_APPROVE, handler: async data => {
+          text: this.translations.GENERAL_CANCEL,
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: this.translations.GENERAL_APPROVE,
+          cssClass: 'primary',
+          handler: async data => {
             let newBudget = data["budget"];
             if (newBudget) {
               if (newBudget < this.minValue) {

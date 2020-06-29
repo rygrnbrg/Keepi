@@ -27,10 +27,12 @@ export class LeadCreatePage implements OnInit {
     public activeSlide = 0;
     public isSummarySlide = false;
     public dealTypeDescription: string;
-    private translations: any;
-    private activeSlideValid: boolean;
+    public areasMultiselect: boolean;
+    public activeSlideValid: boolean;
+    public isCommercial: boolean;
     private submitted = false;
-    private areasMultiselect;
+    private translations: any;
+
 
     @ViewChild(IonSlides) slides: IonSlides;
 
@@ -182,9 +184,11 @@ export class LeadCreatePage implements OnInit {
                 break;
             case LeadProperty.rooms:
                 if (button.title === "מסחרי") {
+                    this.isCommercial = true;
                     this.addMetersSlide(index);
                 }
                 else {
+                    this.isCommercial = false;
                     this.removeMetersSlide(index);
                 }
                 break;
@@ -235,7 +239,8 @@ export class LeadCreatePage implements OnInit {
             buttons: [
                 { text: this.translations.GENERAL_CANCEL },
                 {
-                    text: this.translations.GENERAL_APPROVE, handler: async data => {
+                    text: this.translations.GENERAL_APPROVE,
+                    handler: async data => {
                         if (data[slide.id]) {
                             this.addPropValue(LeadProperty[slide.id], data[slide.id]);
                         }
@@ -282,7 +287,7 @@ export class LeadCreatePage implements OnInit {
         this.leads.add(this.resultLead).then(() => {
             this.modalCtrl.dismiss();
             this.navCtrl.navigateRoot(["tabs/tab2/" + this.resultLead.type.toLowerCase()]);
-        }, ).finally(() => loading.dismiss());//todo: handle exception
+        }).finally(() => loading.dismiss());//todo: handle exception
     }
 
     private handleSingleValueButtonClick(slide: LeadPropertyMetadata, button: PropertyOption) {

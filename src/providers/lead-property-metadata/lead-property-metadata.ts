@@ -18,7 +18,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.type,
         title: 'סוג עסקה',
-        description: 'מה {leadName} מעוניין לבצע?',
+        description: 'מה {leadName} מעוניינ/ת לבצע?',
         options: [
           new PropertyOption("לרכוש", false, LeadTypeID.Buyer),
           new PropertyOption("למכור", false, LeadTypeID.Seller),
@@ -33,7 +33,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.property,
         title: 'סוג הנכס',
-        description: 'מה {leadName} מעוניין {dealType}?',
+        description: 'מה {leadName} מעוניינ/ת {dealType}?',
         options: this.getOptions(LeadProperty.property),
         icon: 'business',
         type: LeadPropertyType.StringSingleValue,
@@ -63,7 +63,7 @@ export class LeadPropertyMetadataProvider {
       {
         id: LeadProperty.budget,
         title: 'תקציב',
-        description: 'מה המחיר (בשקלים) בו {leadName} מוכנ/ה {dealType}?',
+        description: 'מה המחיר (בשקלים) בו {leadName} מעוניינ/ת {dealType}?',
         icon: 'cash',
         type: LeadPropertyType.Budget,
         filterable: false
