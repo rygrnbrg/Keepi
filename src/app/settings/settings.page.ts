@@ -81,9 +81,14 @@ export class SettingsPage {
     }
   }
 
-  initSettingsPage(prop: LeadProperty) {
+  private async initSettingsPage(prop: LeadProperty) {
+    let loading = await this.loadingCtrl.create();
+    loading.present();
     this.currentLeadProperty = prop;
-    this.items = this.userData.settings[prop];
+    let docs = await this.user.getOptions();
+    loading.dismiss();
+    let optionsDoc = docs.find(doc=> this.user.extractPropName(doc.data()) === prop);
+    this.items = this.user.extractOptions(optionsDoc.data()).map(x => { return { name: x } });
   }
 
   ionViewDidLoad() {

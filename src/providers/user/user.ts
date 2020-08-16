@@ -73,15 +73,27 @@ export class User {
     }
 
     this._settings[leadProp] = [];
-    var docs = (await this.optionsCollectionRef.get()).docs;
 
+    var docs = await this.getOptions();
     docs.forEach(doc => {
       let data = doc.data();
-      let options: string[] = data["options"];
-      let propName: string = data["name"];//i.e "area", "source"
+      let options: string[] = this.extractOptions(data);
+      let propName: string = this.extractPropName(data);//i.e "area", "source"
       this._settingsDocs[propName] = doc;
       this._settings[propName] = options.map(x => { return { name: x } });
     });
+  }
+
+  public async getOptions(): Promise<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[]>{
+    return (await this.optionsCollectionRef.get()).docs;
+  }
+
+  public extractPropName(data: firebase.firestore.DocumentData): string {
+    return data["name"];
+  }
+
+  public extractOptions(data: firebase.firestore.DocumentData): string[] {
+    return data["options"];
   }
 
   private async initSettings() {
