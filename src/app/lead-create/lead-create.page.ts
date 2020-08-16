@@ -266,7 +266,6 @@ export class LeadCreatePage implements OnInit {
             }
             newOption.selected = true;
             this.leadPropertiesMetadata.find(x => x.id == prop).options.unshift(newOption);
-            this.user.getUserData().settings[prop];
         }, () => {
             this.showToast(this.translations.GENERAL_ACTION_ERROR);
         }).finally(() => loading.dismiss());

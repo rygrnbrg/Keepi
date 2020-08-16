@@ -63,28 +63,50 @@ export class User {
   private initUser(user: firebase.User): void {
     this._user = user;
     if (user) {
-      this.initSettings();
+      this.initServerSettings();
     }
   }
 
-  private async initSetting(leadProp: LeadProperty): Promise<void> {
-    if (!this._user) {
-      return Promise.resolve();
-    }
+  private async initServerSettings() {
+    this.optionsCollectionRef = firebase.firestore().collection("users").doc(this._user.email).collection("leadOptions");
 
-    this._settings[leadProp] = [];
+    this.optionsCollectionRef.get().then(async x => {
+      if (x.empty) {
+        this.initServerSettingsDefaults();
+      }
+      else {
+        var optionsCollection = await this.getOptions();
+        this.serverSettings.forEach(async leadProp => {
+          this._settings[leadProp] = [];
 
-    var docs = await this.getOptions();
-    docs.forEach(doc => {
-      let data = doc.data();
-      let options: string[] = this.extractOptions(data);
-      let propName: string = this.extractPropName(data);//i.e "area", "source"
-      this._settingsDocs[propName] = doc;
-      this._settings[propName] = options.map(x => { return { name: x } });
+          let doc = optionsCollection.find(doc => this.extractPropName(doc.data()) === leadProp);
+          this.initUserSetting(doc);
+        });
+      }
     });
   }
 
-  public async getOptions(): Promise<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[]>{
+  private initServerSettingsDefaults() {
+    this.serverSettings.forEach(prop => {
+      this.optionsCollectionRef.add({ name: prop, options: this.getDefaultSetting(prop) }).then(
+        res => {
+          res.get().then(doc => {
+            this.initUserSetting(doc);
+          });
+        }
+      );
+    });
+  }
+
+  private initUserSetting(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>) {
+    let data = doc.data();
+    let options: string[] = this.extractOptions(data);
+    let propName: string = this.extractPropName(data); //i.e "area", "source"
+    this._settingsDocs[propName] = doc;
+    this._settings[propName] = options.map(x => { return { name: x }; });
+  }
+
+  public async getOptions(): Promise<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[]> {
     return (await this.optionsCollectionRef.get()).docs;
   }
 
@@ -94,25 +116,6 @@ export class User {
 
   public extractOptions(data: firebase.firestore.DocumentData): string[] {
     return data["options"];
-  }
-
-  private async initSettings() {
-    this.optionsCollectionRef = firebase.firestore().collection("users").doc(this._user.email).collection("leadOptions");
-
-    this.optionsCollectionRef.get().then(x => {
-      if (x.empty) {
-        this.serverSettings.forEach(prop => {
-          this.optionsCollectionRef.add({ name: prop, options: this.getDefaultSetting(prop) }).then(
-            res => {
-              this.initSetting(prop);
-            }
-          );
-        });
-      }
-      else {
-        this.serverSettings.forEach(prop => this.initSetting(prop));
-      }
-    });
   }
 
   public loginExistingUser(user: firebase.User): void {
@@ -162,22 +165,26 @@ export class User {
       let foundOptionIndex = options.indexOf(value);
       if (foundOptionIndex === -1) {
         options.push(value);
-        doc.ref.update({ "options": options });
+        return doc.ref.update({ "options": options }).then(() => {
+          return doc.ref.get().then(res => this.initUserSetting(res)) 
+        });
       }
-    }).then(() => this.initSetting(prop));
+    });
   }
 
   public removeSetting(prop: LeadProperty, value: string): Promise<void> {
     let doc = this._settingsDocs[prop];
     return doc.ref.get().then((result) => {
       let data = result.data();
-      let options: string[] = data["options"];
+      let options: string[] = this.extractOptions(data);
       let foundOptionIndex = options.indexOf(value);
       if (foundOptionIndex !== -1) {
         options.splice(foundOptionIndex, 1);
-        doc.ref.update({ "options": options });
+        return doc.ref.update({ "options": options }).then(() => {
+          return doc.ref.get().then(res => this.initUserSetting(res))
+        });
       }
-    }).then(() => this.initSetting(prop));
+    });
   }
 
   private getDefaultSetting(prop: LeadProperty): string[] {
