@@ -67,12 +67,7 @@ Installed only for cordova-plugin-x-socialsharing (@ionic-native/social-sharing)
 To run it automatically when dependencies are installed, add "postinstall": "jetifier" in the package.json.
 
 
-
-
-Your Ionic app is ready! Follow these next steps:
-
-- Go to your new project: cd .\keepi
-- Run ionic serve within the app directory to see your app in the browser
-- Run ionic capacitor add to add a native iOS or Android project using Capacitor
-- Generate your app icon and splash screens using cordova-res --skip-config --copy
-- Explore the Ionic docs for components, tutorials, and more: https://ion.link/docs
+DEPLOY NOTES
+1. Test SMS permissions are working (update manifest!!)
+android/app/src/main/AndroidManifest.xml
+    <uses-permission android:name="android.permission.SEND_SMS"/>

@@ -13,12 +13,13 @@ import { AvatarPipe } from "../../pipes/avatar/avatar";
   styleUrls: ['./message.page.scss'],
   providers: [AvatarPipe, SMS, AndroidPermissions]
 })
-export class MessagePage {
+export class MessagePage implements OnInit {
   public contacts: Contact[] = [];
   public contactsHeaderLimit: number = 5;
   public messageText: string = "";
   private translations: any;
   private messageSent: boolean;
+  private permissionRefused: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -32,7 +33,8 @@ export class MessagePage {
     private toastCtrl: ToastController
   ) {
     this.translateService.get([
-      'SMS_MESSAGE_WILL_BE_SENT_TO', 'CONTACTS', 'GENERAL_CANCEL', 'GENERAL_APPROVE', 'LEADS_RECIEVED_MESSAGE']).subscribe(values => {
+      'SMS_MESSAGE_WILL_BE_SENT_TO', 'CONTACTS', 'GENERAL_CANCEL', 'GENERAL_APPROVE', 'LEADS_RECIEVED_MESSAGE', 
+      'SMS_PERMISSIONS_REFUSED','SMS_SEND_ERROR']).subscribe(values => {
         this.translations = values;
       });
 
@@ -40,14 +42,20 @@ export class MessagePage {
   }
 
 
-  ionViewDidLoad() {
+  ngOnInit() {
     this.askAndroidSMSPermissions();
   }
 
   private askAndroidSMSPermissions() {
     if (this.platform.is("android") && this.platform.is("hybrid")) {
       this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(
-        result => result.hasPermission ? console.log('Ceck permission?', result.hasPermission) : this.requestUserSMSPermission(),
+        result => {
+          console.log('Ceck SMS permission?', result.hasPermission);
+          if (result.hasPermission) {
+            this.permissionRefused = false;
+          } else
+            this.requestUserSMSPermission();
+        },
         err => this.requestUserSMSPermission()
       );
     }
@@ -55,7 +63,13 @@ export class MessagePage {
 
   private requestUserSMSPermission() {
     this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.SEND_SMS).then(requestResult => {
-      console.log('Request permission?', requestResult.hasPermission)
+      console.log('Request SMS permission?', requestResult.hasPermission)
+      if (!requestResult.hasPermission) {
+        this.permissionRefused = true;
+      }
+      else {
+        this.permissionRefused = false;
+      }
     });
   }
 
@@ -121,11 +135,33 @@ export class MessagePage {
     prompt.present();
   }
 
+  private async presentRequestPermissions() {
+    let message = `${this.translations.SMS_PERMISSIONS_REFUSED}`;
+    const prompt = await this.alertCtrl.create({
+      message: message,
+      buttons: [
+        {
+          text: this.translations.GENERAL_APPROVE,
+          handler: data => {
+            this.requestUserSMSPermission();
+          },
+          cssClass: 'primary'
+        }
+      ]
+    });
+    prompt.present();
+  }
+
   private sendSMS() {
-    if (this.messageSent === true){
+    if (this.permissionRefused) {
+      this.presentRequestPermissions();
       return;
     }
-    
+
+    if (this.messageSent === true) {
+      return;
+    }
+
     if (this.contacts.length == 0 || !this.messageText || !this.messageText.length) {
       console.log("Contacts list for SMS send is empty");
       return;
@@ -154,6 +190,9 @@ export class MessagePage {
           console.log(reason);
           if (reason === "User has denied permission") {
             this.askAndroidSMSPermissions();
+          }
+          else {
+            this.showToast(this.translations.SMS_SEND_ERROR);
           }
         }
       );
