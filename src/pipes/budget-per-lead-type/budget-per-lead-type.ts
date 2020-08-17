@@ -14,7 +14,7 @@ export class BudgetPerLeadTypePipe implements PipeTransform {
       return value;
     }
 
-    if (!commercial || leadType === LeadTypeID.Buyer || leadType === LeadTypeID.Seller) {
+    if (!commercial) {
       return leadType.toString().toUpperCase() + "_BUDGET_TITLE";
     }
 
