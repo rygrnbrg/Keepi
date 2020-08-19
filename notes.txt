@@ -71,3 +71,6 @@ DEPLOY NOTES
 1. Test SMS permissions are working (update manifest!!)
 android/app/src/main/AndroidManifest.xml
     <uses-permission android:name="android.permission.SEND_SMS"/>
+
+2. Enable Prod Mode
+app.component.ts => enableProdMode()

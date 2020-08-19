@@ -246,7 +246,7 @@ export class LeadDetailsPage implements OnInit {
     let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
 
     let convertedLead = this.leadsProvider.convertDbObjectToLead(this.item, this.item.type)
-    return await this.leadsProvider.addComment(convertedLead, comment);
+    return this.leadsProvider.addComment(convertedLead, comment);
   }
 
   private getPropertyString(property: LeadPropertyMetadata): string {

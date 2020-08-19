@@ -12,8 +12,7 @@ export class LeadPropertyMetadataProvider {
   public static relevanceKey = "relevant";
   public static commentKey = "comment";
 
-  constructor(
-    private user: User) {
+  constructor(private user: User) {
     this.properties = [
       {
         id: LeadProperty.type,
@@ -135,6 +134,11 @@ export class LeadPropertyMetadataProvider {
   }
 
   public getOptions(prop: LeadProperty): PropertyOption[] {
-    return this.user.getUserData().settings[prop].map(x => new PropertyOption(x.name));
+    let propSettings = this.user.getUserData().settings[prop];
+    if (!propSettings){
+      console.log(`lead-property-metadata:getOptions failed to get options for prop ${prop}.`);
+      return null; 
+    }
+    return propSettings.map(x => new PropertyOption(x.name));
   }
 }

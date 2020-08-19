@@ -184,7 +184,8 @@ export class MessagePage implements OnInit {
             }
           }
           let message = this.translations.LEADS_RECIEVED_MESSAGE.replace("{numberOfLeads}", phones.length);
-          this.showToast(message).then(() => this.modalCtrl.dismiss());
+          let result: SmsResult = { success: true, sentCount: phones.length, text: this.messageText };
+          this.showToast(message).then(() => this.modalCtrl.dismiss(result));
         },
         (reason) => {
           console.log(reason);
