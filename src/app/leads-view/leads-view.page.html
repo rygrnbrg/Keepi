@@ -16,7 +16,7 @@
   </app-onboarding-info>
   <ion-list>
     <ion-list-header>{{'LEAD_DETAILS_FILTERS_TITLE'| translate}} </ion-list-header>
-    <filtered-by [filters]="filters"></filtered-by>
+    <filtered-by [filters]="filters" [leadType]="selectedLeadType"></filtered-by>
     <range-budget-slider *ngIf="showBudgetSlider && dealType!== undefined" [value]="budgetValue" [minMaxValues]="budgetMinMaxValues"
       [dealType]="dealType" (valueChanged)="budgetChanged($event)" [title]="leadType === 'Buyer' || leadType === 'Tenant'? 'BUDGETS_RANGE' : 'PRICES_RANGE'">
     </range-budget-slider>

@@ -19,7 +19,7 @@
       <ion-label [hidden]="!relevant">{{'LEAD_RELEVANCE_STATUS_YES' | translate }}</ion-label>
       <ion-icon [hidden]="relevant" name="close" icon slot="start" color="danger"></ion-icon>
       <ion-label [hidden]="relevant">{{'LEAD_RELEVANCE_STATUS_NO' | translate }}</ion-label>
-      <ion-toggle [(ngModel)]="relevant" (ionChange)="relevantChanged($event)"></ion-toggle>
+      <ion-toggle [(ngModel)]="relevant" (ionChange)="relevantChanged()"></ion-toggle>
     </ion-item>
     <ion-item>
       <ion-icon name="phone-portrait-outline" icon slot="start" color="primary"></ion-icon>

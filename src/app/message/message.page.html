@@ -26,7 +26,7 @@
       {{'SMS_MESSAGE_WILL_BE_SENT_TO' | translate}}-{{contacts.length}} {{'CONTACTS' | translate}}
     </ion-list-header>
     <ion-item *ngFor="let contact of contacts" ion-item>
-      <ion-avatar slot="start"> <img [src]="contact.avatar | avatar: item" /> </ion-avatar>
+      <ion-avatar slot="start"> <img [src]="contact | avatar"/> </ion-avatar>
       <ion-label>
         <h3>{{ contact.name }}</h3>
         <p>{{ contact.phone }}</p>

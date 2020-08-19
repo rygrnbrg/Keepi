@@ -209,7 +209,7 @@ export class LeadCreatePage implements OnInit {
         }
     }
 
-    public getSlideValueString(property: LeadPropertyMetadata): String {
+    public getSlideValueStr(property: LeadPropertyMetadata): string {
         let value = LeadPropertyMetadata.getValueString(property);
         if (!value) {
             value = "-";

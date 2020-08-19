@@ -1,23 +1,20 @@
 <div class="logo-block">
-    <div class="logo-block-inner"></div>
-  </div>
-  <ion-header class="logo-header">
-    <ion-navbar>
-      <ion-title></ion-title>
-    </ion-navbar>
-  </ion-header>
+  <div class="logo-block-inner"></div>
+</div>
+<ion-header class="logo-header">
+</ion-header>
 
 <ion-content class="cover-page">
   <ion-list class="login-box">
-      <label>
-        {{'SEND_VERIFICATION_SENT_SUCCESS_MESSAGE' | translate}}
-      </label>
-      <br><br>
-      <ion-button expand="block"  color="secondary" (click)="gotoLogin()">{{'VERIFY_BUTTON' | translate}}</ion-button>
+    <label>
+      {{'SEND_VERIFICATION_SENT_SUCCESS_MESSAGE' | translate}}
+    </label>
+    <br><br>
+    <ion-button expand="block" color="secondary" (click)="gotoLogin()">{{'VERIFY_BUTTON' | translate}}</ion-button>
 
-      <div class="login-box-buttons" (click)="sendVerification()">
-          {{ 'SEND_VERIFICATION_SEND_AGAIN_PRE' | translate }}
-          <span class="highlight">{{ 'SEND_VERIFICATION_SEND_AGAIN' | translate }}</span>
-      </div>
+    <div class="login-box-buttons" (click)="sendVerification()">
+      {{ 'SEND_VERIFICATION_SEND_AGAIN_PRE' | translate }}
+      <span class="highlight">{{ 'SEND_VERIFICATION_SEND_AGAIN' | translate }}</span>
+    </div>
   </ion-list>
 </ion-content>

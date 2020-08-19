@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "debug": "ionic capacitor run android -l --address=0.0.0.0",
-    "sync": "ionic capacitor copy android",
+    "sync": "ionic capacitor copy android --prod",
+    "syncdev": "ionic capacitor copy android --source-map",
     "resources": "capacitor-resources -p android",
     "open": "npx cap open android"
   },

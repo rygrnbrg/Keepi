@@ -34,6 +34,7 @@ export class LeadsViewPage implements OnInit {
   public lead: Lead;
   private translations: any;
   public dealTypeStr: string;
+  leadTypes: LeadType[];
 
   constructor(
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
@@ -45,11 +46,13 @@ export class LeadsViewPage implements OnInit {
       'LEADS_RECIEVED_MESSAGE']).subscribe(values => {
         this.translations = values;
       });
+      this.leadTypes = LeadType.getAllLeadTypes();
   }
 
   ionViewWillEnter() {
     if (this.leadType !== undefined) {
       this.dealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.leadType);
+      this.selectedLeadType = this.leadTypes.find(x => x.id.toLowerCase() === this.leadType.toLowerCase())
     }
   }
   ngOnInit() {

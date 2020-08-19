@@ -39,7 +39,7 @@ export class LeadDetailsPage implements OnInit {
   private subscriptions: Subscription[];
   private potentialDealFilters: LeadFilter[];
   private potentialDealsQuery: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
-  private disableNavigation: boolean;
+  public disableNavigation: boolean;
 
   constructor(
     navParams: NavParams,

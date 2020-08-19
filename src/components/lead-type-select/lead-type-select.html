@@ -14,7 +14,7 @@
     <ion-grid>
       <ion-row *ngIf="!iconsView">
         <ion-col *ngFor="let leadType of leadTypes" col-3> 
-          <button type="button" block ion-button small [color]="selectedLeadType === leadType? 'secondary' : 'primary'"
+          <button type="button" block ion-button small 
             (click)="leadTypeChanged(leadType)">
             {{ leadType.actionTranslation | translate }}
           </button>
@@ -22,7 +22,7 @@
       </ion-row>
       <ion-row *ngIf="iconsView">
         <ion-col *ngFor="let leadType of leadTypes" col-6>
-          <button type="button" block ion-button  [color]="selectedLeadType === leadType? 'secondary' : 'primary'"
+          <button type="button" block ion-button 
             (click)="leadTypeChanged(leadType)">
             {{ leadType.actionTranslation | translate }}          
           </button>

@@ -94,7 +94,7 @@
               <span *ngIf="slide.type === leadPropertyType.Budget">
                 {{ slide.title  | budgetPerLeadType : resultLead.type: isCommercial| translate }}
               </span></h2>
-            <p><span dir="ltr">{{getSlideValueString(slide) | leadOption: slide.id}}</span></p>
+            <p><span dir="ltr">{{getSlideValueStr(slide) | leadOption: slide.id}}</span></p>
           </ion-label>
         </ion-item>
       </ion-list>

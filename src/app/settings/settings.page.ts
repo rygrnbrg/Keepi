@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserData, UserSetting } from './../../providers/user/user';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
-import { User, Settings } from '../../providers';
+import { User } from '../../providers';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
@@ -30,7 +30,6 @@ export class SettingsPage {
   subSettings: any = SettingsPage;
 
   constructor(
-    //public settings: Settings,
     public formBuilder: FormBuilder,
     public translate: TranslateService,
     public user: User,

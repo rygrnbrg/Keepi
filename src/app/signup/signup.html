@@ -1,30 +1,27 @@
 <div class="logo-block">
-    <div class="logo-block-inner"></div>
-  </div>
-  <ion-header class="logo-header">
-    <ion-navbar>
-      <ion-title></ion-title>
-    </ion-navbar>
-  </ion-header>
+  <div class="logo-block-inner"></div>
+</div>
+<ion-header class="logo-header">
+</ion-header>
 
 <ion-content class="cover-page">
   <form (submit)="doSignup()" class="login-box">
     <ion-list>
-        <ion-item>
-          <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
-          <ion-input dir="ltr" type="email" [(ngModel)]="account.email" name="email"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
-          <ion-input dir="ltr" type="password" [(ngModel)]="account.password" name="password"></ion-input>
-        </ion-item>
-      </ion-list>  
-      <ion-list>
+      <ion-item>
+        <ion-label fixed>{{ 'EMAIL' | translate }}</ion-label>
+        <ion-input dir="ltr" type="email" [(ngModel)]="account.email" name="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
+        <ion-input dir="ltr" type="password" [(ngModel)]="account.password" name="password"></ion-input>
+      </ion-item>
+    </ion-list>
+    <ion-list>
       <ion-button type="submit" expand="block" color="secondary" block>{{ 'SIGNUP_BUTTON' | translate }}</ion-button>
-     
+
       <div class="login-box-buttons" (click)="gotoLogin()">
-          {{ 'GOTO_LOGIN_MESSAGE' | translate }}
-          <span class="highlight">{{ 'GOTO_LOGIN' | translate }}</span>
+        {{ 'GOTO_LOGIN_MESSAGE' | translate }}
+        <span class="highlight">{{ 'GOTO_LOGIN' | translate }}</span>
       </div>
     </ion-list>
   </form>

@@ -13,7 +13,7 @@ import { AppComponent } from './app.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { User, AuthProvider, Settings } from "../providers";
+import { User, AuthProvider } from "../providers";
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { environment } from '../environments/environment';
 import * as firebase from 'firebase';
@@ -42,7 +42,6 @@ import { PipesModule } from 'src/pipes/pipes.module';
     User,
     AuthProvider,
     NativeStorage,
-    Settings,
     PipesModule
   ],
   bootstrap: [AppComponent]
