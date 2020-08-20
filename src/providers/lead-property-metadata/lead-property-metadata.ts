@@ -1,18 +1,26 @@
 import { DealType, LeadTypeID, LeadType } from './../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
 import * as _ from "lodash";
 import { User } from '../../providers';
 import { LeadProperty } from 'src/models/LeadProperty';
 
 @Injectable()
-export class LeadPropertyMetadataProvider {
+export class LeadPropertyMetadataProvider implements OnInit {
   private properties: LeadPropertyMetadata[] = [];
   public static relevanceKey = "relevant";
   public static commentKey = "comment";
 
   constructor(private user: User) {
+
+  }
+
+  ngOnInit() {
+    this.initProperties();
+  }
+
+  private initProperties() {
     this.properties = [
       {
         id: LeadProperty.type,
@@ -94,6 +102,11 @@ export class LeadPropertyMetadataProvider {
 
   public get(): LeadPropertyMetadata[] {
     let copy: LeadPropertyMetadata[] = [];
+
+    if (!this.properties || !this.properties.length) {
+      this.initProperties();
+    }
+
     this.properties.forEach(prop => copy.push(_.cloneDeep(prop)));
     return copy;
   }
@@ -134,10 +147,21 @@ export class LeadPropertyMetadataProvider {
   }
 
   public getOptions(prop: LeadProperty): PropertyOption[] {
-    let propSettings = this.user.getUserData().settings[prop];
-    if (!propSettings){
-      console.log(`lead-property-metadata:getOptions failed to get options for prop ${prop}.`);
-      return null; 
+    if (!this.user) {
+      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. User is ${this.user}.`);
+      return null;
+    }
+
+    let userData = this.user.getUserData();
+    if (!userData) {
+      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. UserData is ${userData}.`);
+      return null;
+    }
+
+    let propSettings = userData.settings[prop];
+    if (!propSettings) {
+      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. Settings object for prop is ${propSettings}`);
+      return null;
     }
     return propSettings.map(x => new PropertyOption(x.name));
   }

@@ -1,6 +1,6 @@
 import { CommentType } from './../../models/comment';
 import { LeadPropertyMetadataProvider } from './../../providers/lead-property-metadata/lead-property-metadata';
-import { LeadType, LeadPropertyType, DealType } from './../../models/lead-property-metadata';
+import { LeadType, LeadPropertyType, DealType, LeadTypeID } from './../../models/lead-property-metadata';
 import { LeadFilter } from './../../models/lead-filter';
 import { Component, OnInit } from '@angular/core';
 import { ModalController, LoadingController, ToastController, NavParams, Platform } from '@ionic/angular';
@@ -103,6 +103,9 @@ export class LeadsPage implements OnInit {
     if (paramsLeadType) {
       this.selectedLeadType = this.leadTypes.find(x => x.id.toLowerCase() === paramsLeadType.toLowerCase())
       return;
+    }
+    else{
+      this.selectedLeadType = this.leadTypes[0];
     }
 
     this.activatedRoute.data.forEach(data => {
