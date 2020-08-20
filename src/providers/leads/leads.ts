@@ -41,16 +41,20 @@ export class LeadsProvider {
   }
 
   private initLeadCollections() {
-    let userData = this.user.getUserData();
-    if (!userData) {
-      return;
-    }
-
-    LeadType.getAllLeadTypes().forEach(leadType => {
-      let leadsCollectionRef =
-        firebase.firestore().collection("users").doc(userData.email)
-          .collection("leads_" + leadType.id.toString().toLowerCase());
-      this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        let userData = this.user.getUserData();
+        if (!userData) {
+          return;
+        }
+    
+        LeadType.getAllLeadTypes().forEach(leadType => {
+          let leadsCollectionRef =
+            firebase.firestore().collection("users").doc(userData.email)
+              .collection("leads_" + leadType.id.toString().toLowerCase());
+          this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
+        });
+      }
     });
   }
 

@@ -32,7 +32,7 @@ export class FilteredByComponent {
         this.translations = values;
       });
       
-      this.leadTypeIcon = leadPropertyMetadataProvider.get().find(x=> x.id === LeadProperty.type).icon;
+      this.leadTypeIcon = leadPropertyMetadataProvider.getBasicLeadProperties().find(x=> x.id === LeadProperty.type).icon;
    }
 
   ngOnChanges() {
