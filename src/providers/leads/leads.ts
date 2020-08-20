@@ -9,6 +9,7 @@ import { firestore } from "firebase";
 import { LeadPropertyType, DealType } from "../../models/lead-property-metadata";
 import { Comment } from '../../models/comment';
 import * as firebase from 'firebase/app';
+import { UserData } from '../user/user';
 
 /*
   Generated class for the LeadsProvider provider.
@@ -37,32 +38,32 @@ export class LeadsProvider {
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
     private user: User
   ) {
-    this.initLeadCollections()
+    let userData = this.user.getUserData();
+    if (userData) {
+      this.initLeadCollections(userData);
+    }
+    else {
+      firebase.auth().onIdTokenChanged(user => {
+        if (user) {
+          let userData = this.user.getUserData();
+          this.initLeadCollections(userData);
+        }
+      });
+    }  
   }
 
-  private initLeadCollections() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        let userData = this.user.getUserData();
-        if (!userData) {
-          return;
-        }
-    
-        LeadType.getAllLeadTypes().forEach(leadType => {
-          let leadsCollectionRef =
-            firebase.firestore().collection("users").doc(userData.email)
-              .collection("leads_" + leadType.id.toString().toLowerCase());
-          this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
-        });
-      }
+  private initLeadCollections(userData: UserData) {
+    LeadType.getAllLeadTypes().forEach(leadType => {
+      let leadsCollectionRef =
+        firebase.firestore().collection("users").doc(userData.email)
+          .collection("leads_" + leadType.id.toString().toLowerCase());
+      this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
     });
   }
 
   public get(leadTypeId: LeadTypeID): firebase.firestore.Query {
     let collectionReference = this.leadsDictionary[leadTypeId.toString()];
-    if (!collectionReference) {
-      this.initLeadCollections();
-    }
+
     if (!collectionReference) {
       console.debug(`leads provider:get - Cannot get leads, collection reference is ${collectionReference}`)
       return null;
