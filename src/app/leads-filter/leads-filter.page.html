@@ -24,21 +24,36 @@
         </ion-label>
         <ion-icon [name]="filter.selected ? 'arrow-down' : 'arrow-back'" slot="end"></ion-icon>
       </ion-item>
-      <ion-radio-group (ionChange)="handleSingleOptionValueClick(filter, $event)" [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringSingleValue">
-        <ion-item *ngFor="let option of filter.metadata.options">
-          <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
-          <ion-radio [value]="option.title" slot="start"></ion-radio>
-        </ion-item>
+      <ion-radio-group class="split-row-items" (ionChange)="handleSingleOptionValueClick(filter, $event)"
+        [hidden]="!filter.selected"
+        *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringSingleValue">
+        <ion-row>
+          <ion-col size="6" *ngFor="let option of filter.metadata.options">
+            <ion-item lines="none">
+              <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
+              <ion-radio [value]="option.title" slot="start"></ion-radio>
+            </ion-item>
+          </ion-col>
+        </ion-row>
       </ion-radio-group>
 
-      <div [hidden]="!filter.selected" *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringMultivalue">
-        <ion-item *ngFor="let option of filter.metadata.options">
-          <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
-          <ion-checkbox [checked]="option.selected" slot="start" (ionChange)="handleMultivalueOptionValueClick(filter, option, $event)"></ion-checkbox>
-        </ion-item>
+      <div class="split-row-items" [hidden]="!filter.selected"
+        *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.StringMultivalue">
+        <ion-row>
+          <ion-col size="6" *ngFor="let option of filter.metadata.options">
+            <ion-item lines="none">
+              <ion-label>{{option.title | leadOption: filter.metadata.id}}</ion-label>
+              <ion-checkbox [checked]="option.selected" slot="start"
+                (ionChange)="handleMultivalueOptionValueClick(filter, option, $event)"></ion-checkbox>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+
       </div>
       <div *ngIf="filter.metadata && filter.metadata.type === leadPropertyType.Budget" [hidden]="!filter.selected">
-        <budget-slider [value]="filter.value" [dealType]="dealType" *ngIf="filter.selected" (valueChanged)="setBudget(filter, $event)"
+        <budget-slider [value]="filter.value" [dealType]="dealType" *ngIf="filter.selected"
+          (valueChanged)="setBudget(filter, $event)"
           (customValueSelected)="setBudget(filter, $event); filter.selected = false;"></budget-slider>
       </div>
     </div>

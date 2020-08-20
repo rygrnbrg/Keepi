@@ -70,8 +70,9 @@ export class LeadsPage implements OnInit {
     if (this.navParams.get("isModal") === true) {
       this.isModal = true;
     }
+  }
 
-
+  ngOnInit() {
     this.initLeadType().then(() => {
       this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
       let paramsFilters = this.navParams.get("filters");
@@ -82,10 +83,6 @@ export class LeadsPage implements OnInit {
         this.initLeadSubscription();
       }
     });
-  }
-
-  ngOnInit() {
-
   }
 
   ionViewDidLeave() {
@@ -140,7 +137,13 @@ export class LeadsPage implements OnInit {
       loading.present();
     }
 
-    this.leadsProvider.get(this.selectedLeadType.id).get().then(
+    let leadsReference = this.leadsProvider.get(this.selectedLeadType.id);
+    if (!leadsReference){
+      console.debug(`Leads page:refreshLeads - Cannot refresh leads, leadsReference is ${leadsReference}`);
+      return;
+    }
+    
+    leadsReference.get().then(
       (res) => {
         let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id));
         this.leadsDictionary[leadTypeKey] = this.sortLeads(leads);

@@ -28,45 +28,6 @@ export class LeadsFilterPage {
     this.leadPropertyMetadata = leadPropertyMetadataProvider.get();
   }
 
-  public getFilterValueString(filter: LeadFilter): string {
-    let value = LeadPropertyMetadata.getValueString(filter.metadata, filter.value);
-    if (filter.type === LeadPropertyType.Budget) {
-      let numberValue = Number.parseInt(value);
-      if (!isNaN(numberValue)) {
-        return this.getBudgetString(numberValue);
-      }
-    }
-
-    return value;
-  }
-
-  private getBudgetString(value: number): string {
-    let transform = this.numberFormatPipe.transform;
-    return transform(value).toString();
-  }
-
-  public filterClick(filter: LeadFilter) {
-    let selected = filter.selected;
-    this.filters.forEach(filter => (filter.selected = false));
-    filter.selected = !selected;
-  }
-
-  public setBudget(filter: LeadFilter, value: number) {
-    filter.value = value;
-  }
-
-  public handleSingleOptionValueClick(filter: LeadFilter, event: CustomEvent) {
-    filter.value = event.detail.value;
-    filter.selected = false;
-  }
-
-  public handleMultivalueOptionValueClick(filter: LeadFilter, option: PropertyOption, event: CustomEvent) {
-    let checkboxValue = event.detail.checked;
-    option.selected = checkboxValue;
-    let valueResult = filter.metadata.options.filter(option => option.selected).map(option => option.title);
-    filter.value = valueResult.length ? valueResult : null;
-  }
-
   ionViewWillEnter() {
     this.filters = this.leadPropertyMetadata.filter(x => x.filterable).map(
       md =>
@@ -88,8 +49,48 @@ export class LeadsFilterPage {
         this.filters[index] = paramFilter;
       });
     }
-
   }
+
+  public getFilterValueString(filter: LeadFilter): string {
+    let value = LeadPropertyMetadata.getValueString(filter.metadata, filter.value);
+    if (filter.type === LeadPropertyType.Budget) {
+      let numberValue = Number.parseInt(value);
+      if (!isNaN(numberValue)) {
+        return this.getBudgetString(numberValue);
+      }
+    }
+
+    return value;
+  }
+
+  public filterClick(filter: LeadFilter) {
+    let selected = filter.selected;
+    this.filters.forEach(filter => (filter.selected = false));
+    filter.selected = !selected;
+  }
+
+  private getBudgetString(value: number): string {
+    let transform = this.numberFormatPipe.transform;
+    return transform(value).toString();
+  }
+
+  public setBudget(filter: LeadFilter, value: number) {
+    filter.value = value;
+  }
+
+  public handleSingleOptionValueClick(filter: LeadFilter, event: CustomEvent) {
+    filter.value = event.detail.value;
+    filter.selected = false;
+  }
+
+  public handleMultivalueOptionValueClick(filter: LeadFilter, option: PropertyOption, event: CustomEvent) {
+    let checkboxValue = event.detail.checked;
+    option.selected = checkboxValue;
+    let valueResult = filter.metadata.options.filter(option => option.selected).map(option => option.title);
+    filter.value = valueResult.length ? valueResult : null;
+  }
+
+
 
   public done() {
     if (this.relevantOnly) {

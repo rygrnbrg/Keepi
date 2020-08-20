@@ -59,6 +59,10 @@ export class LeadsProvider {
     if (!collectionReference) {
       this.initLeadCollections();
     }
+    if (!collectionReference) {
+      console.debug(`leads provider:get - Cannot get leads, collection reference is ${collectionReference}`)
+      return null;
+    }
 
     return collectionReference.orderBy("created", "desc").limit(300);
   }

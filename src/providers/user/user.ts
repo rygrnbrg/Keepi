@@ -123,7 +123,6 @@ export class User {
       this._user = user;
       console.log('Logged in existing user');
     }
-
   }
 
   public signup(data: AuthenticationData) {
