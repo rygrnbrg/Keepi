@@ -39,6 +39,10 @@ export class User {
     this.initDefaultSettings();
   }
 
+  public onUserAuthStateChanged() {
+    // make this return observable that ensures user is initiated
+  }
+
   private initDefaultSettings() {
     this.staticSettings.forEach(x => {
       let defaults = this.getDefaultSetting(x);
@@ -137,7 +141,11 @@ export class User {
     return this.authProvider.doSendVerificationEmail();
   }
 
-  public getUserData(): UserData {
+  public getUserData(user?:firebase.User): UserData {
+    if (!this._user && user){
+      this._user = user;
+    }
+
     if (!this._user) {
       console.error('User provider - getUserData: User is null');
       return null;
@@ -165,7 +173,7 @@ export class User {
       if (foundOptionIndex === -1) {
         options.push(value);
         return doc.ref.update({ "options": options }).then(() => {
-          return doc.ref.get().then(res => this.initUserSetting(res)) 
+          return doc.ref.get().then(res => this.initUserSetting(res))
         });
       }
     });

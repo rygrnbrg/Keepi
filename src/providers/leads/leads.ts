@@ -43,9 +43,9 @@ export class LeadsProvider {
       this.initLeadCollections(userData);
     }
     else {
-      firebase.auth().onIdTokenChanged(user => {
+      firebase.auth().onIdTokenChanged(user => { 
         if (user) {
-          let userData = this.user.getUserData();
+          let userData = this.user.getUserData(user);
           this.initLeadCollections(userData);
         }
       });
