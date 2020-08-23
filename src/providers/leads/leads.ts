@@ -120,15 +120,24 @@ export class LeadsProvider {
     lead.relevant = item[LeadPropertyMetadataProvider.relevanceKey];
 
     let comments = <Object[]>item[LeadPropertyMetadataProvider.commentKey];
-    lead.comments = comments && comments.map ? comments.map(comment =>
-      new Comment(comment["text"], comment["date"], comment["title"], comment["commentType"])) : [];
+    lead.comments = comments && comments.map ? 
+                    comments.map(comment =>new Comment(comment["text"], this.convertDbDateToDate(comment["date"]), comment["title"], comment["commentType"])) 
+                    : [];
 
     let created = item["created"];
     if (created) {
-      lead.created = new Date(created.seconds * 1000 + created.nanoseconds / 1000);
+      lead.created = this.convertDbDateToDate(created);
     }
 
     return lead;
+  }
+
+  private convertDbDateToDate(dbDate: any){
+    if (!dbDate){
+      console.error(`leads provider - convertDbDateToDate - expected db date but got ${dbDate}`)
+      return null;
+    }
+    return new Date(dbDate.seconds * 1000 + dbDate.nanoseconds / 1000);
   }
 
   public add(item: Lead): Promise<firestore.DocumentReference> {

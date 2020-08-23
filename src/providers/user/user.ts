@@ -141,8 +141,8 @@ export class User {
     return this.authProvider.doSendVerificationEmail();
   }
 
-  public getUserData(user?:firebase.User): UserData {
-    if (!this._user && user){
+  public getUserData(user?: firebase.User): UserData {
+    if (!this._user && user) {
       this._user = user;
     }
 
@@ -170,10 +170,16 @@ export class User {
       let data = result.data();
       let options: string[] = data["options"];
       let foundOptionIndex = options.indexOf(value);
+      console.debug(`user provider - addSetting - got option index: ${foundOptionIndex}`);
+
       if (foundOptionIndex === -1) {
         options.push(value);
         return doc.ref.update({ "options": options }).then(() => {
-          return doc.ref.get().then(res => this.initUserSetting(res))
+          console.info(`user provider - addSetting - after update options succeeded options: ${options}`);
+          return doc.ref.get().then(res => this.initUserSetting(res));
+        }).catch((reason) => {
+          console.error(`user provider - addSetting - after update options failed, options: ${options}, reason: ${reason}`);
+          return Promise.reject(reason);
         });
       }
     });
