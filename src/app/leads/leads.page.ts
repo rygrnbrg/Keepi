@@ -28,10 +28,10 @@ export class LeadsPage implements OnInit {
   public relevantOnly: boolean = true;
   public isModal: boolean = false;
   public enableFiltering = true;
-  leadsDictionary: { [id: string]: firebase.firestore.DocumentData[] } = {};
-  leads: firebase.firestore.DocumentData[];
-  queryLeadsSearchResults: firebase.firestore.DocumentData[];
-  leadsSearchResults: firebase.firestore.DocumentData[];
+  leadsDictionary: { [id: string]: Lead[] } = {};
+  leads: Lead[];
+  queryLeadsSearchResults: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[];
+  leadsSearchResults: Lead[];
   loading: any;
   translations: any;
   activeFilters: LeadFilter[];
@@ -145,7 +145,7 @@ export class LeadsPage implements OnInit {
     
     leadsReference.get().then(
       (res) => {
-        let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id));
+        let leads = res.docs.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id, lead.ref));
         this.leadsDictionary[leadTypeKey] = this.sortLeads(leads);
         this.leads = this.leadsDictionary[leadTypeKey];
       },
@@ -197,8 +197,7 @@ export class LeadsPage implements OnInit {
         this.setBudgetMinMaxValues(querySnapshot);
         this.setShowBudgetSlider();
         querySnapshot.forEach(doc => {
-          let data = doc.data();
-          this.queryLeadsSearchResults.push(data);
+          this.queryLeadsSearchResults.push(doc);
         });
         this.filterLeadsByRange();
       }
@@ -228,9 +227,8 @@ export class LeadsPage implements OnInit {
     });
     modal.present();
     modal.onDidDismiss().then(value => {
-      if (value.data && value.data.result && value.data.result.success) {
-        let result = value.data.result;
-        this.addMessageSentComments(result.text, leads);
+      if (value.data && value.data.success) {
+        this.addMessageSentComments(value.data.text, leads);
       }
     });
   }
@@ -247,19 +245,18 @@ export class LeadsPage implements OnInit {
     this.cleanFilters();
   }
 
-  private addMessageSentComments(text: string, leads: firebase.firestore.DocumentData[]) {
+  private addMessageSentComments(text: string, leads: Lead[]) {
     let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
 
     leads.forEach(lead => {
-      let convertedLead = this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id)
-      this.leadsProvider.addComment(convertedLead, comment);
+      this.leadsProvider.addComment(lead, comment);
     });
   }
 
   private filterLeadsByRange() {
-    let filteredQueryResults = this.queryLeadsSearchResults.filter(x => this.inBudgetRange(x));
-    let leads = filteredQueryResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead, this.selectedLeadType.id));
-    this.leadsSearchResults = this.sortLeads(leads);
+    let leads = this.queryLeadsSearchResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.selectedLeadType.id, lead.ref));
+    let filteredQueryResults = leads.filter(x => this.inBudgetRange(x));
+    this.leadsSearchResults = this.sortLeads(filteredQueryResults);
   }
 
   private setShowBudgetSlider(): void {
@@ -298,9 +295,8 @@ export class LeadsPage implements OnInit {
     this.budgetValue = range;
   }
 
-  private inBudgetRange(lead: any) {
-    let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
-    let value = <number>lead[budgetFilterId.id];
+  private inBudgetRange(lead: Lead) {
+    let value = <number>lead.budget;
     return value >= this.budgetValue.lower && value <= this.budgetValue.upper;
   }
 
@@ -324,23 +320,8 @@ export class LeadsPage implements OnInit {
     });
 
     modal.present();
-    modal.onDidDismiss().then(value => {
-      if (value.data && value.data.editedItem) {
-        let editedItem = value.data.editedItem;
-        this.updateItem(item, editedItem, this.leads);
-        this.updateItem(item, editedItem, this.leadsSearchResults);
-      }
+    modal.onDidDismiss().then((res) => {
+      item.relevant = res.data.relevant;
     });
-  }
-
-  private updateItem(item: Lead, editedItem: Lead, leads: any[]) {
-    if (leads) {
-      let index = leads.indexOf(item);
-      if (index > -1) {
-        let lead = <Lead>leads[index];
-        lead.comments = editedItem.comments;
-        lead.relevant = editedItem.relevant;
-      }
-    }
   }
 }

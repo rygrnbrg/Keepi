@@ -10,6 +10,7 @@ import { LeadPropertyType, DealType } from "../../models/lead-property-metadata"
 import { Comment } from '../../models/comment';
 import * as firebase from 'firebase/app';
 import { UserData } from '../user/user';
+import * as _ from "lodash";
 
 /*
   Generated class for the LeadsProvider provider.
@@ -36,20 +37,19 @@ export class LeadsProvider {
   constructor(
     public http: HttpClient,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
-    private user: User
-  ) {
+    private user: User) {
     let userData = this.user.getUserData();
     if (userData) {
       this.initLeadCollections(userData);
     }
     else {
-      firebase.auth().onIdTokenChanged(user => { 
+      firebase.auth().onIdTokenChanged(user => {
         if (user) {
           let userData = this.user.getUserData(user);
           this.initLeadCollections(userData);
         }
       });
-    }  
+    }
   }
 
   private initLeadCollections(userData: UserData) {
@@ -88,52 +88,46 @@ export class LeadsProvider {
   }
 
   public updateLeadRelevance(item: Lead, isRelevant: boolean): Promise<void> {
+    if (item.relevant === isRelevant) {
+      return;
+    }
+
     let data = {};
     data[LeadPropertyMetadataProvider.relevanceKey] = isRelevant;
-    let promise = this.getQuerySnapshotPromise(item);
-    return promise.then((querySnapshot) => {
-      querySnapshot.forEach(x => {
-        return x.ref.update(data);
-      });
-    });
+    return item.ref.update(data);
   }
 
   public addComment(item: Lead, comment: Comment): Promise<void> {
-    let promise = this.getQuerySnapshotPromise(item);
-    return promise.then((querySnapshot) => {
-      querySnapshot.forEach((x: firestore.QueryDocumentSnapshot) => {
-        let lead = this.convertDbObjectToLead(x.data(), item.type);
-        lead.comments.push(comment);
-        let data = {};
+    let comments = _.clone(item.comments);
+    comments.push(comment);
 
-        data[LeadPropertyMetadataProvider.commentKey] = lead.comments.map(comment => this.getCommentDbObject(comment));
-
-        return x.ref.update(data);
-      });
-    });
+    let data = {};
+    data[LeadPropertyMetadataProvider.commentKey] = comments.map(comment => this.getCommentDbObject(comment));
+    return item.ref.update(data);
   }
 
-  public convertDbObjectToLead(item: firebase.firestore.DocumentData, leadType: LeadTypeID): Lead {
+  public convertDbObjectToLead(item: firebase.firestore.DocumentData, leadType: LeadTypeID, ref: firebase.firestore.DocumentReference<firebase.firestore.DocumentData>): Lead {
     let lead = <Lead>{};
+    lead.ref = ref;
     LeadsProvider.standardLeadKeys.forEach(key => (lead[key] = item[key]));
     lead.type = leadType;
     lead.relevant = item[LeadPropertyMetadataProvider.relevanceKey];
 
     let comments = <Object[]>item[LeadPropertyMetadataProvider.commentKey];
-    lead.comments = comments && comments.map ? 
-                    comments.map(comment =>new Comment(comment["text"], this.convertDbDateToDate(comment["date"]), comment["title"], comment["commentType"])) 
-                    : [];
+    lead.comments = comments && comments.map ?
+      comments.map(comment => new Comment(comment["text"], this.convertDbDateToDate(comment["date"]), comment["title"], comment["commentType"]))
+      : [];
 
     let created = item["created"];
     if (created) {
       lead.created = this.convertDbDateToDate(created);
     }
-
     return lead;
+
   }
 
-  private convertDbDateToDate(dbDate: any){
-    if (!dbDate){
+  private convertDbDateToDate(dbDate: any) {
+    if (!dbDate) {
       console.error(`leads provider - convertDbDateToDate - expected db date but got ${dbDate}`)
       return null;
     }
@@ -147,11 +141,6 @@ export class LeadsProvider {
 
   public delete(item: Lead) {
 
-  }
-
-  public getQuerySnapshotPromise(item: Lead): Promise<firestore.QuerySnapshot> {
-    let promise = this.leadsDictionary[item.type.toString()].where("phone", "==", item.phone).where("name", "==", item.name).get();
-    return promise;
   }
 
   private addBudgetFilter(filters: LeadFilter[], query: firebase.firestore.Query): firebase.firestore.Query {

@@ -33,7 +33,7 @@ export class LeadDetailsPage implements OnInit {
   public dealCount: number;
   public oppositeLeadType: LeadTypeID;
   public potentialLeadsDisplay: string;
-  public potentialLeadsArray: any[];
+  public potentialLeadsArray: firestore.QueryDocumentSnapshot<firestore.DocumentData>[];
   private translations: any;
   private leadPropertiesMetadata: LeadPropertyMetadata[];
   private subscriptions: Subscription[];
@@ -56,8 +56,7 @@ export class LeadDetailsPage implements OnInit {
     this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get();
     let item = navParams.get("item");
     this.disableNavigation = navParams.get("disableNavigation");
-    this.loadItem(item);
-    // this.refreshItem();
+    this.loadItem(item, false);
   }
 
   ngOnInit() {
@@ -78,6 +77,10 @@ export class LeadDetailsPage implements OnInit {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
+  ionViewWillEnter() {
+    this.refreshItem();
+  }
+
   public async potentialDealMatchesClick() {
     if (this.dealCount <= 0) {
       return;
@@ -85,7 +88,7 @@ export class LeadDetailsPage implements OnInit {
 
     if (this.dealCount === 1) {
       let dbLead = this.potentialLeadsArray[0];
-      let lead = this.leadsProvider.convertDbObjectToLead(dbLead, this.oppositeLeadType);
+      let lead = this.leadsProvider.convertDbObjectToLead(dbLead.data(), this.oppositeLeadType, dbLead.ref);
       this.openLeadDetailsPage(lead);
       return;
     }
@@ -193,6 +196,10 @@ export class LeadDetailsPage implements OnInit {
   }
 
   public relevantChanged(): void {
+    if (this.item.relevant === this.relevant) {
+      return;
+    }
+
     this.leadsProvider.updateLeadRelevance(this.item, this.relevant).then(() => {
       this.item.relevant = this.relevant;
     }).catch(() => {
@@ -201,21 +208,21 @@ export class LeadDetailsPage implements OnInit {
     });
   }
 
-  private loadItem(item: Lead) {
-    this.item = item;
-    this.oppositeLeadType = this.leadPropertyMetadataProvider.getOppositeLeadType(this.item.type);
+  private loadItem(item: Lead, isReload: boolean) {
+    this.item = item;  
     this.properties = this.getProperties();
     this.relevant = this.item.relevant;
-    this.setPotentialDealCount();
+    if (isReload) {
+      this.oppositeLeadType = this.leadPropertyMetadataProvider.getOppositeLeadType(this.item.type);
+      this.setPotentialDealCount();
+    }
+
   }
 
   private refreshItem() {
-    let promise = this.leadsProvider.getQuerySnapshotPromise(this.item);
-    promise.then((querySnapshot) => {
-      querySnapshot.forEach((x: firestore.QueryDocumentSnapshot) => {
-        let lead = this.leadsProvider.convertDbObjectToLead(x.data(), this.item.type);
-        this.loadItem(lead);
-      });
+    this.item.ref.get().then((x) => {
+      let lead = this.leadsProvider.convertDbObjectToLead(x.data(), this.item.type, this.item.ref);
+      this.loadItem(lead, true);
     });
   }
 
@@ -244,9 +251,7 @@ export class LeadDetailsPage implements OnInit {
 
   private async addMessageSentComments(text: string): Promise<void> {
     let comment = new Comment(text, new Date(Date.now()), "", CommentType.MessageSent);
-
-    let convertedLead = this.leadsProvider.convertDbObjectToLead(this.item, this.item.type)
-    return this.leadsProvider.addComment(convertedLead, comment);
+    return this.leadsProvider.addComment(this.item, comment);
   }
 
   private getPropertyString(property: LeadPropertyMetadata): string {
@@ -300,10 +305,10 @@ export class LeadDetailsPage implements OnInit {
           this.potentialLeadsArray = [];
           this.dealCount = querySnapshot.size;
           querySnapshot.forEach(x => {
-            this.potentialLeadsArray.push(x.data());
+            this.potentialLeadsArray.push(x);
           });
 
-          this.potentialLeadsDisplay = this.potentialLeadsArray.map(x=>x["name"]).join(", ");
+          this.potentialLeadsDisplay = this.potentialLeadsArray.map(x => x.data()["name"]).join(", ");
         }, 1000);
       }
     ).catch();

@@ -30,5 +30,6 @@ export class Lead extends Contact {
   area: string[];
   relevant: boolean;
   meters: string;
-  comments: Comment[]
+  comments: Comment[];
+  ref: firebase.firestore.DocumentReference<firebase.firestore.DocumentData>;
 }

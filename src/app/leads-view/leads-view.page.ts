@@ -5,7 +5,7 @@ import { rangeValue } from 'src/components/range-budget-slider/range-budget-slid
 import { LeadsProvider } from 'src/providers/leads/leads';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 import { Lead, Contact } from 'src/models/lead';
-import { LeadPropertyType, LeadType, LeadTypeID, DealType } from 'src/models/lead-property-metadata';
+import { LeadPropertyType, LeadType, LeadTypeID, DealType, LeadPropertyMetadata } from 'src/models/lead-property-metadata';
 import { LeadFilter } from 'src/models/lead-filter';
 import { MessagePage } from '../message/message.page';
 import { TranslateService } from '@ngx-translate/core';
@@ -33,6 +33,7 @@ export class LeadsViewPage implements OnInit {
   public dealType: DealType;
   public lead: Lead;
   private translations: any;
+  private budgetFilterMetadata: LeadPropertyMetadata;
   public dealTypeStr: string;
   leadTypes: LeadType[];
 
@@ -46,7 +47,8 @@ export class LeadsViewPage implements OnInit {
       'LEADS_RECIEVED_MESSAGE']).subscribe(values => {
         this.translations = values;
       });
-      this.leadTypes = LeadType.getAllLeadTypes();
+    this.budgetFilterMetadata = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
+    this.leadTypes = LeadType.getAllLeadTypes();
   }
 
   ionViewWillEnter() {
@@ -61,7 +63,7 @@ export class LeadsViewPage implements OnInit {
     this.setShowBudgetSlider();
     this.query.forEach(doc => {
       let data = doc.data();
-      this.queryLeadsSearchResults.push(data);
+      this.queryLeadsSearchResults.push(data);//add ref to here (breakpoint)
     });
     this.filters = this.filters.filter(x => x.id !== "relevant");
     this.filterLeadsByRange();
@@ -102,9 +104,9 @@ export class LeadsViewPage implements OnInit {
   }
 
   private filterLeadsByRange() {
-    let filteredQueryResults = this.queryLeadsSearchResults.filter(x => this.inBudgetRange(x));
-    let leads = filteredQueryResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead, this.leadType));
-    this.leadsSearchResults = this.sortLeads(leads);
+    let leads = this.queryLeadsSearchResults.map(lead => this.leadsProvider.convertDbObjectToLead(lead.data(), this.leadType, lead.ref));
+    let filteredQueryResults = leads.filter(x => this.inBudgetRange(x));
+    this.leadsSearchResults = this.sortLeads(filteredQueryResults);
   }
 
   private setBudgetMinMaxValues(querySnapshot: firebase.firestore.QuerySnapshot): void {
@@ -143,9 +145,8 @@ export class LeadsViewPage implements OnInit {
     return sortedLeads;
   }
 
-  private inBudgetRange(lead: any) {
-    let budgetFilterId = this.leadPropertyMetadataProvider.get().find(x => x.type === LeadPropertyType.Budget);
-    let value = <number>lead[budgetFilterId.id];
+  private inBudgetRange(lead: Lead) {
+    let value = <number>lead[this.budgetFilterMetadata.id];
     return value >= this.budgetValue.lower && value <= this.budgetValue.upper;
   }
 
