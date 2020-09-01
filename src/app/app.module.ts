@@ -1,4 +1,3 @@
-import { ComponentFixture } from '@angular/core/testing';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -18,6 +17,8 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { environment } from '../environments/environment';
 import * as firebase from 'firebase';
 import { PipesModule } from 'src/pipes/pipes.module';
+import { StoreModule } from '@ngrx/store';
+import * as fromApp from './store/app.reducer'
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,7 +34,7 @@ import { PipesModule } from 'src/pipes/pipes.module';
         useFactory: (createTranslateLoader),  
         deps: [HttpClient] 
       } 
-    }),
+    }), StoreModule.forRoot(fromApp.appReducer),
   ],
   providers: [
     StatusBar,
