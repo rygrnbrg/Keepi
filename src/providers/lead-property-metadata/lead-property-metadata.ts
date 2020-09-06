@@ -1,23 +1,46 @@
 import { DealType, LeadTypeID, LeadType } from './../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
 import * as _ from "lodash";
-import { User } from '../../providers';
 import { LeadProperty } from 'src/models/LeadProperty';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import { UserSettings } from '../user/models';
+import { Subscription, Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { isNullOrUndefined } from 'util';
 
 @Injectable()
-export class LeadPropertyMetadataProvider implements OnInit {
+export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
   private properties: LeadPropertyMetadata[] = [];
+  private subscriptions: Subscription[] = [];
+  private userSettings: UserSettings;
   public static relevanceKey = "relevant";
   public static commentKey = "comment";
 
-  constructor(private user: User) {
+  constructor(private store: Store<AppState>) {
 
   }
 
   ngOnInit() {
     this.initProperties();
+    this.subscribeToUserSettingsUpdate();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(x => x.unsubscribe());
+  }
+
+  private subscribeToUserSettingsUpdate() {
+    let subscription = this.store.select(state => state.User)
+      .pipe(filter(x => !isNullOrUndefined(x?.Settings)))
+      .pipe(map(x => x.Settings))
+      .subscribe((settings: UserSettings) => {
+        this.userSettings = settings;
+      })
+
+    this.subscriptions.push(subscription);
   }
 
   private initProperties() {
@@ -31,7 +54,13 @@ export class LeadPropertyMetadataProvider implements OnInit {
       new PropertyOption("להשכיר", false, LeadTypeID.Landlord)
     ];
 
-    optionsToInit.forEach(prop => this.properties.find(x => x.id === prop).options = this.getOptions(prop));
+    optionsToInit.forEach(prop => {
+      let subscription = this.options(prop).subscribe(options => {
+        this.properties.find(x => x.id === prop).options = options;
+      });
+
+      this.subscriptions.push(subscription);
+    });
   }
 
   public get(): LeadPropertyMetadata[] {
@@ -80,24 +109,11 @@ export class LeadPropertyMetadataProvider implements OnInit {
     return DealType.Rent;
   }
 
-  public getOptions(prop: LeadProperty): PropertyOption[] {
-    if (!this.user) {
-      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. User is ${this.user}.`);
-      return null;
-    }
-
-    let userData = this.user.getUserData();
-    if (!userData) {
-      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. UserData is ${userData}.`);
-      return null;
-    }
-
-    let propSettings = userData.settings[prop];
-    if (!propSettings) {
-      console.debug(`lead-property-metadata:getOptions failed to get options for prop ${prop}. Settings object for prop is ${propSettings}`);
-      return null;
-    }
-    return propSettings.map(x => new PropertyOption(x.name));
+  public options(prop: LeadProperty): Observable<PropertyOption[]> {
+    return this.store.select(state => state.User)
+      .pipe(filter(x => !isNullOrUndefined(x?.Settings?.settings[prop])))
+      .pipe(map(x => x.Settings.settings[prop]))
+      .pipe(map(x => x.map(prop => new PropertyOption(prop.name))));
   }
 
   public getBasicLeadProperties() {

@@ -2,15 +2,18 @@ import { LeadTypeID, LeadType } from './../../models/lead-property-metadata';
 import { LeadPropertyMetadataProvider } from './../lead-property-metadata/lead-property-metadata';
 import { LeadFilter } from "./../../models/lead-filter";
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit, OnDestroy } from "@angular/core";
 import { Lead } from "../../models/lead";
 import { User } from "..";
 import { firestore } from "firebase";
 import { LeadPropertyType, DealType } from "../../models/lead-property-metadata";
 import { Comment } from '../../models/comment';
 import * as firebase from 'firebase/app';
-import { UserData } from '../user/user';
+import { UserData } from '../user/models';
 import * as _ from "lodash";
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import { Subscription } from 'rxjs';
 
 /*
   Generated class for the LeadsProvider provider.
@@ -21,6 +24,7 @@ import * as _ from "lodash";
 @Injectable()
 export class LeadsProvider {
   private leadsDictionary: { [id: string]: firestore.CollectionReference<firestore.DocumentData> } = {};
+  private userDataUpdateSubscription: Subscription;
 
   private static standardLeadKeys = [
     "name",
@@ -34,20 +38,24 @@ export class LeadsProvider {
     "source"
   ];
 
-  constructor(
-    public http: HttpClient,
-    private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
-    private user: User) {
-    let userData = this.user.getUserData();
-    if (userData) {
-      this.initLeadCollections(userData);
-    }
-    else {
-      firebase.auth().onIdTokenChanged(user => {
-        if (user) {
-          let userData = this.user.getUserData(user);
-          this.initLeadCollections(userData);
-        }
+  constructor(public http: HttpClient, private leadPropertyMetadataProvider: LeadPropertyMetadataProvider, private store: Store<AppState>) {
+
+  }
+
+  public initLeads() {
+    this.subscribeToUserDataUpdate();
+  }
+
+  private subscribeToUserSettingsUpdate() {
+    this.store.select(x => x.User.Settings).subscribe(settings => {
+
+    });
+  }
+
+  private subscribeToUserDataUpdate() {
+    if (!this.userDataUpdateSubscription) {
+      this.userDataUpdateSubscription = this.store.select(x => x.User.Data).subscribe((userData: UserData) => {
+        this.initLeadCollections(userData);
       });
     }
   }

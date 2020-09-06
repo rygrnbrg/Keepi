@@ -51,6 +51,10 @@ export class LeadPropertyMetadata {
   }
 
   private static optionsToString(options: PropertyOption[]) {
+    if (!options){
+      return "";
+    }
+    
     return options
       .filter(option => option.selected === true)
       .map(option => option.title)
@@ -72,7 +76,7 @@ export class PropertyOption {
 
   constructor(title: string, selected?: boolean, id?: any) {
     this.title = title;
-    this.selected = selected;
+    this.selected = selected? true: false;
     this.id = id;
   }
 }

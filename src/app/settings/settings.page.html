@@ -12,7 +12,7 @@
     <app-onboarding-info key="ONBOARDING_SETTINGS" *ngIf="page === 'main'">
         {{ 'ONBOARDING_SETTINGS' | translate }}
     </app-onboarding-info>
-    <ion-list *ngIf="page == 'main'" class="items-list">
+    <ion-list *ngIf="page === 'main'" class="items-list">
         <ion-list-header>
             {{ 'SETTINGS_ACCOUNT' | translate }}
         </ion-list-header>
@@ -44,8 +44,6 @@
             </ion-item>
         </ion-list>
     </div>
-
-
 </ion-content>
 <ion-footer class="ion-no-border">
     <div *ngFor="let setting of multivalueMetadataEditableSettings">

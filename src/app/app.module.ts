@@ -19,6 +19,7 @@ import * as firebase from 'firebase';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer'
+import { userReducer } from 'src/providers/user/store/user.reducer';
 
 @NgModule({
   declarations: [AppComponent],
@@ -34,7 +35,7 @@ import * as fromApp from './store/app.reducer'
         useFactory: (createTranslateLoader),  
         deps: [HttpClient] 
       } 
-    }), StoreModule.forRoot(fromApp.appReducer),
+    }), StoreModule.forRoot({ User: userReducer}),
   ],
   providers: [
     StatusBar,

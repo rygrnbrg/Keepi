@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { UserData, UserSetting } from './../../providers/user/user';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { UserData, UserSetting } from './../../providers/user/models';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
@@ -7,6 +7,12 @@ import { User } from '../../providers';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { AppState } from '../store/app.reducer';
+import { filter, map } from 'rxjs/operators';
+import { isNullOrUndefined } from 'util';
+import { UserState } from 'src/providers/user/store/user.reducer';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +21,7 @@ import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metada
   providers: [LeadPropertyMetadataProvider]
 
 })
-export class SettingsPage {
+export class SettingsPage implements OnInit, OnDestroy {
   public items: UserSetting[];
   public userData: UserData;
   private translations: any;
@@ -23,6 +29,8 @@ export class SettingsPage {
   public multivalueMetadataEditableSettings: EditableSetting[];
   public form: FormGroup;
   private currentLeadProperty: LeadProperty;
+  private subscriptions: Subscription[] = [];
+
   page: string = 'main';
   pageTitleKey: string = 'SETTINGS_TITLE';
   pageTitle: string;
@@ -33,27 +41,30 @@ export class SettingsPage {
     public formBuilder: FormBuilder,
     public translate: TranslateService,
     public user: User,
+    private store: Store<AppState>,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
     private router: Router,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,) {
-    this.multivalueMetadataEditableSettings = this.leadPropertyMetadataProvider.get().filter(x=>x.editable)
-    .map(x=> {  
-      return { name: x.id, key: x.stringsKey }
-    });
+    this.multivalueMetadataEditableSettings = this.leadPropertyMetadataProvider.get().filter(x => x.editable)
+      .map(x => {
+        return { name: x.id, key: x.stringsKey }
+      });
 
     let translations = [
       'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
       'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR',
-      'SETTINGS_ITEM_ADD_SUCCESS','GENERAL_ALREADY_EXISTS_IN_LIST', 'GENERAL_TO_ADD'];
+      'SETTINGS_ITEM_ADD_SUCCESS', 'GENERAL_ALREADY_EXISTS_IN_LIST', 'GENERAL_TO_ADD'];
 
     this.multivalueMetadataEditableSettings.forEach(x => translations.push(x.key + "_SINGLE"));
 
-    this.translate.get(translations).subscribe(values => {
+    let translationSubscription = this.translate.get(translations).subscribe(values => {
       this.translations = values;
     });
+
+    this.subscriptions.push(translationSubscription);
 
 
     this.route.queryParams.subscribe(params => {
@@ -61,22 +72,57 @@ export class SettingsPage {
       this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
 
       this.translate.get(this.pageTitleKey).subscribe((res) => {
-        this.pageTitle = res; 
+        this.pageTitle = res;
       });
     });
   }
 
+  ngOnInit() {
 
+    this.subscribeToUserDataUpdate();
+    this.subscribeToSettingsUpdate();
+
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(x => x.unsubscribe());
+  }
+
+  private subscribeToSettingsUpdate() {
+    this.store.select(x => x.User)
+    .pipe(filter(x=>!isNullOrUndefined(x)))
+    .pipe(filter(x=>!isNullOrUndefined(x.Settings)))
+    .subscribe((user: UserState) => {
+      this.items = user.Settings.settings[this.currentLeadProperty];
+    });
+  }
+
+  private subscribeToUserDataUpdate() {
+    let userDataSubscription = 
+    this.store.select(x=>x.User)
+    .pipe(filter(x=>!isNullOrUndefined(x)))
+    .pipe(map(x=> x.Data))
+    .pipe(filter(x=>!isNullOrUndefined(x)))
+    .subscribe((userData: UserData) => {
+      if (!userData) {
+        return;
+      }
+
+      this.userData = userData;
+      this.form = this.formBuilder.group({});
+      this._buildForm();
+    });
+
+    this.subscriptions.push(userDataSubscription);
+  }
 
   _buildForm() {
-
-    this.userData = this.user.getUserData();
     switch (this.page) {
       case 'main':
         break;
       default:
-      this.initSettingsPage(LeadProperty[this.page]); 
-      break;
+        this.initSettingsPage(LeadProperty[this.page]);
+        break;
     }
   }
 
@@ -86,8 +132,8 @@ export class SettingsPage {
     this.currentLeadProperty = prop;
     let docs = await this.user.getOptions();
     loading.dismiss();
-    let optionsDoc = docs.find(doc=> this.user.extractPropName(doc.data()) === prop);
-    this.items = this.user.extractOptions(optionsDoc.data()).map(x => { return { name: x } });
+    let optionsDoc = docs.find(doc => this.user.extractPropName(doc.data()) === prop);
+    this.items = this.user.extractOptions(optionsDoc.data()).map(x => { return <UserSetting>{ name: x } });
   }
 
   ionViewDidLoad() {
@@ -95,11 +141,6 @@ export class SettingsPage {
     this.form = this.formBuilder.group({});
   }
 
-  ionViewWillEnter() {
-    // Build an empty form for the template to render
-    this.form = this.formBuilder.group({});
-    this._buildForm();
-  }
 
   public gotoSettingsPage(setting: EditableSetting) {
     this.router.navigate(["settings"],
@@ -151,7 +192,7 @@ export class SettingsPage {
   }
 
   private async addItem(name: string) {
-    if (this.items.find(x=> x.name === name)){
+    if (this.items.find(x => x.name === name)) {
       this.showToast(`"${name}" ${this.translations.GENERAL_ALREADY_EXISTS_IN_LIST}`);
       return;
     }
@@ -159,13 +200,14 @@ export class SettingsPage {
     let loading = await this.loadingCtrl.create();
     loading.present();
     this.user.addSetting(this.currentLeadProperty, name).then(() => {
-      this.items = this.user.getUserData().settings[this.currentLeadProperty];
       loading.dismiss();
       this.showToast(`"${name}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
     }, () => {
       this.showToast(this.translations.GENERAL_ACTION_ERROR);
-    });//todo:handle error
+    });
   }
+
+
 
   private removeFromView(setting: UserSetting) {
     this.items.splice(this.items.indexOf(setting), 1);

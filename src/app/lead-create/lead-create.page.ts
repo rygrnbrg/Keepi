@@ -121,16 +121,11 @@ export class LeadCreatePage implements OnInit {
     }
 
     ngOnInit() {
-        this.updateAreas();
         this.leadPropertiesMetadata.forEach(slide =>
             LeadPropertyMetadata.reset(slide)
         );
+        
         this.resultLead = new Lead(this.item.phone, this.item.name);
-    }
-
-    private updateAreas() {
-        this.leadPropertiesMetadata.find(x => x.id == 'area').options =
-            this.leadPropertyMetadataProvider.getOptions(LeadProperty.area);
     }
 
     public addMetersSlide(index: number) {
@@ -255,8 +250,7 @@ export class LeadCreatePage implements OnInit {
         let loading = await this.loadingCtrl.create();
         loading.present();
         this.user.addSetting(prop, name).then(() => {
-            let options = this.leadPropertyMetadataProvider.getOptions(prop);
-            let newOption = options.find(x => x.title == name);
+            let newOption = new PropertyOption(name);
             if (prop === LeadProperty.area && this.areasMultiselect) {
                 newOption.selected = true;
             }
