@@ -10,8 +10,26 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class BudgetSliderComponent implements OnInit {
   @Input() public value: number;
-  @Input() public dealType: number;
-  @Input() public commercial: boolean;
+
+  @Input() public set dealType(value: number) {
+    if (this._dealType !== value) {
+      this._dealType = value;
+      this.initSettings();
+    }
+  }
+  @Input() public set commercial(value: number) {
+    if (this._commercial !== value) {
+      this._commercial = value;
+      this.initSettings();
+    }
+  }
+
+  public get commercial() {
+    return this._commercial;
+  }
+  public get dealType() {
+    return this._dealType;
+  }
 
   public sliderMaxValue: number;
   public sliderMinValue: number;
@@ -20,6 +38,8 @@ export class BudgetSliderComponent implements OnInit {
   public presetBudgets: number[];
   private translations: any;
   private scaleFactor = 10000;
+  private _dealType;
+  private _commercial;
   public sliderValue: number;
 
   @Output() valueChanged = new EventEmitter<number>();
@@ -35,6 +55,10 @@ export class BudgetSliderComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initSettings()
+  }
+
+  private initSettings() {
     var settings = {
       defaultBudget: 1500_000,
       minBudget: 500_000,
@@ -75,17 +99,6 @@ export class BudgetSliderComponent implements OnInit {
     }
     this.sliderMaxValue = this.actualToRangeValue(this.maxValue);
     this.sliderMinValue = this.actualToRangeValue(this.minValue);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    let dealTypeChange = changes["dealType"];
-    let commercialChange = changes["commercial"];
-    if (
-      (dealTypeChange && dealTypeChange.currentValue != dealTypeChange.previousValue) ||
-      (commercialChange && commercialChange.currentValue != commercialChange.previousValue)
-    ) {
-      this.ngOnInit();
-    }
   }
 
   private initValue(defaultValue: number) {

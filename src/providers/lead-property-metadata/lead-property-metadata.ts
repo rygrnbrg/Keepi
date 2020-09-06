@@ -157,7 +157,7 @@ export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
       {
         id: LeadProperty.budget,
         title: 'תקציב',
-        description: 'מה המחיר (בשקלים) בו {leadName} מעוניינ/ת {dealType}?',
+        description: 'מה המחיר בו {leadName} מעוניינ/ת {dealType}?',
         icon: 'cash',
         type: LeadPropertyType.Budget,
         filterable: false
