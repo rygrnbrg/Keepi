@@ -14,11 +14,13 @@ import { UserState } from 'src/providers/user/store/user.reducer';
 import { filter, map } from 'rxjs/operators';
 import { isNull } from 'lodash';
 import { isNullOrUndefined } from 'util';
+import { LeadsProvider } from 'src/providers/leads/leads';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss']
+  styleUrls: ['app.component.scss'],
+  providers:[LeadsProvider]
 })
 export class AppComponent implements OnInit {
   private staticSettings: LeadProperty[] = [LeadProperty.rooms, LeadProperty.meters];
@@ -31,7 +33,8 @@ export class AppComponent implements OnInit {
     private statusBar: StatusBar,
     private translate: TranslateService,
     private user: User,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private leadsProvider: LeadsProvider
   ) {
 
   }
@@ -69,12 +72,13 @@ export class AppComponent implements OnInit {
   private async subscribeToServerDefaultsSettingsReady() {
     this.store.select(x => x.User)
       .pipe(filter(x => !isNullOrUndefined(x)))
-      .pipe(filter(x => x.ServerSettingsReady))
+      .pipe(filter(x => x.DefaultServerSettingsReady))
       .pipe(map(x=> x.Data))
       .pipe(filter(x => !isNullOrUndefined(x) && x.email !== this.initiatedUserEmail))
       .subscribe((userData: UserData) => {
         this.initiatedUserEmail = userData.email;
         this.initUserSettings();
+        this.leadsProvider.initLeads(userData);
       });
   }
 

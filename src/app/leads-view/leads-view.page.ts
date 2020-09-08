@@ -17,7 +17,7 @@ import { LeadDetailsPage } from '../lead-details/lead-details.page';
   selector: 'app-leads-view',
   templateUrl: './leads-view.page.html',
   styleUrls: ['./leads-view.page.scss'],
-  providers: [LeadsProvider, LeadPropertyMetadataProvider, NumberFormatPipe]
+  providers: [NumberFormatPipe]
 })
 export class LeadsViewPage implements OnInit {
   public title: string;

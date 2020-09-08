@@ -9,7 +9,7 @@ import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metada
   selector: 'app-comment',
   templateUrl: './comment.page.html',
   styleUrls: ['./comment.page.scss'],
-  providers: [LeadsProvider, LeadPropertyMetadataProvider]
+  providers: []
 })
 export class CommentPage implements OnInit {
   public text: string = "";

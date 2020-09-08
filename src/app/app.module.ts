@@ -19,7 +19,8 @@ import * as firebase from 'firebase';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer'
-import { userReducer } from 'src/providers/user/store/user.reducer';
+import { LeadsProvider } from 'src/providers/leads/leads';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,7 +36,7 @@ import { userReducer } from 'src/providers/user/store/user.reducer';
         useFactory: (createTranslateLoader),  
         deps: [HttpClient] 
       } 
-    }), StoreModule.forRoot({ User: userReducer}),
+    }), StoreModule.forRoot(fromApp.appReducer),
   ],
   providers: [
     StatusBar,
@@ -44,7 +45,9 @@ import { userReducer } from 'src/providers/user/store/user.reducer';
     User,
     AuthProvider,
     NativeStorage,
-    PipesModule
+    PipesModule,
+    LeadsProvider,
+    LeadPropertyMetadataProvider
   ],
   bootstrap: [AppComponent]
 })

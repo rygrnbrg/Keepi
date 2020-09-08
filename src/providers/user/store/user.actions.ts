@@ -38,4 +38,4 @@ export class UserDefaultServerSettingsReady implements Action {
     constructor() { }
 }
 
-export type UserActions = UpdateUserData | UpdateUserSettings | UserDefaultServerSettingsReady | Login | Logout
+export type UserActions = UpdateUserData | UpdateUserSettings | UserDefaultServerSettingsReady | Login | Logout;

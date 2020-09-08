@@ -20,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-leads',
   templateUrl: './leads.page.html',
   styleUrls: ['./leads.page.scss'],
-  providers: [LeadsProvider, LeadPropertyMetadataProvider, NavParams]
+  providers: [NavParams]
 })
 
 export class LeadsPage implements OnInit {
@@ -51,7 +51,6 @@ export class LeadsPage implements OnInit {
     private loadingCtrl: LoadingController,
     private translateService: TranslateService,
     private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,
-    private user: User,
     private activatedRoute: ActivatedRoute,
     private navParams: NavParams) {
     this.subscriptions = [];
@@ -73,7 +72,6 @@ export class LeadsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.leadsProvider.initLeads();
     this.initLeadType().then(() => {
       this.selectedDealType = this.leadPropertyMetadataProvider.getDealTypeByLeadType(this.selectedLeadType.id);
       let paramsFilters = this.navParams.get("filters");

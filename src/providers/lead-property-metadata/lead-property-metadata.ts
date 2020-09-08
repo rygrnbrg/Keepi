@@ -1,4 +1,4 @@
-import { DealType, LeadTypeID, LeadType } from './../../models/lead-property-metadata';
+import { DealType, LeadTypeID } from './../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
@@ -7,9 +7,10 @@ import { LeadProperty } from 'src/models/LeadProperty';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/app.reducer';
 import { UserSettings } from '../user/models';
-import { Subscription, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Subscription, Observable, forkJoin, from } from 'rxjs';
+import { filter, map, concatMap, mergeMap, finalize, take } from 'rxjs/operators';
 import { isNullOrUndefined } from 'util';
+import * as leadPropertyMetadataActions from './store/lead-property-metadata.actions';
 
 @Injectable()
 export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
@@ -54,13 +55,27 @@ export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
       new PropertyOption("להשכיר", false, LeadTypeID.Landlord)
     ];
 
-    optionsToInit.forEach(prop => {
-      let subscription = this.options(prop).subscribe(options => {
-        this.properties.find(x => x.id === prop).options = options;
-      });
+    let optionsToObserve$ = from(optionsToInit).pipe(
+      mergeMap(prop =>
+        this.options(prop)
+          .pipe(map(options => {
+            return {
+              prop: prop,
+              options: options
+            }
+          }))),
+      finalize(() => {
+        this.store.dispatch(new leadPropertyMetadataActions.LeadPropertyMetadataUpdate(this.properties));
+      })
+    );
 
-      this.subscriptions.push(subscription);
+    let optionsSubscription = optionsToObserve$.subscribe(x => {
+      let prop = x["prop"];
+      let options = x["options"];
+      this.properties.find(x => x.id === prop).options = options;
     });
+
+    this.subscriptions.push(optionsSubscription);
   }
 
   public get(): LeadPropertyMetadata[] {
@@ -113,7 +128,8 @@ export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
     return this.store.select(state => state.User)
       .pipe(filter(x => !isNullOrUndefined(x?.Settings?.settings[prop])))
       .pipe(map(x => x.Settings.settings[prop]))
-      .pipe(map(x => x.map(prop => new PropertyOption(prop.name))));
+      .pipe(map(x => x.map(prop => new PropertyOption(prop.name))))
+      .pipe(take(1));
   }
 
   public getBasicLeadProperties() {

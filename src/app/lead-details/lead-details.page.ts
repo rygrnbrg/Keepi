@@ -24,7 +24,7 @@ import { LeadOptionPipe } from 'src/pipes/lead-option/lead-option.pipe';
   selector: 'app-lead-details',
   templateUrl: './lead-details.page.html',
   styleUrls: ['./lead-details.page.scss'],
-  providers: [AvatarPipe, CallNumber, LeadPropertyMetadataProvider, LeadsProvider, NumberFormatPipe, LeadOptionPipe]
+  providers: [AvatarPipe, CallNumber, NumberFormatPipe, LeadOptionPipe]
 })
 export class LeadDetailsPage implements OnInit {
   public item: Lead;

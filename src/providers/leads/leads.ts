@@ -14,6 +14,8 @@ import * as _ from "lodash";
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/app.reducer';
 import { Subscription } from 'rxjs';
+import { isNullOrUndefined } from 'util';
+import { filter, map } from 'rxjs/operators';
 
 /*
   Generated class for the LeadsProvider provider.
@@ -42,21 +44,23 @@ export class LeadsProvider {
 
   }
 
-  public initLeads() {
+  public initLeads(userData) {
+    this.initLeadCollections(userData);
     this.subscribeToUserDataUpdate();
-  }
-
-  private subscribeToUserSettingsUpdate() {
-    this.store.select(x => x.User.Settings).subscribe(settings => {
-
-    });
   }
 
   private subscribeToUserDataUpdate() {
     if (!this.userDataUpdateSubscription) {
-      this.userDataUpdateSubscription = this.store.select(x => x.User.Data).subscribe((userData: UserData) => {
-        this.initLeadCollections(userData);
-      });
+      this.userDataUpdateSubscription =
+        this.store.select(x => x.User)
+          .pipe(
+            filter(x => !isNullOrUndefined(x)),
+            map(x => x.Data)
+          )
+          .subscribe((userData: UserData) => {
+            if (userData && userData.email)
+              this.initLeadCollections(userData);
+          });
     }
   }
 

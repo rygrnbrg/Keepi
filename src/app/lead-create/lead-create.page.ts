@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadTypeID } from 'src/models/lead-property-metadata';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
@@ -9,15 +9,21 @@ import { User } from 'src/providers';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { LeadOptionPipe } from 'src/pipes/lead-option/lead-option.pipe';
 import { NumberFormatPipe } from 'src/pipes/number-format/number-format';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.reducer';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { isNullOrUndefined } from 'util';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-lead-create',
     templateUrl: './lead-create.page.html',
     styleUrls: ['./lead-create.page.scss'],
-    providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadsProvider, LeadOptionPipe]
+    providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadOptionPipe]
 })
 
-export class LeadCreatePage implements OnInit {
+export class LeadCreatePage implements OnInit, OnDestroy {
     public item: Lead;
     public resultLead: Lead;
     public leadPropertyType = LeadPropertyType;
@@ -32,7 +38,7 @@ export class LeadCreatePage implements OnInit {
     public isCommercial: boolean;
     private submitted = false;
     private translations: any;
-
+    private subscriptions: Subscription[] = [];
 
     @ViewChild(IonSlides) slides: IonSlides;
 
@@ -47,7 +53,8 @@ export class LeadCreatePage implements OnInit {
         private toastCtrl: ToastController,
         private navCtrl: NavController,
         private navParams: NavParams,
-        private modalCtrl: ModalController
+        private modalCtrl: ModalController,
+        private store: Store<AppState>
     ) {
         let translations = ['GENERAL_CANCEL', 'GENERAL_APPROVE', 'SETTINGS_ITEM_ADD_TITLE', 'GENERAL_ADD_VALUE',
             'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR', 'GENERAL_TO_ADD'];
@@ -60,9 +67,34 @@ export class LeadCreatePage implements OnInit {
 
         this.item = this.navParams.get("lead");
 
-        this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
         this.initSlideOptions();
     }
+
+    ngOnInit() {
+        this.leadPropertiesMetadata = this.leadPropertyMetadataProvider.get().filter(x => !x.hidden);
+        this.leadPropertiesMetadata.forEach(slide =>
+            LeadPropertyMetadata.reset(slide)
+        );
+
+        this.resultLead = new Lead(this.item.phone, this.item.name);
+        this.subscribeToLeadPropertyMetadata();
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(x => x.unsubscribe());
+    }
+
+    private subscribeToLeadPropertyMetadata() {
+        let subscription = this.store.select(x => x.LeadPropertyMetadata)
+            .pipe(filter(x => !isNullOrUndefined(x)))
+            .subscribe(leadPropertyMetadata => {
+                this.leadPropertiesMetadata = _.cloneDeep(leadPropertyMetadata.Properties);
+            });
+
+        this.subscriptions.push(subscription);
+    }
+
+
 
     public closePage() {
         this.modalCtrl.dismiss();
@@ -118,14 +150,6 @@ export class LeadCreatePage implements OnInit {
         if (this.activeSlideValid) {
             this.goToSlide(this.activeSlide + 1);
         }
-    }
-
-    ngOnInit() {
-        this.leadPropertiesMetadata.forEach(slide =>
-            LeadPropertyMetadata.reset(slide)
-        );
-        
-        this.resultLead = new Lead(this.item.phone, this.item.name);
     }
 
     public addMetersSlide(index: number) {
@@ -260,7 +284,7 @@ export class LeadCreatePage implements OnInit {
             }
             newOption.selected = true;
             this.leadPropertiesMetadata.find(x => x.id == prop).options.unshift(newOption);
-        }).catch((reason)=>{
+        }).catch((reason) => {
             console.error(`lead create - addPropValue failed, reason: ${reason}`);
             this.showToast(this.translations.GENERAL_ACTION_ERROR)
         }).finally(() => loading.dismiss());
