@@ -15,12 +15,12 @@ import { filter, map } from 'rxjs/operators';
 import { isNull } from 'lodash';
 import { isNullOrUndefined } from 'util';
 import { LeadsProvider } from 'src/providers/leads/leads';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
-  providers:[LeadsProvider]
+  styleUrls: ['app.component.scss']
 })
 export class AppComponent implements OnInit {
   private staticSettings: LeadProperty[] = [LeadProperty.rooms, LeadProperty.meters];

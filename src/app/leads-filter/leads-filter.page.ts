@@ -10,7 +10,7 @@ import { NumberFormatPipe } from "../../pipes/number-format/number-format";
   selector: 'app-leads-filter',
   templateUrl: './leads-filter.page.html',
   styleUrls: ['./leads-filter.page.scss'],
-  providers: [NumberFormatPipe, LeadPropertyMetadataProvider]
+  providers: [NumberFormatPipe]
 })
 export class LeadsFilterPage {
   public filters: LeadFilter[];

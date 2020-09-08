@@ -17,9 +17,7 @@ import { UserState } from 'src/providers/user/store/user.reducer';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss'],
-  providers: [LeadPropertyMetadataProvider]
-
+  styleUrls: ['./settings.page.scss']
 })
 export class SettingsPage implements OnInit, OnDestroy {
   public items: UserSetting[];

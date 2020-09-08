@@ -20,7 +20,7 @@ import * as _ from 'lodash';
     selector: 'app-lead-create',
     templateUrl: './lead-create.page.html',
     styleUrls: ['./lead-create.page.scss'],
-    providers: [NumberFormatPipe, LeadPropertyMetadataProvider, LeadOptionPipe]
+    providers: [NumberFormatPipe, LeadOptionPipe]
 })
 
 export class LeadCreatePage implements OnInit, OnDestroy {

@@ -8,8 +8,7 @@ import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metada
 @Component({
   selector: 'app-comment',
   templateUrl: './comment.page.html',
-  styleUrls: ['./comment.page.scss'],
-  providers: []
+  styleUrls: ['./comment.page.scss']
 })
 export class CommentPage implements OnInit {
   public text: string = "";
