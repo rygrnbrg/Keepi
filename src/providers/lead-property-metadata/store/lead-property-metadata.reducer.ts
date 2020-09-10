@@ -16,5 +16,6 @@ export function leadPropertyMetadataReducer(state: LeadPropertyMetadataState = i
                 ...state,
                 Properties: action.payload
             }
+        default: return state;
     }
 }

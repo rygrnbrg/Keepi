@@ -1,10 +1,10 @@
 import { CommentType } from './../../models/comment';
-import { LeadPropertyMetadataProvider } from './../../providers/lead-property-metadata/lead-property-metadata';
+import { LeadPropertyMetadataProvider } from '../../providers/lead-property-metadata/lead-property-metadata.provider';
 import { LeadType, LeadPropertyType, DealType, LeadTypeID } from './../../models/lead-property-metadata';
 import { LeadFilter } from './../../models/lead-filter';
 import { Component, OnInit } from '@angular/core';
 import { ModalController, LoadingController, ToastController, NavParams, Platform } from '@ionic/angular';
-import { LeadsProvider } from '../../providers/leads/leads';
+import { LeadsProvider } from '../../providers/leads/leads.provider';
 import { Lead, Contact } from '../../models/lead';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';

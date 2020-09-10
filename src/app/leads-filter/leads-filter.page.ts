@@ -1,6 +1,6 @@
 import { PropertyOption, LeadPropertyType, DealType, LeadType } from "./../../models/lead-property-metadata";
 import { LeadFilter } from "./../../models/lead-filter";
-import { LeadPropertyMetadataProvider } from "./../../providers/lead-property-metadata/lead-property-metadata";
+import { LeadPropertyMetadataProvider } from "../../providers/lead-property-metadata/lead-property-metadata.provider";
 import { Component } from "@angular/core";
 import { NavParams, ModalController } from "@ionic/angular";
 import { LeadPropertyMetadata } from "../../models/lead-property-metadata";

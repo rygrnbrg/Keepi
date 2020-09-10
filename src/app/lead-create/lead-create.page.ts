@@ -1,8 +1,8 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadTypeID } from 'src/models/lead-property-metadata';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
-import { LeadsProvider } from 'src/providers/leads/leads';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
+import { LeadsProvider } from 'src/providers/leads/leads.provider';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController, IonSlides, NavController, NavParams, ModalController } from '@ionic/angular';
 import { User } from 'src/providers';

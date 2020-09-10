@@ -1,8 +1,8 @@
 import { Contact } from './../../models/lead';
-import { LeadsProvider } from './../../providers/leads/leads';
+import { LeadsProvider } from '../../providers/leads/leads.provider';
 import { Component, OnInit } from "@angular/core";
 import { NavParams, ToastController, ModalController, AlertController, Platform, NavController } from "@ionic/angular";
-import { LeadPropertyMetadataProvider } from "../../providers/lead-property-metadata/lead-property-metadata";
+import { LeadPropertyMetadataProvider } from "../../providers/lead-property-metadata/lead-property-metadata.provider";
 import { LeadPropertyMetadata, LeadPropertyType, LeadType, LeadTypeID } from "../../models/lead-property-metadata";
 import { Lead } from "../../models/lead";
 import { AvatarPipe } from "../../pipes/avatar/avatar";

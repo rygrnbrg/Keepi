@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { Comment } from 'src/models/comment';
 import { NavParams, ModalController } from '@ionic/angular';
-import { LeadsProvider } from 'src/providers/leads/leads';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
+import { LeadsProvider } from 'src/providers/leads/leads.provider';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
 
 @Component({
   selector: 'app-comment',

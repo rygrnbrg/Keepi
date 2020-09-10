@@ -1,4 +1,4 @@
-import { LeadPropertyMetadataProvider } from './../../providers/lead-property-metadata/lead-property-metadata';
+import { LeadPropertyMetadataProvider } from '../../providers/lead-property-metadata/lead-property-metadata.provider';
 import { NumberFormatPipe } from './../../pipes/number-format/number-format';
 import { LeadPropertyMetadata, LeadType, LeadTypeID } from './../../models/lead-property-metadata';
 import { Input } from '@angular/core';

@@ -19,12 +19,12 @@ export function userReducer(state: UserState = initialState, action: UserActions
             return {
                 ...initialState
             }
-        case UserActions.UPDATE_USER_DATA:
+        case UserActions.USER_UPDATE_DATA:
             return {
                 ...state,
                 Data: action.payload
             }
-        case UserActions.UPDATE_USER_SETTINGS:
+        case UserActions.USER_UPDATE_SETTINGS:
             return {
                 ...state,
                 Settings: action.payload
@@ -34,6 +34,8 @@ export function userReducer(state: UserState = initialState, action: UserActions
                 ...state,
                 DefaultServerSettingsReady: true
             }
+        default:
+            return state;
     }
 }
 

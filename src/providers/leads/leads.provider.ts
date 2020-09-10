@@ -1,6 +1,6 @@
-import { LeadTypeID, LeadType } from './../../models/lead-property-metadata';
-import { LeadPropertyMetadataProvider } from './../lead-property-metadata/lead-property-metadata';
-import { LeadFilter } from "./../../models/lead-filter";
+import { LeadTypeID, LeadType } from '../../models/lead-property-metadata';
+import { LeadPropertyMetadataProvider } from '../lead-property-metadata/lead-property-metadata.provider';
+import { LeadFilter } from "../../models/lead-filter";
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnInit, OnDestroy } from "@angular/core";
 import { Lead } from "../../models/lead";

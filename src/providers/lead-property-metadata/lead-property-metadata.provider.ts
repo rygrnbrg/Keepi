@@ -1,4 +1,4 @@
-import { DealType, LeadTypeID } from './../../models/lead-property-metadata';
+import { DealType, LeadTypeID } from '../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'

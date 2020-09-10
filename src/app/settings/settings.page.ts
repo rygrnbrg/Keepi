@@ -6,7 +6,7 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { User } from '../../providers';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LeadProperty } from 'src/models/LeadProperty';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { AppState } from '../store/app.reducer';

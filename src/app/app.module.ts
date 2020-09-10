@@ -19,8 +19,8 @@ import * as firebase from 'firebase';
 import { PipesModule } from 'src/pipes/pipes.module';
 import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer'
-import { LeadsProvider } from 'src/providers/leads/leads';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
+import { LeadsProvider } from 'src/providers/leads/leads.provider';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
 
 @NgModule({
   declarations: [AppComponent],

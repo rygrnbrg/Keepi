@@ -3,29 +3,44 @@ import * as firebase from 'firebase/app';
 import { AuthenticationData } from '../../models/authentication';
 import { TranslateService } from '@ngx-translate/core';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/app.reducer';
+import * as AuthActions from './store/auth.actions';
+import { UserData } from '../user/models';
 
 @Injectable()
 export class AuthProvider {
   private translations: any;
+  private user: firebase.User;
   public static emailNotVerifiedErrorCode = 'auth/email-not-verified';
   public static emailStorageKey = "email";
 
-  constructor( 
-    public translateService: TranslateService, 
-    public storage: NativeStorage) {
+  constructor(
+    public translateService: TranslateService,
+    public storage: NativeStorage,
+    public store: Store<AppState>) {
     this.translateService.use('he');
     this.translateService.get([
       'SIGNUP_ERROR', 'SIGNUP_ERROR_WEAK', 'SIGNUP_ERROR_EMAIL_USED', 'LOGIN_WRONG_CREDENTIALS',
       'LOGIN_ERROR', 'LOGIN_EMAIL_NOT_VERIFIED', 'PASSWORD_RECOVERY_FAIL', 'PASSWORD_RECOVERY_NO_ACCOUNT']).subscribe((values) => {
         this.translations = values;
-      })
+      });
+
+      this.subscribeToAuthChange();
   }
 
-  doRegister(data: AuthenticationData): Promise<firebase.User> {
+  public doRegister(data: AuthenticationData): Promise<firebase.User> {
     return firebase.auth().createUserWithEmailAndPassword(data.email, data.password)
       .then(
         res => {
           this.storage.setItem(AuthProvider.emailStorageKey, data.email);
+
+          this.store.dispatch(
+            new AuthActions.RegisterSuccess(<UserData>{
+              email: res.user.email,
+              id: res.user.uid
+            }));
+
           return Promise.resolve(res.user);
         },
         err => {
@@ -35,7 +50,7 @@ export class AuthProvider {
       )
   }
 
-  doLogin(data: AuthenticationData): Promise<firebase.User> {
+  public doLogin(data: AuthenticationData): Promise<firebase.User> {
     return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
       .then(
         res => {
@@ -45,6 +60,13 @@ export class AuthProvider {
             console.log("User login failed due to email not being verified.", res.user)
             return Promise.reject(<Error>{ name: code, message: this.getLoginErrorString(code) });
           }
+
+          this.store.dispatch(
+            new AuthActions.LoginSuccess(<UserData>{
+              email: res.user.email,
+              id: res.user.uid
+            }));
+
           return Promise.resolve(res.user);
         },
         err => {
@@ -54,14 +76,17 @@ export class AuthProvider {
       )
   }
 
-  doLogout(): Promise<void> {
+  public doLogout(): Promise<void> {
     if (!firebase.auth().currentUser) {
       return Promise.resolve();
     }
-    return firebase.auth().signOut().then(()=> console.log("User signed out"));
+
+    this.store.dispatch(new AuthActions.LogoutSuccess());
+
+    return firebase.auth().signOut().then(() => console.log("User signed out"));
   }
 
-  doSendVerificationEmail(): Promise<void> {
+  public doSendVerificationEmail(): Promise<void> {
     if (!firebase.auth().currentUser) {
       return Promise.reject("Send verification failed. User not logged in.");
     }
@@ -74,7 +99,7 @@ export class AuthProvider {
     );
   }
 
-  doSendPasswordResetEmail(email: string): Promise<void> {
+  public doSendPasswordResetEmail(email: string): Promise<void> {
     return firebase.auth().sendPasswordResetEmail(email).then(
       () => Promise.resolve(),
       (err) => {
@@ -82,6 +107,13 @@ export class AuthProvider {
         return Promise.reject(<Error>{ name: err.code, message: this.getPasswordResetErrorString(err.code) });
       }
     );;
+  }
+
+  private subscribeToAuthChange(): void {
+    firebase.auth().onAuthStateChanged((res) => {
+      let userData: UserData = res ? { id: res.uid, email: res.email } : null;
+      this.store.dispatch(new AuthActions.LoginSuccess(userData))
+    });
   }
 
   private getRegisterErrorString(errorCode: string) {

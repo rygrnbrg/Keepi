@@ -14,8 +14,8 @@ import { UserState } from 'src/providers/user/store/user.reducer';
 import { filter, map } from 'rxjs/operators';
 import { isNull } from 'lodash';
 import { isNullOrUndefined } from 'util';
-import { LeadsProvider } from 'src/providers/leads/leads';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata';
+import { LeadsProvider } from 'src/providers/leads/leads.provider';
+import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
 
 @Component({
   selector: 'app-root',
