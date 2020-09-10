@@ -1,22 +1,17 @@
+import * as userActions from '../providers/user/store/user.actions'
+import * as fromApp from './store/app.reducer';
 import { Component, OnInit } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'src/providers';
-import * as firebase from 'firebase';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { Store } from '@ngrx/store';
-import * as userActions from '../providers/user/store/user.actions'
-import * as fromApp from './store/app.reducer';
 import { UserSetting, UserData } from 'src/providers/user/models';
-import { UserState } from 'src/providers/user/store/user.reducer';
-import { filter, map, debounce, debounceTime } from 'rxjs/operators';
-import { isNull } from 'lodash';
-import { isNullOrUndefined } from 'util';
+import { filter, map } from 'rxjs/operators';
 import { LeadsProvider } from 'src/providers/leads/leads.provider';
-import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
-import { interval } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
@@ -34,8 +29,7 @@ export class AppComponent implements OnInit {
     private statusBar: StatusBar,
     private translate: TranslateService,
     private user: User,
-    private store: Store<fromApp.AppState>,
-    private leadsProvider: LeadsProvider
+    private store: Store<fromApp.AppState>
   ) {
 
   }
@@ -72,14 +66,13 @@ export class AppComponent implements OnInit {
 
   private async subscribeToServerSettingsReady() {
     this.store.select(x => x.User).pipe(
-      filter(x => !isNullOrUndefined(x)),
+      filter(x => !(x === null || x === undefined)),
       filter(x => x.ServerSettingsReady),
       map(x => x.Data),
-      filter(x => !isNullOrUndefined(x) && x.email !== this.initiatedUserEmail))
+      filter(x => !(x === null || x === undefined) && x.email !== this.initiatedUserEmail))
       .subscribe((userData: UserData) => {
         this.initiatedUserEmail = userData.email;
         this.initUserSettings();
-        this.leadsProvider.initLeads(userData);
       });
   }
 

@@ -1,20 +1,18 @@
+import * as firebase from 'firebase/app';
+import * as _ from "lodash";
 import { LeadTypeID, LeadType } from '../../models/lead-property-metadata';
 import { LeadPropertyMetadataProvider } from '../lead-property-metadata/lead-property-metadata.provider';
 import { LeadFilter } from "../../models/lead-filter";
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnInit, OnDestroy } from "@angular/core";
+import { Injectable} from "@angular/core";
 import { Lead } from "../../models/lead";
-import { User } from "..";
 import { firestore } from "firebase";
 import { LeadPropertyType, DealType } from "../../models/lead-property-metadata";
 import { Comment } from '../../models/comment';
-import * as firebase from 'firebase/app';
 import { UserData } from '../user/models';
-import * as _ from "lodash";
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/app.reducer';
 import { Subscription } from 'rxjs';
-import { isNullOrUndefined } from 'util';
 import { filter, map } from 'rxjs/operators';
 
 /*
@@ -27,6 +25,7 @@ import { filter, map } from 'rxjs/operators';
 export class LeadsProvider {
   private leadsDictionary: { [id: string]: firestore.CollectionReference<firestore.DocumentData> } = {};
   private userDataUpdateSubscription: Subscription;
+  private userData: UserData;
 
   private static standardLeadKeys = [
     "name",
@@ -41,36 +40,40 @@ export class LeadsProvider {
   ];
 
   constructor(public http: HttpClient, private leadPropertyMetadataProvider: LeadPropertyMetadataProvider, private store: Store<AppState>) {
-
-  }
-
-  public initLeads(userData) {
-    this.initLeadCollections(userData);
     this.subscribeToUserDataUpdate();
   }
 
   private subscribeToUserDataUpdate() {
     if (!this.userDataUpdateSubscription) {
       this.userDataUpdateSubscription =
-        this.store.select(x => x.User)
-          .pipe(
-            filter(x => !isNullOrUndefined(x)),
-            map(x => x.Data)
-          )
+        this.store.select(x => x.User).pipe(
+          filter(x => !(x === null || x === undefined)),
+          map(x => x.Data)
+        )
           .subscribe((userData: UserData) => {
-            if (userData && userData.email)
-              this.initLeadCollections(userData);
+            this.initLeadCollections(userData);
           });
     }
   }
 
   private initLeadCollections(userData: UserData) {
+    if (!userData) {
+      this.leadsDictionary = {};
+      return;
+    }
+
+    if (userData.email === this.userData?.email){
+      return;
+    }
+
     LeadType.getAllLeadTypes().forEach(leadType => {
       let leadsCollectionRef =
         firebase.firestore().collection("users").doc(userData.email)
           .collection("leads_" + leadType.id.toString().toLowerCase());
       this.leadsDictionary[leadType.id.toString()] = leadsCollectionRef;
     });
+    
+    this.userData = userData;
   }
 
   public get(leadTypeId: LeadTypeID): firebase.firestore.Query {

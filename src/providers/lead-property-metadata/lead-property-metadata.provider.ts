@@ -1,16 +1,15 @@
+import * as _ from "lodash";
+import * as leadPropertyMetadataActions from './store/lead-property-metadata.actions';
 import { DealType, LeadTypeID } from '../../models/lead-property-metadata';
 import { LeadPropertyType } from '../../models/lead-property-metadata';
 import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { PropertyOption, LeadPropertyMetadata } from '../../models/lead-property-metadata'
-import * as _ from "lodash";
 import { LeadProperty } from 'src/models/LeadProperty';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/app.reducer';
 import { UserSettings } from '../user/models';
-import { Subscription, Observable, forkJoin, from } from 'rxjs';
-import { filter, map, concatMap, mergeMap, finalize, take } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
-import * as leadPropertyMetadataActions from './store/lead-property-metadata.actions';
+import { Subscription, Observable, from } from 'rxjs';
+import { filter, map, mergeMap, finalize, take } from 'rxjs/operators';
 
 @Injectable()
 export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
@@ -35,7 +34,8 @@ export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
 
   private subscribeToUserSettingsUpdate() {
     let subscription = this.store.select(state => state.User)
-      .pipe(filter(x => !isNullOrUndefined(x?.Settings)))
+      .pipe(filter(x => !(x === null || x === undefined)))
+      .pipe(filter(x => !(x.Settings === null || x.Settings === undefined)))
       .pipe(map(x => x.Settings))
       .subscribe((settings: UserSettings) => {
         this.userSettings = settings;
@@ -125,11 +125,14 @@ export class LeadPropertyMetadataProvider implements OnInit, OnDestroy {
   }
 
   public options(prop: LeadProperty): Observable<PropertyOption[]> {
-    return this.store.select(state => state.User)
-      .pipe(filter(x => !isNullOrUndefined(x?.Settings?.settings[prop])))
-      .pipe(map(x => x.Settings.settings[prop]))
-      .pipe(map(x => x.map(prop => new PropertyOption(prop.name))))
-      .pipe(take(1));
+    return this.store.select(state => state.User).pipe(
+      filter(x => !(x === null || x === undefined)),
+      filter(x => !(x.Settings === null || x.Settings === undefined)),
+      filter(x => !(x.Settings.settings[prop] === null || x.Settings.settings[prop] === undefined)),
+      map(x => x.Settings.settings[prop]),
+      map(x => x.map(prop => new PropertyOption(prop.name))),
+      take(1)
+    );
   }
 
   public getBasicLeadProperties() {

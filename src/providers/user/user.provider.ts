@@ -7,13 +7,12 @@ import { AuthenticationData } from '../../models/authentication';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { Store } from '@ngrx/store';
 import { UserSetting, UserData, UserSettings } from './models';
-import { isNullOrUndefined } from 'util';
 import { filter, map } from 'rxjs/operators';
 
 
 @Injectable()
 export class User {
-  private settings: UserSettings = { settings: {} };
+  private userSettings: UserSettings = { settings: {} };
   private settingsDocs: { [leadProp: string]: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData> } = {};
   private optionsCollectionRef: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>;
   private userData: UserData;
@@ -21,6 +20,7 @@ export class User {
 
   constructor(private authProvider: AuthProvider, private store: Store<fromApp.AppState>) {
     this.subscribeToAuthChanged();
+    this.userSettings.settings["test"] = [];
   }
 
   public login(data: AuthenticationData): Promise<UserData> {
@@ -39,7 +39,7 @@ export class User {
 
   private subscribeToAuthChanged(): void {
     this.store.select(x => x.Auth).pipe(
-      filter(x => !isNullOrUndefined(x)),
+      filter(x => !(x === null || x === undefined)),
       map(x => x.Data)
     ).subscribe(userData => {
       this.initUser(userData);
@@ -52,7 +52,7 @@ export class User {
         this.store.dispatch(new userActions.Logout());
       }
       this.userData = null;
-      this.settings.settings = {};
+      this.userSettings.settings = {};
       this.settingsDocs = {};
       this.optionsCollectionRef = null;
 
@@ -76,8 +76,8 @@ export class User {
         this.initServerSettingsDefaults();
       }
 
-      this.settings.settings = await this.getServerSettings();
-      this.store.dispatch(new userActions.ServerSettingsReady(this.settings));     
+      this.userSettings.settings =  await this.getServerSettings();
+      this.store.dispatch(new userActions.ServerSettingsReady(this.userSettings));     
     });
   }
 
@@ -152,7 +152,7 @@ export class User {
         settings[propName] = options.map(x => { return <UserSetting>{ name: x }; });
       });
 
-      return settings;
+      return {...settings};
     });
   }
 
@@ -161,9 +161,9 @@ export class User {
     let options: string[] = this.extractOptions(data);
     let propName: string = this.extractPropName(data); //i.e "area", "source"
     this.settingsDocs[propName] = doc;
-    this.settings[propName] = options.map(x => { return { name: x }; });
+    this.userSettings.settings[propName] = options.map(x => { return { name: x }; });
 
-    this.store.dispatch(new userActions.UpdateUserSettings({ settings: { ...this.settings } }));
+    this.store.dispatch(new userActions.UpdateUserSettings(this.userSettings));
   }
 
   public async getOptions(): Promise<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[]> { //this should be deprecated to ngrx settings only 

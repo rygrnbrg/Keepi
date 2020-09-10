@@ -11,8 +11,6 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { AppState } from '../store/app.reducer';
 import { filter, map } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
-import { UserState } from 'src/providers/user/store/user.reducer';
 
 @Component({
   selector: 'app-settings',
@@ -85,12 +83,13 @@ export class SettingsPage implements OnInit, OnDestroy {
   private subscribeToQueryParamsUpdate() {
     let queryParamsSubscription = this.route.queryParams.subscribe(params => {
       this.page = params.page || this.page;
-      this.initSettingsPage(this.page);
       this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
 
       this.translate.get(this.pageTitleKey).subscribe((res) => {
         this.pageTitle = res;
       });
+
+      this.initSettingsPage(this.page);
     });
 
     this.subscriptions.push(queryParamsSubscription);
@@ -98,13 +97,16 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   private subscribeToSettingsUpdate() {
     let subscription = this.store.select(x => x.User).pipe(
-      filter(x => !isNullOrUndefined(x)),
-      filter(x => !isNullOrUndefined(x.Settings)),
+      filter(x => !(x === null || x === undefined)),
+      filter(x => !(x.Settings === null || x.Settings === undefined)),
       map(x => x.Settings))
       .subscribe((res) => {
-        this.userSettings = res;
+        this.userSettings = { ...res };
         if (this.page) {
           this.items = this.userSettings.settings[this.page];
+        }
+        else {
+          this.items = [];
         }
       });
 
@@ -112,24 +114,24 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   private subscribeToUserDataUpdate() {
-    let userDataSubscription = 
-    this.store.select(x=>x.User)
-    .pipe(filter(x=>!isNullOrUndefined(x)))
-    .pipe(map(x=> x.Data))
-    .pipe(filter(x=>!isNullOrUndefined(x)))
-    .subscribe((userData: UserData) => {
-      this.userData = userData;
-    });
+    let userDataSubscription =
+      this.store.select(x => x.User)
+        .pipe(filter(x => !(x === null || x === undefined)))
+        .pipe(map(x => x.Data))
+        .pipe(filter(x => !(x === null || x === undefined)))
+        .subscribe((userData: UserData) => {
+          this.userData = { ...userData };
+        });
 
     this.subscriptions.push(userDataSubscription);
   }
-
   private initSettingsPage(page: string) {
     switch (page) {
       case 'main':
+        this.currentLeadProperty = null;
         break;
       default:
-        this.items = this.userSettings.settings[page];
+        this.currentLeadProperty = LeadProperty[this.page];
         break;
     }
   }
@@ -180,7 +182,9 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.user.removeSetting(this.currentLeadProperty, item.name).then(() => {
       loading.dismiss();
       this.removeFromView(item);
-    });
+    }, () => {
+      this.showToast(this.translations.GENERAL_ACTION_ERROR);
+    }).finally(() => loading.dismiss());
   }
 
   private async addItem(name: string) {
@@ -196,7 +200,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.showToast(`"${name}" ${this.translations.SETTINGS_ITEM_ADD_SUCCESS}`);
     }, () => {
       this.showToast(this.translations.GENERAL_ACTION_ERROR);
-    });
+    }).finally(() => loading.dismiss());
   }
 
 

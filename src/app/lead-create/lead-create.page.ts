@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Lead } from 'src/models/lead';
 import { LeadPropertyMetadata, DealType, LeadPropertyType, PropertyOption, LeadTypeID } from 'src/models/lead-property-metadata';
@@ -13,8 +14,6 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
-import * as _ from 'lodash';
 
 @Component({
     selector: 'app-lead-create',
@@ -86,7 +85,7 @@ export class LeadCreatePage implements OnInit, OnDestroy {
 
     private subscribeToLeadPropertyMetadata() {
         let subscription = this.store.select(x => x.LeadPropertyMetadata)
-            .pipe(filter(x => !isNullOrUndefined(x)))
+            .pipe(filter(x => !(x === null || x === undefined)))
             .subscribe(leadPropertyMetadata => {
                 this.leadPropertiesMetadata = _.cloneDeep(leadPropertyMetadata.Properties);
             });
