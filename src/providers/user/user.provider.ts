@@ -1,97 +1,89 @@
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
+import * as userActions from './store/user.actions';
+import * as firebase from 'firebase/app';
+import * as fromApp from 'src/app/store/app.reducer';
+import { Injectable } from '@angular/core';
 import { AuthProvider } from '../auth/auth';
 import { AuthenticationData } from '../../models/authentication';
-import * as firebase from 'firebase/app';
 import { LeadProperty } from 'src/models/LeadProperty';
 import { Store } from '@ngrx/store';
-import * as fromApp from 'src/app/store/app.reducer';
-import * as userActions from './store/user.actions';
-import { UserSetting, UserData } from './models';
+import { UserSetting, UserData, UserSettings } from './models';
+import { isNullOrUndefined } from 'util';
+import { filter, map } from 'rxjs/operators';
 
 
 @Injectable()
 export class User {
-  private settings: { [leadProp: string]: UserSetting[] } = {};
+  private settings: UserSettings = { settings: {} };
   private settingsDocs: { [leadProp: string]: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData> } = {};
   private optionsCollectionRef: firebase.firestore.CollectionReference<firebase.firestore.DocumentData>;
-  private onAuthStateChangedSubscription: firebase.Unsubscribe;
-  private _user: firebase.User;
+  private userData: UserData;
   private serverSettings: LeadProperty[] = [LeadProperty.area, LeadProperty.property, LeadProperty.source];
-
-  private set user(user: firebase.User) {
-    this._user = user;
-    if (!user) {
-      this.settings = {};
-      this.settingsDocs = {};
-      this.optionsCollectionRef = null;
-    }
-  }
-  private get user(): firebase.User { return this._user; }
 
   constructor(private authProvider: AuthProvider, private store: Store<fromApp.AppState>) {
     this.subscribeToAuthChanged();
   }
 
-  public login(data: AuthenticationData): Promise<any> {
+  public login(data: AuthenticationData): Promise<UserData> {
     return this.authProvider.doLogin(data).then(
-      res => { },
-      err => {
-        return Promise.reject(err);
-      }
-    );
+      res => {
+        return { id: res.uid, email: res.email, emailVerified: res.emailVerified }
+      },
+      reason => {
+        return reason;
+      });
   }
 
-  public logout() {
-    this.authProvider.doLogout().then(() => {
-      this.user = null;
-
-      this.store.dispatch(new userActions.Logout());
-    });
+  public logout(): void {
+    this.authProvider.doLogout();
   }
 
   private subscribeToAuthChanged(): void {
-    if (!this.onAuthStateChangedSubscription) {
-      this.onAuthStateChangedSubscription = firebase.auth().onAuthStateChanged(user => {
-        this.initUser(user);
-      });
-    }
+    this.store.select(x => x.Auth).pipe(
+      filter(x => !isNullOrUndefined(x)),
+      map(x => x.Data)
+    ).subscribe(userData => {
+      this.initUser(userData);
+    });
   }
 
-  private initUser(user: firebase.User) {
-    this.user = user;
-    if (!user) {
+  private initUser(userData: UserData): void {
+    if (!userData) {
+      if (this.userData) {
+        this.store.dispatch(new userActions.Logout());
+      }
+      this.userData = null;
+      this.settings.settings = {};
+      this.settingsDocs = {};
       this.optionsCollectionRef = null;
-      this.store.dispatch(new userActions.UpdateUserData(null));
+
       return;
     }
-    this.optionsCollectionRef = firebase.firestore().collection("users").doc(user.email).collection("leadOptions");
-    let userData = this.getUserData(user);
 
-    this.store.dispatch(new userActions.UpdateUserData(userData));
-
-    this.initServerSettingsDefaults();
-  }
-
-  private getUserData(user?: firebase.User): UserData {
-    if (!user) {
-      return null;
+    if (userData && this.userData && this.userData.email === userData.email) {
+      return;
     }
 
-    return {
-      id: user.uid,
-      email: user.email
-    };
+    this.userData = userData;
+    this.optionsCollectionRef = firebase.firestore().collection("users").doc(userData.email).collection("leadOptions");
+
+    this.store.dispatch(new userActions.InitUserSuccess(userData));
+    this.initServerSettings();
   }
 
-  private initServerSettingsDefaults() {
+  private initServerSettings() {
     this.optionsCollectionRef.get().then(async x => {
       if (x.empty) {
-        this.serverSettings.forEach(async prop => {
-          await this.optionsCollectionRef.add({ name: prop, options: this.getDefaultSetting(prop) });//todo: examine one request only
-        });
+        this.initServerSettingsDefaults();
       }
 
-      this.store.dispatch(new userActions.UserDefaultServerSettingsReady());
+      this.settings.settings = await this.getServerSettings();
+      this.store.dispatch(new userActions.ServerSettingsReady(this.settings));     
+    });
+  }
+
+  private async initServerSettingsDefaults() {
+    this.serverSettings.forEach(async prop => {
+      let doc = await this.optionsCollectionRef.add({ name: prop, options: this.getDefaultSetting(prop) });
     });
   }
 
@@ -164,7 +156,7 @@ export class User {
     });
   }
 
-  private updateLocalUserSetting(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>) {
+  private updateLocalUserSetting(doc: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>): void {
     let data = doc.data();
     let options: string[] = this.extractOptions(data);
     let propName: string = this.extractPropName(data); //i.e "area", "source"
@@ -184,13 +176,6 @@ export class User {
 
   public extractOptions(data: firebase.firestore.DocumentData): string[] {
     return data["options"];
-  }
-
-  public loginExistingUser(user: firebase.User): void {
-    if (user) {
-      this._user = user;
-      console.log('Logged in existing user');
-    }
   }
 
   public signup(data: AuthenticationData) {

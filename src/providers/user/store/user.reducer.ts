@@ -4,13 +4,13 @@ import * as UserActions from './user.actions'
 export interface UserState {
     Data: UserData,
     Settings: UserSettings,
-    DefaultServerSettingsReady: boolean
+    ServerSettingsReady: boolean
 }
 
 const initialState: UserState = {
     Data: null,
     Settings: null,
-    DefaultServerSettingsReady: false
+    ServerSettingsReady: false
 }
 
 export function userReducer(state: UserState = initialState, action: UserActions.UserActions): UserState {
@@ -19,7 +19,7 @@ export function userReducer(state: UserState = initialState, action: UserActions
             return {
                 ...initialState
             }
-        case UserActions.USER_UPDATE_DATA:
+        case UserActions.USER_INIT:
             return {
                 ...state,
                 Data: action.payload
@@ -29,10 +29,11 @@ export function userReducer(state: UserState = initialState, action: UserActions
                 ...state,
                 Settings: action.payload
             }
-        case UserActions.USER_DEFAULT_SERVER_SETTINGS_READY:
+        case UserActions.USER_SERVER_SETTINGS_READY:
             return {
                 ...state,
-                DefaultServerSettingsReady: true
+                Settings: action.payload,
+                ServerSettingsReady: true
             }
         default:
             return state;

@@ -44,11 +44,10 @@ export class LoginPage {
     );
   }
 
-  // Attempt to login in through our User service
   async doLogin() {
     let loading = await this.loadingCtrl.create();
     loading.present();
-    this.user.login(this.account).then((resp) => {
+    this.user.login(this.account).then(() => {
       loading.dismiss();
     }, (err: Error) => {
       loading.dismiss();

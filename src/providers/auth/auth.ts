@@ -26,7 +26,7 @@ export class AuthProvider {
         this.translations = values;
       });
 
-      this.subscribeToAuthChange();
+    this.subscribeToAuthChange();
   }
 
   public doRegister(data: AuthenticationData): Promise<firebase.User> {
@@ -77,13 +77,16 @@ export class AuthProvider {
   }
 
   public doLogout(): Promise<void> {
-    if (!firebase.auth().currentUser) {
+    let currentUser = firebase.auth().currentUser;
+
+    if (!currentUser) {
       return Promise.resolve();
     }
 
-    this.store.dispatch(new AuthActions.LogoutSuccess());
-
-    return firebase.auth().signOut().then(() => console.log("User signed out"));
+    return firebase.auth().signOut().then(() => {
+      this.store.dispatch(new AuthActions.LogoutSuccess());
+      console.log("User signed out")
+    });
   }
 
   public doSendVerificationEmail(): Promise<void> {
@@ -111,8 +114,8 @@ export class AuthProvider {
 
   private subscribeToAuthChange(): void {
     firebase.auth().onAuthStateChanged((res) => {
-      let userData: UserData = res ? { id: res.uid, email: res.email } : null;
-      this.store.dispatch(new AuthActions.LoginSuccess(userData))
+      let userData: UserData = res ? { id: res.uid, email: res.email, emailVerified: res.emailVerified } : null;
+      this.store.dispatch(new AuthActions.AuthStateChanged(userData))
     });
   }
 

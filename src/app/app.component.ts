@@ -11,11 +11,12 @@ import * as userActions from '../providers/user/store/user.actions'
 import * as fromApp from './store/app.reducer';
 import { UserSetting, UserData } from 'src/providers/user/models';
 import { UserState } from 'src/providers/user/store/user.reducer';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, debounce, debounceTime } from 'rxjs/operators';
 import { isNull } from 'lodash';
 import { isNullOrUndefined } from 'util';
 import { LeadsProvider } from 'src/providers/leads/leads.provider';
 import { LeadPropertyMetadataProvider } from 'src/providers/lead-property-metadata/lead-property-metadata.provider';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +56,7 @@ export class AppComponent implements OnInit {
 
 
   private initUser() {
-    this.subscribeToServerDefaultsSettingsReady();
+    this.subscribeToServerSettingsReady();
   }
 
   private getDefaultSettings(): { [leadProp: string]: UserSetting[] } {
@@ -69,12 +70,12 @@ export class AppComponent implements OnInit {
     return settings;
   }
 
-  private async subscribeToServerDefaultsSettingsReady() {
-    this.store.select(x => x.User)
-      .pipe(filter(x => !isNullOrUndefined(x)))
-      .pipe(filter(x => x.DefaultServerSettingsReady))
-      .pipe(map(x=> x.Data))
-      .pipe(filter(x => !isNullOrUndefined(x) && x.email !== this.initiatedUserEmail))
+  private async subscribeToServerSettingsReady() {
+    this.store.select(x => x.User).pipe(
+      filter(x => !isNullOrUndefined(x)),
+      filter(x => x.ServerSettingsReady),
+      map(x => x.Data),
+      filter(x => !isNullOrUndefined(x) && x.email !== this.initiatedUserEmail))
       .subscribe((userData: UserData) => {
         this.initiatedUserEmail = userData.email;
         this.initUserSettings();
@@ -86,26 +87,29 @@ export class AppComponent implements OnInit {
     let clientSettings = this.getDefaultSettings();
     this.user.getServerSettings().then(serverSettings => {
       let settings = { ...clientSettings, ...serverSettings };
-
       this.store.dispatch(new userActions.UpdateUserSettings({ settings: settings }));
     });
   }
 
-  private subscribeToAuthChange(): void {
-    firebase.auth().onAuthStateChanged((res) => {
-      if (!res) {
-        this.gotoPage("login");
-        return;
-      }
+  private subscribeToAuthChange(): void {//todo: refactor as guard!!
+    this.store.select(x => x.Auth)
+      .subscribe(res => {
+        if (!res || !res.Ready) {
+          return;
+        }
 
-      if (res.emailVerified) {
-        this.user.loginExistingUser(res);
-        this.gotoPage("tabs");
-        return
-      }
+        if (!res.Data) {
+          this.gotoPage("login");
+          return;
+        }
 
-      this.gotoPage("sendverification", { email: res.email })
-    });
+        if (res.Data.emailVerified) {
+          this.gotoPage("tabs");
+          return
+        }
+
+        this.gotoPage("sendverification", { email: res.Data.email })
+      });
   }
 
   private gotoPage(page: string, params?: any) {

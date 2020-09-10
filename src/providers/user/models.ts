@@ -1,6 +1,7 @@
 export interface UserData {
   id: string;
   email: string;
+  emailVerified: boolean;
 }
 
 export interface UserSettings {

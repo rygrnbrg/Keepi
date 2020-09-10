@@ -3,9 +3,9 @@ import { UserData, UserSettings } from 'src/providers/user/models';
 
 export const USER_LOGIN = 'USER_LOGIN';
 export const USER_LOGOUT = 'USER_LOGOUT';
-export const USER_UPDATE_DATA = 'USER_UPDATE_DATA';
+export const USER_INIT = 'USER_INIT';
 export const USER_UPDATE_SETTINGS = 'USER_UPDATE_SETTINGS';
-export const USER_DEFAULT_SERVER_SETTINGS_READY = 'USER_DEFAULT_SERVER_SETTINGS_READY';
+export const USER_SERVER_SETTINGS_READY = 'USER_SERVER_SETTINGS_READY';
 
 
 
@@ -21,8 +21,8 @@ export class Logout implements Action {
     constructor() { }
 }
 
-export class UpdateUserData implements Action {
-    readonly type = USER_UPDATE_DATA;
+export class InitUserSuccess implements Action {
+    readonly type = USER_INIT;
 
     constructor(public payload: UserData) { }
 }
@@ -32,10 +32,12 @@ export class UpdateUserSettings implements Action {
     constructor(public payload: UserSettings) { }
 }
 
-export class UserDefaultServerSettingsReady implements Action {
-    readonly type = USER_DEFAULT_SERVER_SETTINGS_READY;
+export class ServerSettingsReady implements Action {
+    readonly type = USER_SERVER_SETTINGS_READY;
 
-    constructor() { }
+    constructor(public payload: UserSettings) { 
+        
+    }
 }
 
-export type UserActions = UpdateUserData | UpdateUserSettings | UserDefaultServerSettingsReady | Login | Logout;
+export type UserActions = InitUserSuccess | UpdateUserSettings | ServerSettingsReady | Login | Logout;

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserData, UserSetting } from './../../providers/user/models';
+import { UserData, UserSetting, UserSettings } from './../../providers/user/models';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
@@ -21,13 +21,14 @@ import { UserState } from 'src/providers/user/store/user.reducer';
 })
 export class SettingsPage implements OnInit, OnDestroy {
   public items: UserSetting[];
-  public userData: UserData;
+  private userSettings: UserSettings;
   private translations: any;
   private newItemName: string;
   public multivalueMetadataEditableSettings: EditableSetting[];
   public form: FormGroup;
   private currentLeadProperty: LeadProperty;
   private subscriptions: Subscription[] = [];
+  private userData: UserData;
 
   page: string = 'main';
   pageTitleKey: string = 'SETTINGS_TITLE';
@@ -45,12 +46,28 @@ export class SettingsPage implements OnInit, OnDestroy {
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
     private router: Router,
-    private leadPropertyMetadataProvider: LeadPropertyMetadataProvider,) {
+    private leadPropertyMetadataProvider: LeadPropertyMetadataProvider) {
+
     this.multivalueMetadataEditableSettings = this.leadPropertyMetadataProvider.get().filter(x => x.editable)
       .map(x => {
         return { name: x.id, key: x.stringsKey }
       });
 
+    this.initTranslations();
+  }
+
+
+  ngOnInit() {
+    this.subscribeToQueryParamsUpdate();
+    this.subscribeToSettingsUpdate();
+    this.subscribeToUserDataUpdate();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(x => x.unsubscribe());
+  }
+
+  private initTranslations() {
     let translations = [
       'SETTINGS_ITEM_DELETE_CONFIRM', 'GENERAL_CANCEL', 'GENERAL_APPROVE',
       'SETTINGS_ITEM_ADD_TITLE', 'SETTINGS_ITEM_ADD_PLACEHOLDER', 'GENERAL_ACTION_ERROR',
@@ -63,36 +80,35 @@ export class SettingsPage implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(translationSubscription);
+  }
 
-
-    this.route.queryParams.subscribe(params => {
+  private subscribeToQueryParamsUpdate() {
+    let queryParamsSubscription = this.route.queryParams.subscribe(params => {
       this.page = params.page || this.page;
+      this.initSettingsPage(this.page);
       this.pageTitleKey = params.pageTitleKey || this.pageTitleKey;
 
       this.translate.get(this.pageTitleKey).subscribe((res) => {
         this.pageTitle = res;
       });
     });
-  }
 
-  ngOnInit() {
-
-    this.subscribeToUserDataUpdate();
-    this.subscribeToSettingsUpdate();
-
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(x => x.unsubscribe());
+    this.subscriptions.push(queryParamsSubscription);
   }
 
   private subscribeToSettingsUpdate() {
-    this.store.select(x => x.User)
-    .pipe(filter(x=>!isNullOrUndefined(x)))
-    .pipe(filter(x=>!isNullOrUndefined(x.Settings)))
-    .subscribe((user: UserState) => {
-      this.items = user.Settings.settings[this.currentLeadProperty];
-    });
+    let subscription = this.store.select(x => x.User).pipe(
+      filter(x => !isNullOrUndefined(x)),
+      filter(x => !isNullOrUndefined(x.Settings)),
+      map(x => x.Settings))
+      .subscribe((res) => {
+        this.userSettings = res;
+        if (this.page) {
+          this.items = this.userSettings.settings[this.page];
+        }
+      });
+
+    this.subscriptions.push(subscription);
   }
 
   private subscribeToUserDataUpdate() {
@@ -102,43 +118,21 @@ export class SettingsPage implements OnInit, OnDestroy {
     .pipe(map(x=> x.Data))
     .pipe(filter(x=>!isNullOrUndefined(x)))
     .subscribe((userData: UserData) => {
-      if (!userData) {
-        return;
-      }
-
       this.userData = userData;
-      this.form = this.formBuilder.group({});
-      this._buildForm();
     });
 
     this.subscriptions.push(userDataSubscription);
   }
 
-  _buildForm() {
-    switch (this.page) {
+  private initSettingsPage(page: string) {
+    switch (page) {
       case 'main':
         break;
       default:
-        this.initSettingsPage(LeadProperty[this.page]);
+        this.items = this.userSettings.settings[page];
         break;
     }
   }
-
-  private async initSettingsPage(prop: LeadProperty) {
-    let loading = await this.loadingCtrl.create();
-    loading.present();
-    this.currentLeadProperty = prop;
-    let docs = await this.user.getOptions();
-    loading.dismiss();
-    let optionsDoc = docs.find(doc => this.user.extractPropName(doc.data()) === prop);
-    this.items = this.user.extractOptions(optionsDoc.data()).map(x => { return <UserSetting>{ name: x } });
-  }
-
-  ionViewDidLoad() {
-    // Build an empty form for the template to render
-    this.form = this.formBuilder.group({});
-  }
-
 
   public gotoSettingsPage(setting: EditableSetting) {
     this.router.navigate(["settings"],
